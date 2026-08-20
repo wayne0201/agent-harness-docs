@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 11 章 技能是这样被使用的 · 深入浅出 AI Agent</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/book.js" defer></script>
+</head>
+<body class="part-2">
+<header class="topbar"><div class="topbar-inner">
+<a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+<span class="crumb">科学篇 / 第 11 章</span>
+<span class="spacer"></span>
+<button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+</div></header>
+<main class="layout">
+<aside class="sidebar" id="sidebar"><nav class="sidenav">
+<div class="side-group">
+<a href="../index.html">全书概览</a>
+<a href="../preface.html">前言</a>
+<a href="../outline.html">大纲</a>
+</div>
+<details class="side-part" open>
+<summary>第一篇 · 哲学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-1/index.html">篇首导览</a></li>
+<li><a href="../part-1/01-what-is-agent.html">第 1 章 什么是 Agent</a></li>
+<li><a href="../part-1/02-language-interface.html">第 2 章 语言成为新接口</a></li>
+<li><a href="../part-1/03-harness-philosophy.html">第 3 章 与 Agent 共事的哲学</a></li>
+<li><a href="../part-1/04-ai-friendly-project.html">第 4 章 让项目活起来</a></li>
+<li><a href="../part-1/05-why-plugin.html">第 5 章 把系统拆成积木</a></li>
+<li><a href="../part-1/06-full-chain-engineer.html">第 6 章 全链路工程师</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第二篇 · 科学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-2/index.html">篇首导览</a></li>
+<li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
+<li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
+<li><a class="active" href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
+<li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
+<li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
+<li><a href="../part-2/16-agent-loop.html">第 16 章 看心脏怎么跳</a></li>
+<li><a href="../part-2/17-capability-seams.html">第 17 章 换一个器官</a></li>
+<li><a href="../part-2/18-multi-agent.html">第 18 章 一个人变一支队伍</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第三篇 · 艺术篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-3/index.html">篇首导览</a></li>
+<li><a href="../part-3/19-gourmet.html">第 19 章 老吃家的段位</a></li>
+<li><a href="../part-3/20-designing-tools.html">第 20 章 设计一个好工具</a></li>
+<li><a href="../part-3/21-prompts.html">第 21 章 Prompt 与系统提示</a></li>
+<li><a href="../part-3/22-debugging.html">第 22 章 调试与可观测</a></li>
+<li><a href="../part-3/23-evaluation.html">第 23 章 评估与质量</a></li>
+<li><a href="../part-3/24-full-chain-practice.html">第 24 章 全链路闭环实战</a></li>
+<li><a href="../part-3/25-taste-and-growth.html">第 25 章 品味与成长</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>附录 · 工具与参考</summary>
+<ul class="side-chapters">
+<li><a href="../appendix/a-glossary.html">附录 A 术语表</a></li>
+<li><a href="../appendix/b-quickstart.html">附录 B 快速上手</a></li>
+<li><a href="../appendix/c-resources.html">附录 C 扩展阅读与资源</a></li>
+<li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
+</ul>
+</details>
+</nav></aside>
+<div class="container">
+
+<div class="hero part-2">
+  <span class="part-badge">第二篇 · 科学篇</span>
+  <span class="line-tag line-app">应用线</span>
+  <h1>第 11 章 · 技能是这样被使用的</h1>
+  <p class="subtitle">skills 技能库——按需拆开的一排锦囊</p>
+</div>
+
+<p>第 10 章结尾留了个话头：消费线还剩最机灵的一层——skills 是「按需调用」的作业指导书，<b>Agent 什么时候想起它、怎么把它调进来</b>。本章就把这两个问题拆开。</p>
+
+<p>来历先补三句：</p>
+<ul>
+  <li>第 7 章见过它的家——<code>.agents/skills</code>，11 个技能；</li>
+  <li>第 8 章 8.3 见过它的出身——同一件事反复做，写回成技能；</li>
+  <li>第 10 章的表里定了性——<b>人拍板设计、Agent 常代笔，调用才读</b>。</li>
+</ul>
+<p>本章讲使用：技能库长什么样、什么时候拆、拆开后模型拿到什么、用得对不对怎么看。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>本章核心问题</div><p>技能是什么？Agent 什么时候、怎么调用它们？拆开锦囊，模型拿到的是什么？</p></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>看懂技能的调用链路——会挑、会点、会验收，知道什么该交给技能、什么还得自己盯。</p></div>
+
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s11-1">11.1 技能是什么：一排锦囊</a></li>
+    <li><a href="#s11-2">11.2 技能库：十一个锦囊贴着纸条</a></li>
+    <li><a href="#s11-3">11.3 什么时候拆、怎么拆：调用链路</a></li>
+    <li><a href="#s11-4">11.4 拆开之后：照做，也要盯</a></li>
+  </ul>
+</div>
+
+<h2 id="s11-1">11.1 技能是什么：一排锦囊</h2>
+
+<p>先回答一个更根本的问题：<b>为什么不用 AGENTS.md 承载这些流程，非要单开一个技能库？</b>因为两者是两种吃法——AGENTS.md <b>每次必读</b>，技能<b>按需调用</b>（第 10 章口诀）。</p>
+<p>把 11 份作业指导书全写进 AGENTS.md，每轮请求都要原文照登这 11 本手册——大部分任务只用得上其中一本：预算白花、台面被占、信号被淹没。反过来，人人该守的全局规矩塞进锦囊，又怕模型想不到去拆。</p>
+
+<table>
+  <tr><th></th><th>AGENTS.md</th><th>技能</th></tr>
+  <tr><td><b>装什么</b></td><td>每次都要在场的约定（短、稳）</td><td>干到那步才需要的流程（长、细）</td></tr>
+  <tr><td><b>什么时候读</b></td><td>每次开工注入，原文照登</td><td>调用才读：纸条常驻，正文按需</td></tr>
+  <tr><td><b>换着放的代价</b></td><td>11 本手册每轮照登：预算白花、信号淹没</td><td>全局规矩进锦囊：怕模型想不到拆</td></tr>
+  <tr><td><b>类比</b></td><td>员工手册，人人必读</td><td>岗位作业指导书，干那活才翻</td></tr>
+</table>
+
+<p>所以技能不可替代的那一点是<b>两级结构</b>：纸条（名字 + 用途）常驻菜单，正文（指导书）按需加载——AGENTS.md 只能整篇照登，没有「目录」这一层。这正是第 8 章 8.3 写回三去处里，技能和 AGENTS.md 各管一半的原因。</p>
+
+<p>现在看技能本身。工具教的是「动作」。第 8 章 8.2 的工具说明书里，read 是读一个文件、write 是写一个文件、bash 是跑一条命令——每个工具都是一下子的动作，模型叫一次，干一件事。</p>
+
+<p>可真实项目里的活大多是「流程」：提交前先看改了什么、挑出最小的测试集、跑完过了才推；审文档先查边界词、再查双语对账、最后才放行。一串有顺序、有标准的动作，靠工具说明书教不了——那就把它写成<b>技能（skill）</b>。</p>
+
+<p>打个比方：工具是<b>一把扳手</b>，技能是<b>一本作业指导书</b>。指导书也是人写好的（第 10 章说过：skills 是人拍板设计、Agent 常代笔），放在项目的技能库里，像老师傅留的一排锦囊——遇到对应的事，拆开照着做。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="工具与技能的对比">
+  <defs><marker id="m111" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">工具教「手怎么动」，技能教「活怎么干」</text>
+    <rect x="20" y="40" width="320" height="150" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="180" y="66" text-anchor="middle" font-size="13" fill="#78350f" font-weight="700">工具 · 一个动作</text>
+    <text x="180" y="94" text-anchor="middle" font-size="11.5" fill="#4b5563">模型叫一次，干一件事</text>
+    <text x="180" y="122" text-anchor="middle" font-size="11" fill="#6b7280">read 读文件 · write 写文件</text>
+    <text x="180" y="150" text-anchor="middle" font-size="11" fill="#6b7280">bash 跑命令（第 8 章 8.2）</text>
+    <text x="180" y="176" text-anchor="middle" font-size="11" fill="#6b7280">说明书教参数怎么传</text>
+    <rect x="380" y="40" width="320" height="150" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="540" y="66" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="700">技能 · 一本指导书</text>
+    <text x="540" y="94" text-anchor="middle" font-size="11.5" fill="#4b5563">拆开锦囊，照着步骤一步步干</text>
+    <text x="540" y="122" text-anchor="middle" font-size="11" fill="#6b7280">步骤 ①②③… + 验收标准</text>
+    <text x="540" y="150" text-anchor="middle" font-size="11" fill="#6b7280">同一件事反复做 → 写回（8.3）</text>
+    <text x="540" y="176" text-anchor="middle" font-size="11" fill="#6b7280">人设计的作业指导书</text>
+    <text x="360" y="228" text-anchor="middle" font-size="11.5" fill="#7b8494">区别不在大小：工具给动作，技能给流程——两个都靠「说明书」进模型眼里</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 11-1</b> 工具是一把扳手，技能是一本指导书：一个是「一下」，一个是「一串」。</div>
+</div>
+
+<p>三种身份，一张表看清：</p>
+
+<table>
+  <tr><th></th><th>工具</th><th>技能</th><th>文档</th></tr>
+  <tr><td><b>身份</b></td><td>手</td><td>剧本（行军命令）</td><td>地图</td></tr>
+  <tr><td><b>给什么</b></td><td>一个动作</td><td>「怎么做、什么算合格」</td><td>「是什么、为什么」</td></tr>
+  <tr><td><b>什么时候上桌</b></td><td>每次开工（说明书随请求）</td><td>调用才读</td><td>用到才读</td></tr>
+  <tr><td><b>例子</b></td><td>read · write · bash</td><td>dsh-pre-push-checks 等 11 个</td><td>docs/architecture.md</td></tr>
+</table>
+
+<p>三种身份之间还差一个「门」：</p>
+<ul>
+  <li><b>技能是内容</b>——SKILL.md 是知识，不是动作；</li>
+  <li><b>工具是手</b>——read / write / bash，模型直接调用；</li>
+  <li><b>skill 工具是门</b>——技能也借一个特殊工具上桌：模型调 <code>skill</code> 工具（这一个动作），换来 SKILL.md 全文进上下文（这一本手册）。</li>
+</ul>
+<p>执行者永远是模型 + 工具：读文档，模型变懂；拆技能，模型开始行动——但谁都不会自己跑。</p>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>工具教「手怎么动」，技能教「活怎么干」，文档告诉你「世界什么样」。</b></p></div>
+
+<h2 id="s11-2">11.2 技能库：十一个锦囊贴着纸条</h2>
+
+<p>dsh 的技能库在 <a href="https://github.com/deepseek-ai/deepseek-harness/tree/master/.agents/skills" target="_blank" rel="noopener">.agents/skills/</a>，一共 11 个锦囊。每个锦囊一个目录，核心是一份 <code>SKILL.md</code>；锦囊外面贴着一张「纸条」——名字和用途，拆开之后，正文才是指导书本身。11 个技能各自管一摊：</p>
+
+<ul>
+  <li><b>dsh-pre-push-checks</b>——提交 / 推送前挑出最小检查集，别整仓跑；</li>
+  <li><b>dsh-prose-standard</b>——行文标准：文档、注释、提示词的写法与取舍；</li>
+  <li><b>dsh-doc-standards</b>——文档的摆放、预算与双语配对；</li>
+  <li><b>dsh-translate-docs</b>——翻译文档；</li>
+  <li><b>dsh-code-review</b>——代码评审；</li>
+  <li><b>dsh-archive-agent-notes</b>——归档 Agent Note（第 7 章的状态机在这里流转）；</li>
+  <li><b>dsh-doc-site-sync</b>——文档站同步；</li>
+  <li><b>dsh-find-simplifications</b>——找简化机会；</li>
+  <li><b>dsh-merging-stacked-prs</b>——合并 stacked PR；</li>
+  <li><b>dsh-trim-cot-leakage</b>——清理推理痕迹泄漏；</li>
+  <li><b>record-browser-gif</b>——录制浏览器操作 GIF（锦囊里还自带编码脚本）。</li>
+</ul>
+
+<p>纸条长什么样？看 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/.agents/skills/dsh-pre-push-checks/SKILL.md" target="_blank" rel="noopener">dsh-pre-push-checks 的 SKILL.md</a> 开头——「纸条」就是文件头部的 name 与 description，正文跟着展开成步骤：</p>
+
+<pre><code>---
+name: dsh-pre-push-checks
+description: Use before pushing, force-pushing, marking
+ready for review, or claiming checks pass on a
+deepseek-harness branch … to select the smallest
+tests and checks that cover the outgoing diff …
+
+# DSH Pre-Push Checks
+Use this skill to run relevant local evidence once
+before a deepseek-harness push …
+
+## Inspect the outgoing change
+1. Confirm the checkout and branch.
+   git status --short --branch
+2. Verify the live PR base or stack parent …
+   pnpm --silent run change-scope --base &lt;ref&gt;</code></pre>
+
+<p>两处要点：纸条（description）是给模型<b>决定拆不拆</b>看的；正文是拆开之后<b>照着干</b>的。想再看一份风格不同的，<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/.agents/skills/dsh-prose-standard/SKILL.md" target="_blank" rel="noopener">dsh-prose-standard</a> 讲的是行文判断，11.4 会用到它。</p>
+
+<h2 id="s11-3">11.3 什么时候拆、怎么拆：调用链路</h2>
+
+<p>「按需调用」的「需」从哪来？和读 docs 一个道理，三个触发通道（第 10 章的三类触发器）：</p>
+
+<ul>
+  <li><b>约定点名</b>——AGENTS.md 里写「提交前用 dsh-pre-push-checks」——路牌，走到这一步就拆；</li>
+  <li><b>Agent 自判</b>——模型看纸条（description）与任务对得上，自己决定拆；</li>
+  <li><b>你点名</b>——当场说「用 dsh-prose-standard 审一遍」。</li>
+</ul>
+
+<p>三条通道汇聚到同一条调用链路：</p>
+
+<ol>
+  <li><b>目录上桌</b>——随请求有一份「技能目录」：每个技能的名字 + 纸条。模型眼前等于一张菜单，这份菜单挂在 <code>skill</code> 工具的说明书里；</li>
+  <li><b>判断拆哪个</b>——三条触发通道都汇到这里：模型选一个技能名；</li>
+  <li><b>调用</b>——skill 工具按名加载，<code>SKILL.md</code> 正文<b>原文</b>进上下文（作业指导书原文照登，不摘要——和 AGENTS.md 一个规矩）；</li>
+  <li><b>照做</b>——模型照着步骤出主意、工具动手（8.2 的读→写→验，在指导书的框架里跑）。</li>
+</ol>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="技能调用链路四步">
+  <defs><marker id="m112" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">按需调用的完整链路：目录上桌 → 判断 → 拆锦囊 → 照做</text>
+    <rect x="20" y="56" width="150" height="100" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="95" y="82" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">① 目录上桌</text>
+    <text x="95" y="108" text-anchor="middle" font-size="10.5" fill="#4b5563">菜单：名字 + 纸条</text>
+    <text x="95" y="130" text-anchor="middle" font-size="10.5" fill="#6b7280">挂在 skill 工具里</text>
+    <rect x="200" y="56" width="150" height="100" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="275" y="82" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">② 判断拆哪个</text>
+    <text x="275" y="108" text-anchor="middle" font-size="10.5" fill="#4b5563">约定点名 · Agent 自判</text>
+    <text x="275" y="130" text-anchor="middle" font-size="10.5" fill="#6b7280">· 你点名</text>
+    <rect x="380" y="56" width="150" height="100" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="455" y="82" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">③ 调用</text>
+    <text x="455" y="108" text-anchor="middle" font-size="10.5" fill="#4b5563">skill 工具按名加载</text>
+    <text x="455" y="130" text-anchor="middle" font-size="10.5" fill="#6b7280">SKILL.md 原文上桌</text>
+    <rect x="560" y="56" width="150" height="100" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="635" y="82" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">④ 照做</text>
+    <text x="635" y="108" text-anchor="middle" font-size="10.5" fill="#4b5563">模型出主意</text>
+    <text x="635" y="130" text-anchor="middle" font-size="10.5" fill="#6b7280">工具动手（8.2）</text>
+    <line x1="170" y1="106" x2="198" y2="106" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m112)"/>
+    <line x1="350" y1="106" x2="378" y2="106" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m112)"/>
+    <line x1="530" y1="106" x2="558" y2="106" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m112)"/>
+    <text x="360" y="210" text-anchor="middle" font-size="11.5" fill="#7b8494">读多少：SKILL.md 原文整篇照登——和 AGENTS.md 一个规矩，不摘要</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 11-2</b> 调用链路：菜单先上桌，判断后调用，SKILL.md 原文进上下文，模型照步骤出主意、工具动手。</div>
+</div>
+
+<p>走一遍真实场景：你让 Agent 往 dsh 仓库推一个改动。</p>
+
+<ol>
+  <li><b>约定点名</b>——AGENTS.md 说了推送前用 dsh-pre-push-checks；</li>
+  <li><b>拆锦囊</b>——SKILL.md 上桌，指导书第一条是「确认分支」，Agent 就叫 bash 跑 <code>git status --short --branch</code>；</li>
+  <li><b>照着走</b>——第二步要「核实 PR 基线」，Agent 再叫 bash 跑 <code>pnpm --silent run change-scope --base …</code>，按范围挑最小测试集；</li>
+  <li><b>过了才推</b>——步骤走完、证据通过，才执行推送；没过就回头修。</li>
+</ol>
+
+<p>注意全程的节奏：<b>指导书出主意，模型下判断，工具动手</b>——技能没有「自动执行」，每一步还是模型叫工具完成的。</p>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>四个谁</div><p><b>谁写</b>——人拍板设计（Agent 常代笔）；<b>谁读</b>——AI；<b>谁拍板读</b>——约定点名 · Agent 自判 · 你点名；<b>读多少</b>——SKILL.md 原文整篇照登。</p></div>
+
+<h2 id="s11-4">11.4 拆开之后：照做，也要盯</h2>
+
+<p>拆开之后只有一句话要盯：<b>命令会跑，判断在模型</b>——技能的质量，直接决定「照做」的质量。三个事实：</p>
+
+<ul>
+  <li><b>命令真的会跑</b>——指导书写 <code>git status --short --branch</code>，模型就用 bash 工具真跑（11.3 场景）；「不是脚本」指<b>不会自动跑</b>：每步执行前模型自己判断——报错了停不停、基线不确定要不要先核实（<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/.agents/skills/dsh-prose-standard/SKILL.md" target="_blank" rel="noopener">dsh-prose-standard</a> 原话：It is guidance, not a script）；</li>
+  <li><b>脚本只是物料</b>——<a href="https://github.com/deepseek-ai/deepseek-harness/tree/master/.agents/skills/record-browser-gif" target="_blank" rel="noopener">record-browser-gif</a> 锦囊里自带 <code>scripts/encode_gif.py</code>（「捆绑的编码器」），照样靠 bash 工具执行；技能机制只加载 SKILL.md 文本，不自动执行任何东西；</li>
+  <li><b>锦囊互相援引</b>——dsh-prose-standard 点名 dsh-doc-standards（摆放、双语对账）和 dsh-trim-cot-leakage（清理推理痕迹）；技能库是一套互相咬合的规矩，不是 11 份孤立的纸。</li>
+</ul>
+
+<p>既然技能是人写的、模型照做的，就没有「装上就高枕无忧」这回事：</p>
+
+<ul>
+  <li><b>用得对不对，回黑匣子查</b>——第 9 章复盘三问：SKILL.md 上桌了吗（喂饱）· 步骤真的照做了吗（看见）· 结果有证据吗（验证）；</li>
+  <li><b>兜底还有机器门卫</b>——第 7 章的提交闸机、翻译校对员在流程终点等着，坏东西进不了仓库；</li>
+  <li><b>用得不好，写回</b>——复盘出的新经验，改技能或立新约定（8.3 写回），下次拆锦囊就更好用。</li>
+</ul>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>创造线的三件事，各归其位：</p><ul><li><b>体内实现</b>——<code>ctx.skills</code> 注册提供方、skill 工具发布目录并加载 SKILL.md → 第 14 章《把功能插上插头》；</li><li><b>自己写技能</b> → 第 20 章《设计一个好工具》；</li><li><b>MCP</b>（模型上下文协议，行业标准的外部能力接入；dsh 已有 <code>packages/mcp</code> 早期形态）→ 第 17 章《换一个器官》。</li></ul></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>回路钩子 · 用→写→长的技能线</div><p>技能线在这里闭合：同一件事反复做（8.3）→ 写回成技能（人拍板、Agent 常代笔）→ 按需调用（本章）→ 复盘验收 → 再写回。剩下的问题是：哪些环节该你点头、哪些能放心全自动——第 12 章《什么时候把钥匙交给它》。</p></div>
+
+<h2>一张图总结</h2>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 354" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="技能锦囊全景">
+  <defs><marker id="m113" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">一章回顾：锦囊的来路与去向</text>
+    <rect x="220" y="44" width="280" height="48" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="360" y="72" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="700">库房：.agents/skills · 11 个锦囊</text>
+    <rect x="220" y="116" width="280" height="48" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="360" y="144" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">目录上桌：菜单（名字 + 纸条）</text>
+    <rect x="220" y="188" width="280" height="48" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="360" y="216" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">拆锦囊：SKILL.md 原文照登</text>
+    <rect x="220" y="260" width="280" height="48" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="360" y="288" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">照步骤干 + 验收（复盘三问 · 门卫）</text>
+    <line x1="360" y1="92" x2="360" y2="114" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m113)"/>
+    <line x1="360" y1="164" x2="360" y2="186" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m113)"/>
+    <line x1="360" y1="236" x2="360" y2="258" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m113)"/>
+    <text x="360" y="338" text-anchor="middle" font-size="11.5" fill="#7b8494">用 → 写 → 长：用得不好，复盘写回；能不能放手，第 12 章讲</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 11-3</b> 技能全景：库房一排锦囊 → 菜单上桌 → 拆锦囊 → 照做验收——一条「用 → 写 → 长」的回路。</div>
+</div>
+
+<h2>要点回顾</h2>
+
+<ul>
+  <li><b>工具 · 技能 · 文档</b>：手 / 剧本 / 地图——动作、步骤、认知各管一摊；执行者永远是模型 + 工具。</li>
+  <li><b>为什么单开技能库</b>：约定每次必读（AGENTS.md）、流程按需上桌（技能）——11 本手册若每轮照登，预算白花、信号淹没；技能的「纸条常驻 + 正文按需」两级结构，AGENTS.md 做不到。</li>
+  <li><b>调用四步</b>：目录上桌 → 判断拆哪个 → skill 工具加载 SKILL.md 原文 → 模型照步骤、工具动手。</li>
+  <li><b>三个触发通道</b>：约定点名 · Agent 自判 · 你点名——「按需调用」的「需」就来自这里。</li>
+  <li><b>锦囊是指导不是脚本</b>：命令会跑（bash 工具真执行），但不会自动跑——判断在模型；写得不清照样干岔——用得对不对回黑匣子复盘；能不能放手，第 12 章讲。</li>
+</ul>
+
+<h2>动手做</h2>
+
+<div class="card">
+<ol>
+  <li>打开 <a href="https://github.com/deepseek-ai/deepseek-harness/tree/master/.agents/skills" target="_blank" rel="noopener">.agents/skills/</a>，挑一个技能读它的 name 与 description——这行「纸条」就是模型决定拆不拆的依据；</li>
+  <li>开一个 dsh 会话，让 Agent 干一件技能覆盖的活（比如写完一段文档，让它按 dsh-prose-standard 审一遍），然后在日志里找 skill 工具的调用记录，看 SKILL.md 原文是不是上了桌；</li>
+  <li>用第 9 章复盘三问验收这次执行：喂饱了吗（SKILL.md 在上下文里吗）· 看见了什么（步骤真的照做了吗）· 验了吗（结果有证据吗）。</li>
+</ol>
+</div>
+
+        <div class="prevnext">
+    <a href="./10-context-memory.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 10 章 记忆是这样被读取的</div></a>
+    <a class="next" href="./12-trust-review.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 12 章 什么时候把钥匙交给它</div></a>
+  </div>
+<footer class="footer">
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
+  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+</footer>
+</div>
+</main>
+<div class="sidebar-backdrop"></div>
+</body>
+</html>

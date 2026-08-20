@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 10 章 记忆是这样被读取的 · 深入浅出 AI Agent</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/book.js" defer></script>
+</head>
+<body class="part-2">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+    <span class="crumb">科学篇 / 第 10 章</span>
+    <span class="spacer"></span>
+    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+  </div>
+</header>
+<main class="layout">
+<aside class="sidebar" id="sidebar">
+<nav class="sidenav">
+<div class="side-group">
+<a href="../index.html">全书概览</a>
+<a href="../preface.html">前言</a>
+<a href="../outline.html">大纲</a>
+</div>
+<details class="side-part" open>
+<summary>第一篇 · 哲学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-1/index.html">篇首导览</a></li>
+<li><a href="../part-1/01-what-is-agent.html">第 1 章 什么是 Agent</a></li>
+<li><a href="../part-1/02-language-interface.html">第 2 章 语言成为新接口</a></li>
+<li><a href="../part-1/03-harness-philosophy.html">第 3 章 与 Agent 共事的哲学</a></li>
+<li><a href="../part-1/04-ai-friendly-project.html">第 4 章 让项目活起来</a></li>
+<li><a href="../part-1/05-why-plugin.html">第 5 章 把系统拆成积木</a></li>
+<li><a href="../part-1/06-full-chain-engineer.html">第 6 章 全链路工程师</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第二篇 · 科学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-2/index.html">篇首导览</a></li>
+<li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
+<li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a class="active" href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
+<li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
+<li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
+<li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
+<li><a href="../part-2/16-agent-loop.html">第 16 章 看心脏怎么跳</a></li>
+<li><a href="../part-2/17-capability-seams.html">第 17 章 换一个器官</a></li>
+<li><a href="../part-2/18-multi-agent.html">第 18 章 一个人变一支队伍</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第三篇 · 艺术篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-3/index.html">篇首导览</a></li>
+<li><a href="../part-3/19-gourmet.html">第 19 章 老吃家的段位</a></li>
+<li><a href="../part-3/20-designing-tools.html">第 20 章 设计一个好工具</a></li>
+<li><a href="../part-3/21-prompts.html">第 21 章 Prompt 与系统提示</a></li>
+<li><a href="../part-3/22-debugging.html">第 22 章 调试与可观测</a></li>
+<li><a href="../part-3/23-evaluation.html">第 23 章 评估与质量</a></li>
+<li><a href="../part-3/24-full-chain-practice.html">第 24 章 全链路闭环实战</a></li>
+<li><a href="../part-3/25-taste-and-growth.html">第 25 章 品味与成长</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>附录 · 工具与参考</summary>
+<ul class="side-chapters">
+<li><a href="../appendix/a-glossary.html">附录 A 术语表</a></li>
+<li><a href="../appendix/b-quickstart.html">附录 B 快速上手</a></li>
+<li><a href="../appendix/c-resources.html">附录 C 扩展阅读与资源</a></li>
+<li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
+</ul>
+</details>
+</nav>
+</aside>
+<div class="container">
+<div class="hero part-2">
+  <span class="part-badge">第二篇 · 科学篇</span>
+  <span class="line-tag line-app">应用线</span>
+  <h1>第 10 章 · 记忆是这样被读取的</h1>
+  <p class="subtitle">备菜台——窗口有限，取舍有方</p>
+</div>
+
+<p class="lead">第 9 章结尾说：黑匣子记录一切，可记录不是为了供着。这一章看「读取」——日志和文件里的记忆，怎么变成模型眼前的上下文。这是记忆线的「消费」一站：<b>7 提供 → 9 记录 → 本章消费 → 8 写回</b>。全章一个比喻：<b>厨房</b>——库房（日志与文件）很大，备菜台（上下文窗口）很小，模型就着台面炒菜；台面装不下，就把历史熬成高汤。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>日志和文件里的记忆，怎么变成模型眼前的上下文？</p></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>看懂上下文组装与压缩——为什么 Agent 有时会「失忆」，如何喂得高效。</p></div>
+
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s10-1">10.1 从黑匣子到备菜台：历史投影</a></li>
+    <li><a href="#s10-2">10.2 台面有限：窗口与压缩</a></li>
+    <li><a href="#s10-3">10.3 三层记忆，怎么被吃掉</a></li>
+  </ul>
+</div>
+
+<h2 id="s10-1">10.1 从黑匣子到备菜台：历史投影</h2>
+
+<p>库房很大，台面很小。模型每一轮请求看到的，只是<b>备菜台</b>——本次请求的上下文。开工前，五样原料被拼上桌：</p>
+<ul>
+  <li><b>系统提示</b>——身份、规矩、工作方式（第 21 章的主角，这里先摆上）；</li>
+  <li><b>工具说明书</b>——第 8 章见过：能叫哪些工具、每个工具的参数长什么样；</li>
+  <li><b>你的消息</b>——本次任务的直接指令；</li>
+  <li><b>注入的指令</b>——第 8 章的交接框：AGENTS.md 链原文；</li>
+  <li><b>历史投影</b>——第 9 章的黑匣子：此前说了什么、模型回了什么、工具交了什么。</li>
+</ul>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 344" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="备菜台组装五样">
+  <defs><marker id="m101" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">开工前，备菜台上摆五样原料</text>
+    <rect x="20" y="40" width="170" height="48" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="105" y="62" text-anchor="middle" font-size="12" fill="#312e81" font-weight="700">系统提示</text>
+    <text x="105" y="80" text-anchor="middle" font-size="10" fill="#6b7280">身份与规矩（第 21 章）</text>
+    <rect x="20" y="96" width="170" height="48" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="105" y="118" text-anchor="middle" font-size="12" fill="#312e81" font-weight="700">工具说明书</text>
+    <text x="105" y="136" text-anchor="middle" font-size="10" fill="#6b7280">能叫哪些工具（第 8 章）</text>
+    <rect x="20" y="152" width="170" height="48" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="105" y="174" text-anchor="middle" font-size="12" fill="#1f2937" font-weight="700">你的消息</text>
+    <text x="105" y="192" text-anchor="middle" font-size="10" fill="#6b7280">本次任务</text>
+    <rect x="20" y="208" width="170" height="48" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="105" y="230" text-anchor="middle" font-size="12" fill="#134e4a" font-weight="700">注入的指令</text>
+    <text x="105" y="248" text-anchor="middle" font-size="10" fill="#6b7280">AGENTS.md 链（第 8 章）</text>
+    <rect x="20" y="264" width="170" height="44" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="105" y="282" text-anchor="middle" font-size="12" fill="#78350f" font-weight="700">历史投影</text>
+    <text x="105" y="298" text-anchor="middle" font-size="10" fill="#6b7280">日志 → 历史（第 9 章）</text>
+    <rect x="300" y="110" width="170" height="100" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="385" y="152" text-anchor="middle" font-size="14" fill="#0f766e" font-weight="700">备菜台</text>
+    <text x="385" y="172" text-anchor="middle" font-size="10.5" fill="#4b5563">= 本次请求的上下文</text>
+    <text x="385" y="190" text-anchor="middle" font-size="10.5" fill="#6b7280">模型只看见台面</text>
+    <rect x="550" y="110" width="150" height="100" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="625" y="152" text-anchor="middle" font-size="14" fill="#312e81" font-weight="700">模型</text>
+    <text x="625" y="172" text-anchor="middle" font-size="10.5" fill="#4b5563">就着台面炒菜</text>
+    <text x="625" y="190" text-anchor="middle" font-size="10.5" fill="#6b7280">输出下一步</text>
+    <line x1="190" y1="64" x2="298" y2="136" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m101)"/>
+    <line x1="190" y1="120" x2="298" y2="148" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m101)"/>
+    <line x1="190" y1="176" x2="298" y2="158" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m101)"/>
+    <line x1="190" y1="232" x2="298" y2="168" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m101)"/>
+    <line x1="190" y1="286" x2="298" y2="178" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m101)"/>
+    <line x1="470" y1="160" x2="548" y2="160" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m101)"/>
+    <text x="360" y="332" text-anchor="middle" font-size="11.5" fill="#7b8494">五样原料拼成一次请求；台面装不装得下，取舍在下一节</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 10-1</b> 备菜台组装：系统提示、工具说明书、你的消息、注入指令、历史投影——模型只看见台面。</div>
+</div>
+
+<p>其中「历史投影」最值得细看：<b>日志是真相全集，模型只吃子集</b>。每轮请求前，<code>session-projection</code> 把日志里的记录投影成「模型可见的历史」——第 9 章图 9-2 的那条「投影」箭头，机制就在这里。投影不是复制：打包行还原成一条条分片，与请求无关的派生记录不上桌。所以<b>最后交给模型的结构</b>是：</p>
+
+<pre><code>── 系统提示 ──────────────────────────
+你是 dsh，一个编码 Agent：身份、规矩、
+可用工具总目录（第 21 章细讲）
+
+── 工具说明书（节选）────────────────
+read 读取文件 · write 写文件 · bash 跑命令
+（名称 · 用途 · 参数，第 8 章 8.2）
+
+── 你的消息 ──────────────────────────
+帮 packages/schedule 写一个 cron 调度插件
+
+── 交接框 system-reminder ────────────
+The following workspace instructions may be
+relevant to your work…
+
+Instructions from: AGENTS.md
+DeepSeek Harness is a plugin-based agent
+harness on vendored Cordis: everything is a
+plugin. Read docs/architecture.md before
+changing packages/…
+（原文照登 · 第 8 章）
+
+── 历史投影（节选）──────────────────
+你：帮 packages/schedule 写一个 cron 调度插件
+Agent：先摸清现状（调用 read）
+工具：packages/schedule/src/… 已读
+Agent：参考 croner 搭插件骨架（调用 write）
+…（再长的历史，装不下就熬成摘要 · 10.2）</code></pre>
+
+<p>五样原料按这个顺序拼成一次请求——「最终长什么样」现在看得见了。第 8 章只答应「原文照登三保证」，完整的拼装流水线看 10.3；台面装不装得下，看下一节。想再往里走一步：这五样在 dsh 体内是怎么一步步拼出来的，是第 13 章《Agent 是怎么拼起来的》「上下文与模型分工」一站的事（创造线看体内）；一个完整回合怎么转起来，第 16 章见。</p>
+
+<h2 id="s10-2">10.2 台面有限：窗口与压缩</h2>
+
+<p>备菜台不是无限大。上下文窗口有<b> token 预算</b>：dsh 的指令注入就要求部署者显式选一个 <code>maxBytes</code>，拒绝「默认无限」。会话越长，历史这味原料越堆越高，眼看要漫出台面——这时轮到<b>压缩（compaction）</b>上场，把用剩的原料熬成<b>高汤</b>：</p>
+<ol>
+  <li><b>察觉压力</b>——<code>compaction-basic</code> 在每步开工前的关卡检查水位。这关卡就是第 8 章 8.1 埋过种子的 pre-step——正式学名 <code>agent/pre-step</code>，每一步开工前广播的<b>生命周期事件</b>，谁挂监听谁干活（事件与监听机制，第 15 章展开）；只有「规范的上下文溢出」才走报错通道；</li>
+  <li><b>先剪枝</b>——可选的无模型工具结果修剪（<code>ctx.toolResultPruner</code>）：把过期的超大工具结果裁掉，不花模型的算力；</li>
+  <li><b>再熬汤</b>——挑历史生成<b>摘要</b>，替换掉可见表层的大段原文；摘要本身也<b>追加进日志</b>（第 9 章的「压缩」派生，就在这里闭合）；</li>
+  <li><b>在新一轮里恢复</b>——压缩在失败的一步之后、这一回合结束之前完成，下一个回合拿着高汤继续干。</li>
+</ol>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="窗口水位与压缩">
+  <defs><marker id="m102" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">台面有限：水位超线，就熬成高汤</text>
+    <rect x="20" y="40" width="300" height="180" rx="10" fill="#ffffff" stroke="#d6d0c4"/>
+    <text x="170" y="64" text-anchor="middle" font-size="11.5" fill="#4b5563" font-weight="600">备菜台（上下文窗口）</text>
+    <rect x="36" y="76" width="120" height="34" rx="7" fill="#eef2ff" stroke="#c7d2fe"/><text x="96" y="97" text-anchor="middle" font-size="11" fill="#312e81">系统提示</text>
+    <rect x="36" y="116" width="120" height="34" rx="7" fill="#f6f4ee" stroke="#d6d0c4"/><text x="96" y="137" text-anchor="middle" font-size="11" fill="#1f2937">AGENTS.md</text>
+    <rect x="176" y="76" width="128" height="74" rx="7" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="240" y="98" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">历史原文</text>
+    <text x="240" y="116" text-anchor="middle" font-size="10" fill="#6b7280">越来越长…</text>
+    <text x="240" y="132" text-anchor="middle" font-size="10" fill="#6b7280">快漫出台面</text>
+    <line x1="20" y1="196" x2="320" y2="196" stroke="#0f766e" stroke-width="2" stroke-dasharray="7 4"/>
+    <text x="46" y="212" font-size="10.5" fill="#0f766e" font-weight="700">水位线 = token 预算</text>
+    <line x1="322" y1="150" x2="378" y2="150" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m102)"/>
+    <text x="350" y="140" text-anchor="middle" font-size="10.5" fill="#0f766e" font-weight="600">压缩</text>
+    <rect x="380" y="96" width="320" height="108" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="540" y="122" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="700">熬高汤：先剪枝，再摘要</text>
+    <text x="540" y="144" text-anchor="middle" font-size="10.5" fill="#4b5563">① 剪掉过期的超大工具结果</text>
+    <text x="540" y="162" text-anchor="middle" font-size="10.5" fill="#4b5563">② 历史熬成摘要（高汤）</text>
+    <text x="540" y="180" text-anchor="middle" font-size="10.5" fill="#4b5563">③ 摘要追加进日志（第 9 章）</text>
+    <text x="540" y="196" text-anchor="middle" font-size="10.5" fill="#6b7280">④ 下个回合拿着高汤继续干</text>
+    <text x="360" y="248" text-anchor="middle" font-size="11.5" fill="#7b8494">高汤没原汤全，但台面装得下——压缩是记忆的「取舍」，不是遗忘</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 10-2</b> 窗口与压缩：水位超线先剪枝再熬摘要；摘要落日志，下个回合接着干。</div>
+</div>
+
+<p>所以 Agent 突然「忘了前面说过的话」，多半不是故障——是台面装不下、高汤没熬到那句。想验证，回第 9 章的黑匣子：摘要落日志的那一行，就是取舍发生的现场。</p>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>这套「先剪枝、再摘要、落日志、新回合恢复」的四步，是你设计任何长程 Agent 都该照抄的骨架；dsh 还把它包成了用户命令 <code>command-compact</code>——不等水位报警，你随时可以主动熬一次汤。</p></div>
+
+<p>机制上可以一直压下去，但策略上「已经压缩过多次」本身就是一个信号——该考虑把工作记忆换成外置记忆了。看三个信号：</p>
+<ul>
+  <li><b>高汤已经熬到第二锅</b>——摘要的摘要开始漂移，早期精确细节（路径、报错原文、当时的约定）一层层变模糊；</li>
+  <li><b>主线还长</b>——任务离终点远、上下文依赖重，继续压下去每一步都在吃漂移的亏；</li>
+  <li><b>你（人）已经看不清现场</b>——几百步的会话，复盘成本已经高过续写的收益。</li>
+</ul>
+<p>三条占两条，就<b>先交接、再新开</b>：让 Agent 把进展写回文件（做完了什么 · 卡在哪 · 下一步是什么，决策的「为什么」进 notes），新会话带着 AGENTS.md 与那份交接文档重新开工；旧日志留在 DSH_SESSION_ROOT 随时可查——它不是消失了，只是不再当工作记忆。反过来，只差临门一脚、关键细节还没落盘时，就再压一次把它干完——干完立刻写回。</p>
+
+<h2 id="s10-3">10.3 三层记忆，怎么被吃掉</h2>
+
+<p>第 7 章清点过「三层记忆放在哪」（见 <a href="./07-newbie-tour.html#s7-2">7.2 三层记忆</a>，忘了的读者可回补一眼），本章补另一半：<b>它们各自怎么被吃</b>。先看人记的 AGENTS.md 链——第 8 章说「原文照登、三保证」，完整的<b>组装流水线</b>是五步：</p>
+<ol>
+  <li><b>收</b>——按家规 → 项目链 → 本地小抄的顺序把手册全部读回来；</li>
+  <li><b>去重与裁剪</b>——内容相同的 AGENTS.md 与 CLAUDE.md 只留一份；总量超过预算（<code>maxBytes</code>）时，超出的文件被省略——是「不放进请求」，不是「压缩成摘要」；</li>
+  <li><b>包框拼接</b>——剩下的手册<b>原文</b>一条条拼进 system-reminder 交接框，每条注明出处（Instructions from: 路径）；</li>
+  <li><b>折进第一步</b>——这条消息紧跟你的消息之后，一起进入第一次模型请求；</li>
+  <li><b>交给模型</b>——原文照登，不是摘要。</li>
+</ol>
+
+<p>五步收口，就是 10.1 里的交接框；保鲜（「走到地盘」补更新条）第 8 章已讲，这里不重复。三层记忆各吃各的——吃之前先分清两条轴：<b>谁读</b>（层的名字是「谁写」，读的使用方未必是同一方）与<b>谁拍板</b>（机制注入 · AI 自判 · 你点名，三种触发器）。生产侧本章不展开（谁写在第 7 章、何时写在 8.3 写回），但表里顺手标出——生产 → 存放 → 消费，一条线看全。同一层里吃法不同就拆成两行，每行只挂一个触发器：</p>
+
+<table>
+  <tr><th>记忆层 · 文档</th><th>谁拍板写 · 何时写</th><th>使用方（谁读）</th><th>谁拍板 · 何时读</th><th>怎么读</th></tr>
+  <tr><td><b>人记</b> · AGENTS.md 链（家规 → 项目 → 小抄）</td><td>人拍板 · 立规矩时</td><td>AI</td><td>机制：每次开工注入</td><td>五步流水线原文注入</td></tr>
+  <tr><td><b>人记</b> · docs 概念文档（如 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/architecture.zh.md" target="_blank" rel="noopener">architecture.zh.md</a>）</td><td>人拍板 · 写文档时</td><td>AI</td><td>AI 自判（或你点名）：用到才读</td><td>read 工具翻</td></tr>
+  <tr><td><b>Agent 记</b> · notes（如 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/.agents/notes/implemented/architecture/2026-07-24-project-session-directories.md" target="_blank" rel="noopener">project-session-directories</a>）</td><td>Agent 自定自写 · 做有分量的决策时</td><td>AI</td><td>AI 自判（或你点名）：要动旧决策，先读它当初「为什么这么定、放弃了什么」</td><td>read 工具翻</td></tr>
+  <tr><td><b>Agent 记</b> · skills（如 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/.agents/skills/dsh-pre-push-checks/SKILL.md" target="_blank" rel="noopener">dsh-pre-push-checks</a>）</td><td>人拍板（Agent 常代笔）· 反复干同一活时</td><td>AI</td><td>技能调用时才读（谁能调，第 11 章）</td><td>技能系统调用</td></tr>
+  <tr><td><b>机器记</b> · 事故档案（<a href="https://github.com/deepseek-ai/deepseek-harness/tree/master/docs/postmortem" target="_blank" rel="noopener">docs/postmortem/</a>）</td><td>流程归档 · 事故后</td><td>AI · 人</td><td>AI 干相关活时翻；人复盘时查</td><td>read 工具翻</td></tr>
+  <tr><td><b>机器记</b> · 术语表 · 版本号</td><td>流程自产 · 随文档配、升级时</td><td>守门工具</td><td>流程到点自动查（提交·翻译·升级）</td><td>工具直接查，不上桌</td></tr>
+  <tr><td><b>日志记</b> · session.jsonl.zstd（第 9 章）</td><td>机器自动记 · 每一步</td><td>AI + 人</td><td>机制：AI 每回合自动投影；人复盘时读——AI 不主动复盘，你点名它才分析</td><td>投影 / 压缩 / 下载读</td></tr>
+</table>
+
+<p>表里「怎么读」再补一问：<b>读到的是整篇，还是节选？</b>三种读法，三种答案：</p>
+<ul>
+  <li><b>AGENTS.md 注入</b>——整篇照登：预算内的文件全文进框，不节选、不摘要；超预算的整份省略（五步流水线里的「裁剪」），去重与路径链是另外两道闸；</li>
+  <li><b>docs · notes 翻读</b>——读多长由 Agent 定：read 工具带 offset / limit 参数（第 8 章 8.2 的说明书），它可以只读相关段落，也可以整篇翻；超大工具结果还有剪枝兜底（10.2 的 toolResultPruner）；</li>
+  <li><b>历史投影</b>——子集 + 摘要：投影本来就不是全集，再装不下就熬成摘要。</li>
+</ul>
+<p>一句话：<b>只有「历史」会被熬成摘要；文件记忆要么整篇照登，要么由 Agent 自己决定读多长</b>。</p>
+
+<p>「谁拍板写」还藏着第二层：<b>动手的未必是拍板的</b>——生产侧同样是两条轴，<b>谁拍板写</b>（决定权）与<b>谁动手写</b>（落笔权）。四类文档，四种组合：</p>
+<ul>
+  <li><b>人记（AGENTS.md · docs）</b>——人拍板、Agent 代笔居多：你口述约定，Agent 用 write 工具落笔（8.2 的「模型出主意、工具动手」，生产时一样成立）；</li>
+  <li><b>skills</b>——也是人拍板：作业指导书的步骤与合格线人定，dsh 的 11 个技能皆然，Agent 常提建议、常代笔；</li>
+  <li><b>notes</b>——Agent 自定自写：决策「为什么」它自己记，人只做事后审查；</li>
+  <li><b>机器记 · 日志</b>——两头都是机器：流水线到点自产。</li>
+</ul>
+<p>一句话：<b>判断在人，落笔多在 Agent，机械活全交给流水线</b>——和第 6 章「判断越关键越留给人」是同一句。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三层记忆流向备菜台">
+  <defs><marker id="m103" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">三层记忆 + 日志，流向同一张备菜台</text>
+    <rect x="20" y="40" width="190" height="64" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="115" y="64" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">人记 · 文档约定</text>
+    <text x="115" y="84" text-anchor="middle" font-size="10.5" fill="#6b7280">AI 读：注入 · 按需翻</text>
+    <rect x="20" y="124" width="190" height="64" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="115" y="148" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">Agent 记 · notes/skills</text>
+    <text x="115" y="168" text-anchor="middle" font-size="10.5" fill="#6b7280">动旧决策先读为什么 · 技能按需调</text>
+    <rect x="20" y="208" width="190" height="64" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="115" y="232" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="700">机器记 · 复盘守门</text>
+    <text x="115" y="252" text-anchor="middle" font-size="10.5" fill="#6b7280">约束产出：术语·版本·坑</text>
+    <rect x="285" y="140" width="150" height="72" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="168" text-anchor="middle" font-size="14" fill="#0f766e" font-weight="700">备菜台</text>
+    <text x="360" y="188" text-anchor="middle" font-size="10.5" fill="#4b5563">本次请求的上下文</text>
+    <rect x="510" y="40" width="190" height="64" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="605" y="64" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">日志记 · 第 9 章</text>
+    <text x="605" y="84" text-anchor="middle" font-size="10.5" fill="#6b7280">AI 投影 · 人复盘读</text>
+    <line x1="210" y1="72" x2="283" y2="158" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m103)"/>
+    <line x1="210" y1="156" x2="283" y2="170" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m103)"/>
+    <line x1="210" y1="240" x2="283" y2="182" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m103)"/>
+    <line x1="508" y1="72" x2="437" y2="158" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m103)"/>
+    <text x="360" y="284" text-anchor="middle" font-size="12" fill="#7b8494">喂进去是「吃」；吃出结果再写回文件（第 8 章）——记忆的回路</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 10-3</b> 三层记忆加日志，四条通道流向同一张备菜台；吃出结果，再走第 8 章的写回。</div>
+</div>
+
+<p>串一遍真实场景：你在 dsh 仓库里让 Agent 改 <code>packages/</code> 下的代码，同一次会话里走遍五种吃法：</p>
+<ol>
+  <li><b>开工</b>——AGENTS.md 链进交接框（每次注入）；</li>
+  <li><b>动手前</b>——按根约定的点名，Agent 自己判断用得上，用 read 工具翻开 <code>docs/architecture.md</code>（用到才读：路牌在 AGENTS.md，抬腿的是它自己）；</li>
+  <li><b>改到旧代码</b>——先翻对应的 .agents/notes，找回当初「为什么这么定、放弃了什么」，改得有理有据，而不是把避开的坑填回去（第 7 章有现成例子：改版本号之前先读 Note）；</li>
+  <li><b>活干得长</b>——压缩把老历史熬成摘要写回日志；</li>
+  <li><b>收尾</b>——你下载整份日志复盘。</li>
+</ol>
+<p><b>七种吃法里，这里一口气走过五种</b>——剩下两种（技能调用、守门工具查）分别等第 11 章和提交时刻登场。</p>
+
+<p>一条总原则：<b>越机械、越通用、越需要一致性的知识，越该进文件</b>（让注入替你喂）；越具体、越临时、越私密的，留在对话里。文件是「培训」，对话是「现场」。落到第 8 章那句口诀，就是这四样：</p>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>四种吃法，一句口诀</div><p><b>AGENTS.md 每次必读 · docs 与 notes 用到才读 · skills 按需调用 · 机器记平时不上桌</b>——路径外的层，走到才读。</p></div>
+
+<h2 id="s10-4">一张图总结</h2>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="备菜台全景">
+  <defs><marker id="m104" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">本章全景：备菜台的四样家当</text>
+    <rect x="20" y="44" width="200" height="100" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="120" y="74" text-anchor="middle" font-size="13.5" fill="#1f2937" font-weight="700">库房 = 记忆</text>
+    <text x="120" y="98" text-anchor="middle" font-size="10.5" fill="#4b5563">第 7 章：文件（AGENTS.md</text>
+    <text x="120" y="114" text-anchor="middle" font-size="10.5" fill="#4b5563">· notes · skills）</text>
+    <text x="120" y="130" text-anchor="middle" font-size="10.5" fill="#6b7280">第 9 章：日志</text>
+    <rect x="260" y="44" width="200" height="100" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="74" text-anchor="middle" font-size="13.5" fill="#0f766e" font-weight="700">备菜台 = 上下文</text>
+    <text x="360" y="98" text-anchor="middle" font-size="10.5" fill="#4b5563">窗口有限 · token 预算</text>
+    <text x="360" y="114" text-anchor="middle" font-size="10.5" fill="#4b5563">五样原料上桌</text>
+    <text x="360" y="130" text-anchor="middle" font-size="10.5" fill="#6b7280">模型只看见台面</text>
+    <rect x="500" y="44" width="200" height="100" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="600" y="74" text-anchor="middle" font-size="13.5" fill="#312e81" font-weight="700">高汤 = 压缩</text>
+    <text x="600" y="98" text-anchor="middle" font-size="10.5" fill="#4b5563">先剪枝 · 再摘要</text>
+    <text x="600" y="114" text-anchor="middle" font-size="10.5" fill="#4b5563">摘要落日志</text>
+    <text x="600" y="130" text-anchor="middle" font-size="10.5" fill="#6b7280">下回合接着用</text>
+    <line x1="220" y1="94" x2="258" y2="94" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m104)"/>
+    <line x1="460" y1="94" x2="498" y2="94" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m104)"/>
+    <rect x="260" y="176" width="200" height="76" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="360" y="204" text-anchor="middle" font-size="13.5" fill="#78350f" font-weight="700">菜谱 = 写回</text>
+    <text x="360" y="224" text-anchor="middle" font-size="10.5" fill="#4b5563">新约定落 AGENTS.md（第 8 章）</text>
+    <text x="360" y="240" text-anchor="middle" font-size="10.5" fill="#6b7280">notes：proposed → implemented</text>
+    <line x1="360" y1="144" x2="360" y2="174" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m104)"/>
+    <path d="M260 214 C120 214 120 94 218 94" fill="none" stroke="#b45309" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m104)"/>
+    <text x="118" y="182" text-anchor="middle" font-size="10.5" fill="#b45309" font-weight="600">写回库房 → 下次自动上桌</text>
+    <text x="360" y="300" text-anchor="middle" font-size="12" fill="#7b8494">一条主线：库房 → 备菜台 → 高汤 → 菜谱写回库房——记忆转起来，项目才活。</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 10-4</b> 备菜台全景：库房、备菜台、高汤、菜谱——一条回路把记忆转起来。</div>
+</div>
+
+<h2>要点回顾</h2>
+
+<ul>
+  <li><b>备菜台五样</b>：系统提示 + 工具说明书 + 你的消息 + 注入指令 + 历史投影——最后交给模型的就是这个结构。</li>
+  <li><b>历史投影</b>：日志是全集、上下文是子集；模型可见的必然可追溯（第 9 章的不变量）。</li>
+  <li><b>台面有限</b>：水位超预算先剪枝再熬摘要；高汤落日志、下回合接着用——「失忆」多半是取舍，不是故障。</li>
+  <li><b>读记忆看两条轴</b>：谁读——人记与 Agent 记给 AI 读、机器记给守门工具与 AI（事故档案）、日志 AI 和人双用；谁拍板——机制注入 · AI 自判 · 你点名；生产侧（谁拍板写 · 何时写，落笔多为 Agent）表里一并标出，生产 → 存放 → 消费一眼看全。</li>
+  <li><b>压缩到第二锅就换锅</b>：多次压缩后，先交接写回（进展 · 卡点 · 下一步进文件）、再新开会话，旧日志留档可查；只差临门一脚时再压一次干完、立刻写回。</li>
+</ul>
+
+<h2>动手做</h2>
+
+<div class="card">
+<ol>
+  <li>开一次 dsh 会话干个小任务，在日志里找出交接框与历史投影并存的证据：system-reminder 段 + 它前面的 user/message。</li>
+  <li>挑一条你项目的 AGENTS.md 规则，确认它属于「每次必读」；再挑一篇 docs/ 概念文档，确认它是「用到才读」——把两类资料的边界想清楚。</li>
+  <li>想象一次长会话的上下文：数一数里面装了几层记忆；窗口爆了，哪些该先被剪、哪些该进摘要（高汤）？</li>
+</ol>
+</div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>回路钩子 · 记忆线的闭合</div><p>记忆线在这里走到「消费」一站：<b>第 7 章提供</b>（记忆放进文件）→ <b>第 9 章记录</b>（过程落日志）→ <b>本章消费</b>（投影上桌 + 熬高汤）→ <b>第 8 章写回</b>（AGENTS.md · notes · skills 三去处）→ <b>再被第 7 章吸收</b>。排序只是让章节相邻，钩子把回路接上——这就是「用 → 写 → 长」。</p></div>
+
+<p>消费线还剩最机灵的一层没展开：skills 是「按需调用」的作业指导书——Agent 什么时候想起它、怎么把它调进来。第 11 章《技能是这样被使用的》。</p>
+  <div class="prevnext">
+    <a href="./09-session-log.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 9 章 复盘先读黑匣子</div></a>
+    <a class="next" href="./11-skills.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 11 章 技能是这样被使用的</div></a>
+  </div>
+<footer class="footer">
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
+  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+</footer>
+</div>
+</main>
+<div class="sidebar-backdrop"></div>
+</body>
+</html>

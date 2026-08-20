@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 9 章 复盘先读黑匣子 · 深入浅出 AI Agent</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/book.js" defer></script>
+</head>
+<body class="part-2">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+    <span class="crumb">科学篇 / 第 9 章</span>
+    <span class="spacer"></span>
+    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+  </div>
+</header>
+<main class="layout">
+<aside class="sidebar" id="sidebar">
+<nav class="sidenav">
+<div class="side-group">
+<a href="../index.html">全书概览</a>
+<a href="../preface.html">前言</a>
+<a href="../outline.html">大纲</a>
+</div>
+<details class="side-part" open>
+<summary>第一篇 · 哲学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-1/index.html">篇首导览</a></li>
+<li><a href="../part-1/01-what-is-agent.html">第 1 章 什么是 Agent</a></li>
+<li><a href="../part-1/02-language-interface.html">第 2 章 语言成为新接口</a></li>
+<li><a href="../part-1/03-harness-philosophy.html">第 3 章 与 Agent 共事的哲学</a></li>
+<li><a href="../part-1/04-ai-friendly-project.html">第 4 章 让项目活起来</a></li>
+<li><a href="../part-1/05-why-plugin.html">第 5 章 把系统拆成积木</a></li>
+<li><a href="../part-1/06-full-chain-engineer.html">第 6 章 全链路工程师</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第二篇 · 科学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-2/index.html">篇首导览</a></li>
+<li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
+<li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
+<li><a class="active" href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
+<li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
+<li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
+<li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
+<li><a href="../part-2/16-agent-loop.html">第 16 章 看心脏怎么跳</a></li>
+<li><a href="../part-2/17-capability-seams.html">第 17 章 换一个器官</a></li>
+<li><a href="../part-2/18-multi-agent.html">第 18 章 一个人变一支队伍</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第三篇 · 艺术篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-3/index.html">篇首导览</a></li>
+<li><a href="../part-3/19-gourmet.html">第 19 章 老吃家的段位</a></li>
+<li><a href="../part-3/20-designing-tools.html">第 20 章 设计一个好工具</a></li>
+<li><a href="../part-3/21-prompts.html">第 21 章 Prompt 与系统提示</a></li>
+<li><a href="../part-3/22-debugging.html">第 22 章 调试与可观测</a></li>
+<li><a href="../part-3/23-evaluation.html">第 23 章 评估与质量</a></li>
+<li><a href="../part-3/24-full-chain-practice.html">第 24 章 全链路闭环实战</a></li>
+<li><a href="../part-3/25-taste-and-growth.html">第 25 章 品味与成长</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>附录 · 工具与参考</summary>
+<ul class="side-chapters">
+<li><a href="../appendix/a-glossary.html">附录 A 术语表</a></li>
+<li><a href="../appendix/b-quickstart.html">附录 B 快速上手</a></li>
+<li><a href="../appendix/c-resources.html">附录 C 扩展阅读与资源</a></li>
+<li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
+</ul>
+</details>
+</nav>
+</aside>
+<div class="container">
+<div class="hero part-2">
+  <span class="part-badge">第二篇 · 科学篇</span>
+  <span class="line-tag line-app">应用线</span>
+  <h1>第 9 章 · 复盘先读黑匣子</h1>
+  <p class="subtitle">会话日志——复盘、调试、审计的第一现场</p>
+</div>
+
+<p class="lead">第 8 章结尾说：干活的每一步都记进黑匣子里，干岔了怎么办、黑匣子怎么读。这一章就打开黑匣子。全章一个比喻：<b>飞机的黑匣子</b>——飞行中你感觉不到它，出事时它救你。记忆线上它是「记录」一站：<b>第 7 章提供</b>（记忆放进文件）→ <b>本章记录</b>（过程落成日志）→ <b>第 10 章消费</b>（喂回模型）→ <b>第 8 章写回</b>。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>干岔了怎么办？Agent 的每一步记在哪、怎么读？</p></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>会读会话日志：复现问题、回放过程、为验收取证。</p></div>
+
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s9-1">9.1 为什么要有黑匣子：先记后用</a></li>
+    <li><a href="#s9-2">9.2 一条不变量：模型可见 ⟺ 已记录</a></li>
+    <li><a href="#s9-3">9.3 一份日志，五种派生</a></li>
+    <li><a href="#s9-4">9.4 复盘实操：从日志定位问题</a></li>
+  </ul>
+</div>
+
+<h2 id="s9-1">9.1 为什么要有黑匣子：先记后用</h2>
+
+<p>先问为什么：为什么要一台黑匣子？因为 Agent 干活的每一步——你的消息、模型的每个分片、工具的每次调用、喂进去的交接框——本来都是<b>转瞬即逝</b>的。干得顺，没人回头看；一旦干岔，没有记录，你就只能对着最后的结果猜「它刚才看见了什么、做了什么」。</p>
+
+<p>所以黑匣子的第一条规矩是<b>先记后用</b>：每一件事发生之前，先落成一行记录，再让下一步继续。飞机的黑匣子为事故留证据，dsh 的日志为<b>复盘、审计、续写</b>留证据——你平时感觉不到它，出事时它救你。</p>
+
+<h3>它长什么样：追加式 JSONL</h3>
+
+<p>具体地，它是一份 JSONL（每行一条 JSON 记录），由 <code>session-persistence-jsonl</code> 落盘：</p>
+<ul>
+  <li>每个会话一个文件，默认 <code>session.jsonl.zstd</code>（zstd 压缩 + 校验和帧；关掉压缩就是纯文本 <code>session.jsonl</code>）；</li>
+  <li>第一行是<b>不可变的会话头</b>：版本、会话 id、工作目录、<code>agentPreset</code>（恢复时用哪套工具与提示）、<code>delegationDepth</code>（子会话层级，顶层为 0）——第 7 章机器记里的格式版本化，管的正是这份文件；</li>
+  <li>之后每一行一条记录，按发生顺序排成一条线，序号连续；</li>
+  <li>日志放在 <code>DSH_SESSION_ROOT</code> 环境变量对应的路径下——部署没设这个变量时，用各自部署的默认位置。</li>
+</ul>
+
+<p>它<b>只追加、不自动清理</b>——当得起「黑匣子」，正因为没有人偷偷删它；存多久是部署策略，不是机制。想取一份出来看，界面上「Session log」按钮会把日志打成 ZIP 交给你。</p>
+
+<p>一条最普通的干活回合，在日志里长这样：</p>
+
+<pre><code>{"type":"session","version":0,"id":"…","agentPreset":…}             ← 会话头
+{"type":"turn","subtype":"start"}
+{"type":"user","subtype":"message","content":"给 tool-todo 加一个工具"}
+{"type":"assistant","subtype":"chunk","content":"我先翻一下现有代码…"}
+{"type":"tool","subtype":"call","name":"read","args":{"file_path":"…"}}
+{"type":"tool","subtype":"result","name":"read","result":"…"}
+{"type":"assistant","subtype":"chunk","content":"…"}
+{"type":"tool","subtype":"call","name":"edit","args":{…}}
+{"type":"turn","subtype":"end"}
+（示意 · 字段从简）</code></pre>
+
+<p>对照第 8 章：干活小循环里的每一次「读、写、验」都留<b>两行</b>——<code>tool/call</code>（叫了谁、传了什么参）与 <code>tool/result</code>（回了什么）；交接框（system-reminder）也是<b>先落日志、再进请求</b>，第 8 章的交接在这份文件里看得见。</p>
+
+<p>两个细节值得记住。一是<b>打包分片</b>：模型吐字是一个字一个字来的，连续至少 3 个同块 <code>assistant/chunk</code> 会合并成一行「打包行」，真实编程会话的日志因此小约 60%，读的时候无损还原。二是<b>崩溃恢复</b>：突然断电，日志尾部的半行被截断，读取器保留有效前缀、补齐结尾的收尾事件——<b>宁可留一条带补丁的真相，也不丢一段有效历史</b>。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="日志条目流">
+  <defs><marker id="m91" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">黑匣子内部：一行一行，只追加</text>
+    <rect x="20" y="40" width="680" height="44" rx="9" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="60" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="700">第 0 行 · 会话头（SessionHeader）</text>
+    <text x="360" y="77" text-anchor="middle" font-size="10.5" fill="#4b5563">version · id · agentPreset（恢复用哪套工具与提示）· delegationDepth（子会话层级）——不可变</text>
+    <line x1="360" y1="84" x2="360" y2="96" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m91)"/>
+    <rect x="20" y="98" width="200" height="40" rx="8" fill="#f6f4ee" stroke="#d6d0c4"/><text x="120" y="122" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="600">turn/start</text>
+    <rect x="250" y="98" width="200" height="40" rx="8" fill="#eef2ff" stroke="#c7d2fe"/><text x="350" y="122" text-anchor="middle" font-size="11.5" fill="#312e81" font-weight="600">user/message</text>
+    <rect x="480" y="98" width="220" height="40" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="590" y="118" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">assistant/chunk ×3</text>
+    <text x="590" y="133" text-anchor="middle" font-size="10" fill="#6b7280">打包成一行 · 小 60%</text>
+    <line x1="220" y1="118" x2="248" y2="118" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m91)"/>
+    <line x1="450" y1="118" x2="478" y2="118" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m91)"/>
+    <line x1="360" y1="140" x2="360" y2="150" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m91)"/>
+    <rect x="20" y="152" width="200" height="40" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="120" y="176" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">tool/call</text>
+    <rect x="250" y="152" width="200" height="40" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="350" y="176" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">tool/result</text>
+    <rect x="480" y="152" width="220" height="40" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="590" y="176" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="600">turn/end</text>
+    <line x1="220" y1="172" x2="248" y2="172" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m91)"/>
+    <line x1="450" y1="172" x2="478" y2="172" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m91)"/>
+    <text x="360" y="228" text-anchor="middle" font-size="12" fill="#4b5563" font-weight="600">只追加、绝不改写；序号必须连续；崩溃就修尾、不丢头</text>
+    <text x="360" y="248" text-anchor="middle" font-size="11.5" fill="#7b8494">格式版本化（SESSION_FORMAT_VERSION）——第 7 章机器记里的格式版本化，管的正是这份文件</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 9-1</b> 日志条目流：会话头打底，事件一行行追加；分片打包省空间，崩溃恢复保真相。</div>
+</div>
+
+<h2 id="s9-2">9.2 一条不变量：模型可见 ⟺ 已记录</h2>
+
+<p>黑匣子为什么可信？因为它守着一条<b>不变量</b>：</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>全书心法 · 会话日志</div><p style="font-size:16px"><b>凡是模型看得到的，一定先落了日志；凡是日志里的，都能完整重放。</b></p><p>先记后用，不是用了再补。</p></div>
+
+<p>看两个方向：</p>
+<ul>
+  <li><b>模型可见 ⟹ 已记录</b>——你的消息、注入的指令、模型的每个分片、工具的每次调用与结果，都是<b>先追加进日志、再进入下一步</b>；分片「绝不丢弃」，连空内容都留一条记录；</li>
+  <li><b>已记录 ⟹ 可重放</b>——日志就是「发生了什么」的完整剧本：按序读一遍，就等于把那次会话原样重演。调试靠它复现，审计靠它取证，续写靠它恢复。</li>
+</ul>
+
+<div class="diagram">
+  <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="不变量示意">
+  <defs><marker id="m92" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="320" y="22" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">不变量：模型看到的，是日志的子集</text>
+    <rect x="20" y="60" width="260" height="120" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="150" y="88" text-anchor="middle" font-size="13.5" fill="#0f766e" font-weight="700">日志（全集）</text>
+    <text x="150" y="110" text-anchor="middle" font-size="10.5" fill="#4b5563">每一条事件按序追加</text>
+    <text x="150" y="128" text-anchor="middle" font-size="10.5" fill="#4b5563">可回放 · 可审计 · 可恢复</text>
+    <text x="150" y="146" text-anchor="middle" font-size="10.5" fill="#4b5563">「先记后用」</text>
+    <rect x="380" y="84" width="240" height="72" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="500" y="110" text-anchor="middle" font-size="13.5" fill="#312e81" font-weight="700">模型上下文（子集）</text>
+    <text x="500" y="130" text-anchor="middle" font-size="10.5" fill="#4b5563">本次请求实际喂进去的部分</text>
+    <text x="500" y="146" text-anchor="middle" font-size="10.5" fill="#6b7280">⊆ 日志</text>
+    <line x1="282" y1="110" x2="378" y2="110" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m92)"/>
+    <text x="330" y="102" text-anchor="middle" font-size="10.5" fill="#0f766e" font-weight="600">投影</text>
+    <text x="320" y="208" text-anchor="middle" font-size="12" fill="#b45309" font-weight="600">拆掉一个实验：删掉日志会怎样？</text>
+    <text x="320" y="228" text-anchor="middle" font-size="11.5" fill="#7b8494">无法回放 · 无法审计 · 无法续写——「记忆」瞬间蒸发</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 9-2</b> 不变量：模型上下文是日志的子集；删掉日志，回放、审计、续写同时蒸发。</div>
+</div>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>这条不变量不是 dsh 的专利——你给自己的 Agent 装黑匣子，照抄两句：<b>只追加、先记后用</b>。审计、回放、信任，全都建立在这条不变量上。</p></div>
+
+<h2 id="s9-3">9.3 一份日志，五种派生</h2>
+
+<p>黑匣子只有一个，读它的人各取所需。日志之上，dsh 长出一批<b>派生视图</b>——全部只读日志，绝不另造真相：</p>
+
+<table>
+  <tr><th>派生</th><th>包</th><th>一句话作用</th></tr>
+  <tr><td><b>历史</b></td><td><code>session-projection</code></td><td>把事件投影成「模型可见的历史」——回放与续写读它</td></tr>
+  <tr><td><b>压缩</b></td><td><code>compaction-basic</code></td><td>历史太长时生成摘要，摘要本身也追加进日志</td></tr>
+  <tr><td><b>恢复</b></td><td><code>session-checkpoint-policy</code></td><td>断点策略：决定在哪些边界留「从这里继续」的锚</td></tr>
+  <tr><td><b>遥测</b></td><td><code>session-telemetry</code></td><td>用量、成本、时长的计量，可接 OTel 后端</td></tr>
+  <tr><td><b>标题</b></td><td><code>session-title</code></td><td>用模型给会话起标题——「日志背书的标题」</td></tr>
+</table>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一份日志五种派生">
+  <defs><marker id="m93" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">一份日志，五种派生——都只读日志，不另造真相</text>
+    <rect x="270" y="120" width="180" height="76" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="150" text-anchor="middle" font-size="14" fill="#0f766e" font-weight="700">会话日志</text>
+    <text x="360" y="170" text-anchor="middle" font-size="10.5" fill="#4b5563">真相的唯一来源</text>
+    <text x="360" y="186" text-anchor="middle" font-size="10.5" fill="#6b7280">只追加 · 不改写</text>
+    <rect x="20" y="40" width="190" height="56" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="115" y="62" text-anchor="middle" font-size="12" fill="#312e81" font-weight="700">历史</text>
+    <text x="115" y="80" text-anchor="middle" font-size="10.5" fill="#6b7280">投影 · 回放续写</text>
+    <rect x="265" y="40" width="190" height="56" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="360" y="62" text-anchor="middle" font-size="12" fill="#78350f" font-weight="700">压缩</text>
+    <text x="360" y="80" text-anchor="middle" font-size="10.5" fill="#6b7280">摘要也追加进日志</text>
+    <rect x="510" y="40" width="190" height="56" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="605" y="62" text-anchor="middle" font-size="12" fill="#1f2937" font-weight="700">恢复</text>
+    <text x="605" y="80" text-anchor="middle" font-size="10.5" fill="#6b7280">断点 · 从这里继续</text>
+    <rect x="20" y="204" width="190" height="56" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="115" y="226" text-anchor="middle" font-size="12" fill="#134e4a" font-weight="700">遥测</text>
+    <text x="115" y="244" text-anchor="middle" font-size="10.5" fill="#6b7280">用量 · 成本 · 时长</text>
+    <rect x="510" y="204" width="190" height="56" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="605" y="226" text-anchor="middle" font-size="12" fill="#1f2937" font-weight="700">标题</text>
+    <text x="605" y="244" text-anchor="middle" font-size="10.5" fill="#6b7280">模型起名 · 日志背书</text>
+    <line x1="130" y1="98" x2="320" y2="140" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m93)"/>
+    <line x1="360" y1="98" x2="360" y2="118" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m93)"/>
+    <line x1="590" y1="98" x2="400" y2="140" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m93)"/>
+    <line x1="140" y1="202" x2="300" y2="174" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m93)"/>
+    <line x1="580" y1="202" x2="420" y2="174" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m93)"/>
+    <text x="360" y="284" text-anchor="middle" font-size="12" fill="#7b8494">派生视图可以随意重建、随意换实现——只要日志在，真相就在</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 9-3</b> 一份日志，五种派生：历史、压缩、恢复、遥测、标题——全部只读日志，可随意重建。</div>
+</div>
+
+<p>会话列表里的标题、用量面板里的数字，都不是「另存了一份数据」，而是从同一份日志现算出来的——日志删了，它们全消失。<b>历史</b>与<b>压缩</b>两路，正是下一章的主角。</p>
+
+<p>那什么时候用得上它？<b>人和 Agent 都要用，而且互相成全</b>：</p>
+<ul>
+  <li><b>人用它</b>——复盘排障（9.4 的复盘三问）、验收取证（Agent 说改好了，日志里核对它真做了什么——第 12 章）、算账（遥测：用量、成本、时长）；</li>
+  <li><b>Agent 用它</b>——日志就是它自己的记忆：历史投影续写上下文、压缩熬高汤（第 10 章）、断点恢复接着干；</li>
+  <li><b>人和 Agent 一起用它改进项目</b>——从日志复盘出的教训写回 AGENTS.md 与 notes（第 8 章写回），下一次开工自动上桌。dsh 自己就是这么养自己的：第 7 章事故档案员的 postmortem，源头也是日志。</li>
+</ul>
+
+<p>于是日志有了公私之分：<b>日志留在本地，教训走进仓库</b>——复盘出的约定写进 AGENTS.md / notes / skills，随 git 交给全队；过程日志留在各自的 <code>DSH_SESSION_ROOT</code> 路径下，<b>不随项目提交</b>。想看别人出问题的现场，让对方把那一次的日志分享给你（「Session log」导出的 ZIP 发过来就行），你拿过来照 9.4 的复盘三问分析。你是 Agent 的使用者，它是复盘现场；你是 Agent 的开发者，它就是调试你作品的现场——第三幕会常回来找它。</p>
+
+<h2 id="s9-4">9.4 复盘实操：从日志定位问题</h2>
+
+<p>接着第 8 章的例子走一遍复盘。你让 Agent 在 <code>packages/</code> 下写一个新工具插件，它交出的代码没按手册的导出规矩来。别急着骂模型——打开黑匣子，按<b>复盘三问</b>查：</p>
+<ol>
+  <li><b>喂饱了吗？</b>——看交接框：日志里的 system-reminder 段，有没有 <code>packages/AGENTS.md</code> 那一份？第 8 章说过：开工时工作目录在根，子目录的手册要「走到地盘」才补。没喂到，就不是模型笨，是上下文没喂饱；</li>
+  <li><b>看见了什么？</b>——看读：<code>tool/call</code> 里它 read 了哪些文件、<code>tool/result</code> 返回了什么，有没有读错文件、读到半截；</li>
+  <li><b>验了吗？</b>——看回炉：<code>bash</code> 跑测试的结果红没红，红了之后模型改了什么。</li>
+</ol>
+
+<p>对位到日志行，三问各有一处「证据现场」：</p>
+
+<pre><code>{"type":"user","subtype":"message","content":"&lt;system-reminder&gt;… Instructions from: AGENTS.md …"}  ← ① 交接框里只有根那一份
+{"type":"tool","subtype":"call","name":"read","args":{"file_path":"packages/AGENTS.md"}}      ← ② 它自己补翻了吗
+{"type":"tool","subtype":"result","name":"bash","result":"✗ 1 failed"}                         ← ③ 验：红了
+（示意 · 字段从简）</code></pre>
+
+<p>三问查完，多数「模型犯蠢」都会现出原形——<b>不是模型不会写，是它没被喂到、没看到、或没验到</b>。这正是第 6 章「出错先查边界与上下文」在科学篇的落地：先查上下文，再动提示词。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="复盘三问">
+  <defs><marker id="m94" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">复盘三问：先查上下文，再动提示词</text>
+    <rect x="20" y="46" width="140" height="120" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="90" y="80" text-anchor="middle" font-size="13.5" fill="#78350f" font-weight="700">干岔了</text>
+    <text x="90" y="104" text-anchor="middle" font-size="10.5" fill="#4b5563">产出不对劲</text>
+    <text x="90" y="126" text-anchor="middle" font-size="10" fill="#6b7280">先别改提示词</text>
+    <text x="90" y="144" text-anchor="middle" font-size="10" fill="#6b7280">先读黑匣子</text>
+    <rect x="250" y="40" width="450" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="475" y="62" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">① 喂饱了吗？</text>
+    <text x="475" y="80" text-anchor="middle" font-size="10.5" fill="#4b5563">交接框里有没有该有的手册 —— 对位：system-reminder 段</text>
+    <rect x="250" y="112" width="450" height="52" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="475" y="134" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">② 看见了什么？</text>
+    <text x="475" y="152" text-anchor="middle" font-size="10.5" fill="#4b5563">read 了哪些文件、结果对不对 —— 对位：tool/call · tool/result</text>
+    <rect x="250" y="184" width="450" height="52" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="475" y="206" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">③ 验了吗？</text>
+    <text x="475" y="224" text-anchor="middle" font-size="10.5" fill="#4b5563">测试红没红、回炉改没改 —— 对位：tool/result（bash）</text>
+    <line x1="162" y1="76" x2="248" y2="66" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m94)"/>
+    <line x1="162" y1="110" x2="248" y2="138" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m94)"/>
+    <line x1="162" y1="142" x2="248" y2="210" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m94)"/>
+    <text x="360" y="270" text-anchor="middle" font-size="11.5" fill="#7b8494">三问查完再动提示词——多数「模型犯蠢」其实是上下文没喂到（第 6 章：出错先查边界与上下文）</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 9-4</b> 复盘三问：喂饱了吗 · 看见了什么 · 验了吗——三问各对位一处日志证据，查完再动提示词。</div>
+</div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>黑匣子记录的是「发生了什么」，不是「谁错了」。</b>它不怪任何人，只给证据。复盘的习惯：每次干岔，先日志，后结论。</p></div>
+
+<h2 id="s9-5">一张图总结</h2>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="黑匣子全景">
+  <defs><marker id="m95" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">本章全景：飞机的黑匣子</text>
+    <rect x="240" y="44" width="240" height="96" rx="12" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="76" text-anchor="middle" font-size="15" fill="#0f766e" font-weight="700">会话日志</text>
+    <text x="360" y="100" text-anchor="middle" font-size="11" fill="#4b5563">只追加 · 不改写</text>
+    <text x="360" y="118" text-anchor="middle" font-size="11" fill="#4b5563">模型可见 ⟺ 已记录</text>
+    <rect x="20" y="172" width="200" height="64" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="120" y="198" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">记忆</text>
+    <text x="120" y="218" text-anchor="middle" font-size="10.5" fill="#6b7280">回放 · 续写 · 复盘</text>
+    <rect x="260" y="172" width="200" height="64" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="360" y="198" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">审计</text>
+    <text x="360" y="218" text-anchor="middle" font-size="10.5" fill="#6b7280">发生了什么 · 谁干的</text>
+    <rect x="500" y="172" width="200" height="64" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="600" y="198" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">派生</text>
+    <text x="600" y="218" text-anchor="middle" font-size="10.5" fill="#6b7280">历史 · 压缩 · 遥测 · 标题</text>
+    <line x1="240" y1="76" x2="220" y2="188" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m95)"/>
+    <line x1="360" y1="142" x2="360" y2="170" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m95)"/>
+    <line x1="480" y1="76" x2="500" y2="188" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m95)"/>
+    <text x="360" y="282" text-anchor="middle" font-size="12" fill="#7b8494">一条主线：先记后用，永远只追加——真相只有一个，人人都来读它。</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 9-5</b> 黑匣子全景：一份只追加的日志，同时喂养记忆、审计与派生视图。</div>
+</div>
+
+<h2>要点回顾</h2>
+
+<ul>
+  <li><b>追加式日志</b>：会话头打底、事件按序追加；分片打包省空间，崩溃恢复保有效历史。</li>
+  <li><b>一条不变量</b>：模型可见 ⟺ 已记录——先记后用，日志是完整剧本。</li>
+  <li><b>五种派生</b>：历史、压缩、恢复、遥测、标题，全部只读日志、可重建。</li>
+  <li><b>复盘三问</b>：喂饱了吗 · 看见了什么 · 验了吗——先查上下文，再动提示词。</li>
+</ul>
+
+<h2>动手做</h2>
+
+<div class="card">
+<ol>
+  <li>用「Session log」按钮下载一份你自己的会话日志 ZIP，解压读前几行，认出会话头与第一条事件。</li>
+  <li>从日志里复述这次会话的前三步：谁先说话、模型回了什么、工具做了什么。</li>
+  <li>拿一次「Agent 干岔了」的真实经历，用复盘三问在日志里定位一步——先下结论：是「上下文没喂到」，还是「模型真错了」？定位后把教训写成一条 AGENTS.md 约定（哪怕一行），下次开工看它有没有自动上桌——你就完成了一次「用 → 写 → 长」。</li>
+</ol>
+</div>
+
+<p>黑匣子记录一切，可记录不是为了供着——下一步看这些记录怎么被喂回 Agent。记忆线的「消费」一站，第 10 章《记忆是这样被读取的》。</p>
+
+
+  <div class="prevnext">
+    <a href="./08-code-with-agent.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 8 章 让 Agent 写得出代码</div></a>
+    <a class="next" href="./10-context-memory.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 10 章 记忆是这样被读取的</div></a>
+  </div>
+<footer class="footer">
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
+  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+</footer>
+</div>
+</main>
+<div class="sidebar-backdrop"></div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 22 章 调试与可观测 · 深入浅出 AI Agent</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/book.js" defer></script>
+</head>
+<body class="part-3">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+    <span class="crumb">艺术篇 / 第 22 章</span>
+    <span class="spacer"></span>
+    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+  </div>
+</header>
+<main class="layout">
+<aside class="sidebar" id="sidebar">
+<nav class="sidenav">
+<div class="side-group">
+<a href="../index.html">全书概览</a>
+<a href="../preface.html">前言</a>
+<a href="../outline.html">大纲</a>
+</div>
+<details class="side-part" open>
+<summary>第一篇 · 哲学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-1/index.html">篇首导览</a></li>
+<li><a href="../part-1/01-what-is-agent.html">第 1 章 什么是 Agent</a></li>
+<li><a href="../part-1/02-language-interface.html">第 2 章 语言成为新接口</a></li>
+<li><a href="../part-1/03-harness-philosophy.html">第 3 章 与 Agent 共事的哲学</a></li>
+<li><a href="../part-1/04-ai-friendly-project.html">第 4 章 让项目活起来</a></li>
+<li><a href="../part-1/05-why-plugin.html">第 5 章 把系统拆成积木</a></li>
+<li><a href="../part-1/06-full-chain-engineer.html">第 6 章 全链路工程师</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第二篇 · 科学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-2/index.html">篇首导览</a></li>
+<li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
+<li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
+<li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
+<li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
+<li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
+<li><a href="../part-2/16-agent-loop.html">第 16 章 看心脏怎么跳</a></li>
+<li><a href="../part-2/17-capability-seams.html">第 17 章 换一个器官</a></li>
+<li><a href="../part-2/18-multi-agent.html">第 18 章 一个人变一支队伍</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第三篇 · 艺术篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-3/index.html">篇首导览</a></li>
+<li><a href="../part-3/19-gourmet.html">第 19 章 老吃家的段位</a></li>
+<li><a href="../part-3/20-designing-tools.html">第 20 章 设计一个好工具</a></li>
+<li><a href="../part-3/21-prompts.html">第 21 章 Prompt 与系统提示</a></li>
+<li><a class="active" href="../part-3/22-debugging.html">第 22 章 调试与可观测</a></li>
+<li><a href="../part-3/23-evaluation.html">第 23 章 评估与质量</a></li>
+<li><a href="../part-3/24-full-chain-practice.html">第 24 章 全链路闭环实战</a></li>
+<li><a href="../part-3/25-taste-and-growth.html">第 25 章 品味与成长</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>附录 · 工具与参考</summary>
+<ul class="side-chapters">
+<li><a href="../appendix/a-glossary.html">附录 A 术语表</a></li>
+<li><a href="../appendix/b-quickstart.html">附录 B 快速上手</a></li>
+<li><a href="../appendix/c-resources.html">附录 C 扩展阅读与资源</a></li>
+<li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
+</ul>
+</details>
+</nav>
+</aside>
+<div class="container">
+
+<div class="hero part-3">
+  <span class="part-badge">第三篇 · 艺术篇</span>
+  <span class="line-tag line-create">创造线</span>
+  <h1>第 22 章 · 调试与可观测</h1>
+  <p class="subtitle">建立可观测与调试工具箱。</p>
+</div>
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>出问题时，如何快速定位与修复？</p></div>
+<h2>本章结构</h2>
+<ul class="section-list" style="grid-template-columns:1fr"><li>22.1 日志驱动的调试</li><li>22.2 常见失败模式与防御</li><li>22.3 快照测试与可回放</li><li>22.4 让「看不见的」看得见</li></ul>
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>一套可观测与调试工具箱。</p></div>
+<div class="callout warn stub-note"><div class="c-title"><span class="ic">✦</span>本章正文待撰写</div><p>这一章的正文（导语、图文详解、一张图、要点回顾、动手做）将在后续步骤中逐步编写。当前页面用于确认章节骨架与导航结构。</p></div>
+
+          <div class="prevnext">
+    <a href="./21-prompts.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 21 章 Prompt 与系统提示</div></a>
+    <a class="next" href="./23-evaluation.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 23 章 评估与质量</div></a>
+  </div>
+<footer class="footer">
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
+  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+</footer>
+</div>
+</main>
+<div class="sidebar-backdrop"></div>
+</body>
+</html>

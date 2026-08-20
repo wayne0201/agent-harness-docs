@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大纲 · 深入浅出 AI Agent</title>
+<link rel="stylesheet" href="./assets/style.css">
+<script src="./assets/book.js" defer></script>
+</head>
+<body class="">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="./index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+    <span class="crumb">大纲</span>
+    <span class="spacer"></span>
+    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+  </div>
+</header>
+<main class="layout">
+<aside class="sidebar" id="sidebar">
+<nav class="sidenav">
+<div class="side-group">
+<a href="index.html">全书概览</a>
+<a href="preface.html">前言</a>
+<a class="active" href="outline.html">大纲</a>
+</div>
+<details class="side-part" open>
+<summary>第一篇 · 哲学篇</summary>
+<ul class="side-chapters">
+<li><a href="part-1/index.html">篇首导览</a></li>
+<li><a href="part-1/01-what-is-agent.html">第 1 章 什么是 Agent</a></li>
+<li><a href="part-1/02-language-interface.html">第 2 章 语言成为新接口</a></li>
+<li><a href="part-1/03-harness-philosophy.html">第 3 章 与 Agent 共事的哲学</a></li>
+<li><a href="part-1/04-ai-friendly-project.html">第 4 章 让项目活起来</a></li>
+<li><a href="part-1/05-why-plugin.html">第 5 章 把系统拆成积木</a></li>
+<li><a href="part-1/06-full-chain-engineer.html">第 6 章 全链路工程师</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第二篇 · 科学篇</summary>
+<ul class="side-chapters">
+<li><a href="part-2/index.html">篇首导览</a></li>
+<li><a href="part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
+<li><a href="part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
+<li><a href="part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
+<li><a href="part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
+<li><a href="part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
+<li><a href="part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
+<li><a href="part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
+<li><a href="part-2/16-agent-loop.html">第 16 章 看心脏怎么跳</a></li>
+<li><a href="part-2/17-capability-seams.html">第 17 章 换一个器官</a></li>
+<li><a href="part-2/18-multi-agent.html">第 18 章 一个人变一支队伍</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第三篇 · 艺术篇</summary>
+<ul class="side-chapters">
+<li><a href="part-3/index.html">篇首导览</a></li>
+<li><a href="part-3/19-gourmet.html">第 19 章 老吃家的段位</a></li>
+<li><a href="part-3/20-designing-tools.html">第 20 章 设计一个好工具</a></li>
+<li><a href="part-3/21-prompts.html">第 21 章 Prompt 与系统提示</a></li>
+<li><a href="part-3/22-debugging.html">第 22 章 调试与可观测</a></li>
+<li><a href="part-3/23-evaluation.html">第 23 章 评估与质量</a></li>
+<li><a href="part-3/24-full-chain-practice.html">第 24 章 全链路闭环实战</a></li>
+<li><a href="part-3/25-taste-and-growth.html">第 25 章 品味与成长</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>附录 · 工具与参考</summary>
+<ul class="side-chapters">
+<li><a href="appendix/a-glossary.html">附录 A 术语表</a></li>
+<li><a href="appendix/b-quickstart.html">附录 B 快速上手</a></li>
+<li><a href="appendix/c-resources.html">附录 C 扩展阅读与资源</a></li>
+<li><a href="appendix/d-diagrams.html">附录 D 图表索引</a></li>
+</ul>
+</details>
+</nav>
+</aside>
+<div class="container">
+
+<div class="hero">
+  <span class="eyebrow"><span class="dot"></span>Outline</span>
+  <h1>大纲</h1>
+  <p class="subtitle">全书骨架：3 篇 × 双线 · 25 章 · 4 个附录。这是一份可调整的蓝图。</p>
+</div>
+
+<div class="diagram">
+  <svg viewBox="0 0 780 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="哲学到科学到艺术">
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 Z" fill="#9aa3ad"/></marker>
+  </defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="10" y="34" width="228" height="150" rx="14" fill="#eef2ff" stroke="#c7d2fe"/>
+    <rect x="276" y="34" width="228" height="150" rx="14" fill="#ecfdf8" stroke="#99f6e4"/>
+    <rect x="542" y="34" width="228" height="150" rx="14" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="124" y="28" text-anchor="middle" font-size="15" fill="#4338ca" font-weight="700">① 哲学</text>
+    <text x="390" y="28" text-anchor="middle" font-size="15" fill="#0f766e" font-weight="700">② 科学</text>
+    <text x="656" y="28" text-anchor="middle" font-size="15" fill="#b45309" font-weight="700">③ 艺术</text>
+    <text x="124" y="72" text-anchor="middle" font-size="19" fill="#312e81" font-weight="700">先问为什么</text>
+    <text x="390" y="72" text-anchor="middle" font-size="19" fill="#134e4a" font-weight="700">建立机制</text>
+    <text x="656" y="72" text-anchor="middle" font-size="19" fill="#78350f" font-weight="700">长出品</text>
+    <text x="124" y="100" text-anchor="middle" font-size="12.5" fill="#6b7280">世界观 · 第一性原理</text>
+    <text x="390" y="100" text-anchor="middle" font-size="12.5" fill="#6b7280">架构 · 模式 · 可验证</text>
+    <text x="656" y="100" text-anchor="middle" font-size="12.5" fill="#6b7280">品味 · 判断 · 闭环</text>
+    <text x="124" y="132" text-anchor="middle" font-size="12.5" fill="#6b7280">回答「是什么、为什么」</text>
+    <text x="390" y="132" text-anchor="middle" font-size="12.5" fill="#6b7280">回答「怎么运转」</text>
+    <text x="656" y="132" text-anchor="middle" font-size="12.5" fill="#6b7280">回答「怎么做好」</text>
+    <rect x="52" y="150" width="144" height="24" rx="12" fill="#ffffff" stroke="#c7d2fe"/>
+    <rect x="318" y="150" width="144" height="24" rx="12" fill="#ffffff" stroke="#99f6e4"/>
+    <rect x="584" y="150" width="144" height="24" rx="12" fill="#ffffff" stroke="#fde68a"/>
+    <text x="124" y="166" text-anchor="middle" font-size="11.5" fill="#4338ca" font-weight="600">第一篇 · 哲学篇</text>
+    <text x="390" y="166" text-anchor="middle" font-size="11.5" fill="#0f766e" font-weight="600">第二篇 · 科学篇</text>
+    <text x="656" y="166" text-anchor="middle" font-size="11.5" fill="#b45309" font-weight="600">第三篇 · 艺术篇</text>
+    <line x1="238" y1="109" x2="268" y2="109" stroke="#9aa3ad" stroke-width="2" marker-end="url(#arr)"/>
+    <line x1="504" y1="109" x2="534" y2="109" stroke="#9aa3ad" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="124" y="210" text-anchor="middle" font-size="12" fill="#9aa3ad">认识 Agent</text>
+    <text x="390" y="210" text-anchor="middle" font-size="12" fill="#9aa3ad">构建 Agent</text>
+    <text x="656" y="210" text-anchor="middle" font-size="12" fill="#9aa3ad">驾驭 Agent</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 0-1</b> 三篇分别对应「哲学 → 科学 → 艺术」的演进。</div>
+</div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>如何使用这份大纲</div><p>先看骨架是否合理，再决定往哪儿填肉。每章都标注了<b>核心问题</b>（它要解决什么）与<b>你将获得</b>（读完得到什么），你可以据此增删章节或调整顺序。</p></div>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>两条线，四种标签</div><p>每章都标注一条线：<b>共用</b>（用与做都要懂）· <b>应用</b>（先用好）· <b>创造</b>（再造出）· <b>结合</b>（用做合一）。应用章与创造章成对相邻、互相呼应，全书遵循「<b>在用中做，在做中用</b>」。</p></div>
+
+<h2 class="part-1 accent" style="color:var(--indigo)">第一篇 · 哲学篇 —— 认识与观念</h2>
+<p class="lead">一切工程，始于认知。这一篇建立世界观：第 1 章认识 Agent，第 2 章看懂这场范式转移，第 3、4 章学会用好（共事心法 + AI 友好项目观），第 5 章理解组合哲学，第 6 章把两条线拧成一条链。</p>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 1 章</span>
+    <span class="chap-title">什么是 Agent</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-shared">共用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>Agent 到底是什么？它和以前的软件有什么本质不同？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>1.1 一个会「行动」的程序</li><li>1.2 Agent 四要素：感知 · 决策 · 行动 · 记忆</li><li>1.3 LLM 的跃迁：从确定性到概率性</li><li>1.4 与程序 / RPA / Chatbot 的边界</li><li>1.5 心智模型：模型 + 记忆 + 工具 + 循环</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b></p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 2 章</span>
+    <span class="chap-title">语言成为新接口</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-shared">共用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>为什么说 Agent 不是软件的升级，而是一场范式转移？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>2.1 三种语言：机器码 → 编程语言 → 自然语言</li><li>2.2 从「算对」到「猜对」</li><li>2.3 从命令到意图</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b></p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 3 章</span>
+    <span class="chap-title">与 Agent 共事的哲学</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>我有一个项目，该怎么把 Agent 用好？哪些事交给 Agent，哪些留给自己？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>3.1 角色之变：从「亲手写」到「管边界」</li><li>3.2 上下文喂饱：把话说清楚</li><li>3.3 边界管住：护栏与信任</li><li>3.4 放手发挥：便宜是美德</li><li>3.5 共同进化：自举飞轮</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>一套「与新来的资深工程师共事」的心法框架——这是 AI 工程化的第一粒种子，比任何具体工具都保值。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 4 章</span>
+    <span class="chap-title">让项目活起来</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>Agent 眼中的好项目长什么样？项目怎么才算「活」起来？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>4.1 上下文是 Agent 的原料</li><li>4.2 四个特征：会说话</li><li>4.3 项目即外置记忆：有记性</li><li>4.4 会吸收反馈，项目才是活的</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>用一个「活」字打量自己的项目：好自述的四个特征、外置记忆的观念、反馈回路的价值——为第 7 章的落地清单打底。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 5 章</span>
+    <span class="chap-title">把系统拆成积木</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>为什么顶级 Agent 框架不约而同走向「组合」？「插件化」到底在解决什么问题？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>5.1 复杂性的代价：为什么大系统会失控</li><li>5.2 组合优于构建：从积木到系统</li><li>5.3 Cordis 的哲学内核：时空 · 依赖 · 无特权核心</li><li>5.4 从「写代码」到「装配能力」</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>理解「插件化 / 可组合」为什么是 Agent 框架的第一性原理；以及一把判断架构是否「真插件化」的尺子——它将成为你阅读第二篇源码时的导航仪。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 6 章</span>
+    <span class="chap-title">全链路工程师</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-merge">结合线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>AI 时代，工程师的新身份是什么？为什么旧的角色边界正在消融？这条链，怎么让 AI 帮着跑起来？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>6.1 角色边界的消融</li><li>6.2 一个闭环：发现 → 梳理 → 落地 → 反馈</li><li>6.3 能力地图：认知 · 工程 · 品味</li><li>6.4 从「实现者」到「闭环者」</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b></p>
+</div>
+
+<h2 class="part-2 accent" style="color:var(--teal)">第二篇 · 科学篇 —— 认识 · 使用 · 开发</h2>
+<p class="lead">这一篇是一个新人的入职之旅：认识项目（第 7 章：读懂这个被 AI 养着的项目）→ 使用项目（第 8–12 章：代码生成 · 黑匣子 · 记忆 · 技能 · 信任）→ 开发项目（第 13–18 章：架构 · 插件 · 事件 · 循环 · 接缝 · 多智能体）。记忆线贯穿：第 7 章提供 → 第 9 章记录 → 第 10 章消费 → 第 8 章写回再提供。</p>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 7 章</span>
+    <span class="chap-title">新人报到：先读懂这个项目</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>dsh 是怎么用 AI 工程化驾驭自己的项目的？观念落在哪里、记忆分几层、成长靠什么？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>7.1 观念对号入座</li><li>7.2 三层记忆：人记 · Agent 记 · 机器记</li><li>7.3 成长的机制：写回与流水线</li><li>7.4 你的项目照做：四动作与体检</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>一张完整的工程化地图：观念对号入座表、三层记忆的清点、成长机制的四样证据、照做的四动作与体检清单——之后第 13 章再讲这些记忆在 Agent 运行时怎么用。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 8 章</span>
+    <span class="chap-title">让 Agent 写得出代码</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>Agent 凭什么能看懂你的项目、写出对的代码？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>8.1 交接：先让项目自我介绍</li><li>8.2 干活：手册怎么变成代码</li><li>8.3 写回：用 → 写 → 长</li><li>8.4 回路钩子：记忆线的闭合</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>掌握「交接 → 干活 → 写回」三个动作——喂饱上下文、写出对的代码、让经验沉淀成约定。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 9 章</span>
+    <span class="chap-title">复盘先读黑匣子</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>干岔了怎么办？Agent 的每一步记在哪、怎么读？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>9.1 为什么要有黑匣子：先记后用</li><li>9.2 一条不变量：模型可见 ⟺ 已记录</li><li>9.3 一份日志，五种派生</li><li>9.4 复盘实操：从日志定位问题</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>会读会话日志：复现问题、回放过程、为验收取证。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 10 章</span>
+    <span class="chap-title">记忆是这样被读取的</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>日志和文件里的记忆，怎么变成模型眼前的上下文？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>10.1 从黑匣子到备菜台：历史投影</li><li>10.2 台面有限：窗口与压缩</li><li>10.3 三层记忆，怎么被吃掉</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>看懂上下文组装与压缩——为什么 Agent 有时会「失忆」，如何喂得高效。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 11 章</span>
+    <span class="chap-title">技能是这样被使用的</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>技能是什么？Agent 什么时候、怎么调用它们？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>11.1 技能是什么：一排锦囊</li><li>11.2 技能库：十一个锦囊贴着纸条</li><li>11.3 什么时候拆、怎么拆：调用链路</li><li>11.4 拆开之后：照做，也要盯</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>看懂技能的调用链路——会挑、会点、会验收，知道什么该交给技能、什么还得自己盯。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 12 章</span>
+    <span class="chap-title">什么时候把钥匙交给它</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>何时能信 Agent 的产出？信任如何校准？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>12.1 完全放开的危害：把关全拆了会怎样</li><li>12.2 防止危害的标准：要防住什么</li><li>12.3 机制怎么落地：Agent 是怎么做到的</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>拿到一套可落地的信任校准方法——以第 9 章的会话日志为审查依据。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 13 章</span>
+    <span class="chap-title">Agent 是怎么拼起来的</span>
+    <span class="chap-status">已完成</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>哪些目录是 Agent 的关键节点？插件怎么管理、上下文与模型由谁负责、一次完整的工作链路怎么走？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>13.1 关键节点：心智模型的器官图</li><li>13.2 插件如何管理：Cordis 的上下文</li><li>13.3 上下文与模型：插件分工</li><li>13.4 一次完整的工作链路</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>拿到 dsh 的架构全景图——关键节点目录地图、插件管理、上下文与模型的分工、一次完整工作链路；第 14–18 章都是这张图的放大。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 14 章</span>
+    <span class="chap-title">把功能插上插头</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>「一切皆插件」如何在代码层面落地？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>14.1 第一个插件：十行代码的 hello</li><li>14.2 五个关键词：Cordis 的全家福</li><li>14.3 顺序与依赖：谁先谁后，谁说了算</li><li>14.4 可逆效应与类型安全：拔插头与说明书</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>看懂并动手写一个 dsh 插件的能力。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 15 章</span>
+    <span class="chap-title">让零件通风报信</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>Agent 的「神经系统」如何工作？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>15.1 事件是什么：一条类型化的广播</li><li>15.2 五种派发模式：广播还是传阅</li><li>15.3 dsh 里的事件：观察与拦截</li><li>15.4 事件即文档：谁发出，谁消费</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>在任何位置安全地插入自定义逻辑的能力。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 16 章</span>
+    <span class="chap-title">看心脏怎么跳</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>Agent 到底怎么「转」起来？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>16.1 turn 与 step：一次心跳，两种粒度</li><li>16.2 主循环走查：认领、装配、请求、工具、收尾</li><li>16.3 工具执行管线：一次调用的九道关</li><li>16.4 取消与错误恢复：心脏的自救</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>理解 Agent 运行时引擎，能定位每一步发生在哪。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 17 章</span>
+    <span class="chap-title">换一个器官</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>如何让能力可替换，而不改动核心？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>17.1 接缝与三角色：凸点、积木、搭积木的人</li><li>17.2 dsh 里的真实接缝：一张替换清单</li><li>17.3 一次替换，全产品改变</li><li>17.4 何时为一个能力设计接缝</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>设计「可插拔能力」的方法论。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 18 章</span>
+    <span class="chap-title">一个人变一支队伍</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>复杂任务如何被分解与协作完成？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>18.1 subagent：派帮厨，交报告</li><li>18.2 workflow：排菜单，多灶出菜</li><li>18.3 结构化与目标：菜单板 · 总目标 · 试菜</li><li>18.4 何时单 Agent，何时多 Agent</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>选择单 / 多 Agent 结构的判断力。</p>
+</div>
+
+<h2 class="part-3 accent" style="color:var(--amber)">第三篇 · 艺术篇 —— 火候与境界</h2>
+<p class="lead">机制能保证「能用」，品味才决定「好用」。从老吃家的段位（第 19 章）出发，打磨工具与提示（第 20–23 章），最后用闭环与品味（第 24、25 章）把两条线收束。</p>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 19 章</span>
+    <span class="chap-title">老吃家的段位</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-app">应用线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>使用的艺术是什么？如何从「会用」走向「用得漂亮」？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>19.1 火候：放手与亲为之间</li><li>19.2 审查的直觉</li><li>19.3 品味：什么算好</li><li>19.4 一张图总结</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>把「用 Agent」从技术活变成手艺活，并把吃出来的段位带回创造线。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 20 章</span>
+    <span class="chap-title">设计一个好工具</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>如何给模型造一双好「手」？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>20.1 工具的界面即产品</li><li>20.2 schema 设计：让模型「看」得懂</li><li>20.3 错误与反馈：让模型「改」得对</li><li>20.4 数量与粒度：少而准</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>工具设计的清单与反模式。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 21 章</span>
+    <span class="chap-title">Prompt 与系统提示</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>如何给模型一颗好「心」？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>21.1 提示的结构：分区与装配</li><li>21.2 直接、具体、可验证</li><li>21.3 少即是多：token 预算与上下文</li><li>21.4 用「约束」而非「劝说」</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>写出稳定、可维护提示的方法。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 22 章</span>
+    <span class="chap-title">调试与可观测</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>出问题时，如何快速定位与修复？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>22.1 日志驱动的调试</li><li>22.2 常见失败模式与防御</li><li>22.3 快照测试与可回放</li><li>22.4 让「看不见的」看得见</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>一套可观测与调试工具箱。</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <span class="chap-no">第 23 章</span>
+    <span class="chap-title">评估与质量</span>
+    <span class="chap-status">待撰写</span>
+    <span class="line-tag line-create">创造线</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>如何科学地说「它变好了」？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>23.1 评估的层次：单元 → 快照 → e2e</li><li>23.2 覆盖率的真正含义</li><li>23.3 用数据驱动迭代</li><li>23.4 「它变好了」如何被证明</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>为 Agent 建立质量护栏的方法。</p>
+</div>
+
+<h2>附录 · 工具与参考</h2>
+
+<div class="card ">
+  <div class="card-head">
+    <span class="chap-no">第 A 章</span>
+    <span class="chap-title">术语表</span>
+    <span class="chap-status">待撰写</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>关键术语的统一定义与索引是什么？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>术语分类 · 统一定义 · 中英对照</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>查得着的概念索引。</p>
+</div>
+
+<div class="card ">
+  <div class="card-head">
+    <span class="chap-no">第 B 章</span>
+    <span class="chap-title">快速上手</span>
+    <span class="chap-status">待撰写</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>如何最快跑起一个 Agent？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>安装环境 · 运行 dsh web · 跑通第一个任务</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>10 分钟获得第一次成功体验。</p>
+</div>
+
+<div class="card ">
+  <div class="card-head">
+    <span class="chap-no">第 C 章</span>
+    <span class="chap-title">扩展阅读与资源</span>
+    <span class="chap-status">待撰写</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>读完本书后，下一步读什么？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>论文 · 源码 · 社区 · 延伸资料</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>一张可持续成长的资源地图。</p>
+</div>
+
+<div class="card ">
+  <div class="card-head">
+    <span class="chap-no">第 D 章</span>
+    <span class="chap-title">图表索引</span>
+    <span class="chap-status">待撰写</span>
+  </div>
+  <p class="desc"><b>核心问题：</b>全书有哪些图？</p>
+  <div class="sections"><b>本章结构</b></div>
+  <ul class="section-list"><li>按章节列出的全部图表清单</li></ul>
+  <p class="desc" style="margin-top:10px"><b>你将获得：</b>一张可回看的视觉索引。</p>
+</div>
+<div class="prevnext">
+    <a href="./preface.html"><div class="pn-label">← 上一页</div><div class="pn-title">前言</div></a>
+    <a class="next" href="./part-1/index.html"><div class="pn-label">下一页 →</div><div class="pn-title">第一篇 · 哲学篇</div></a>
+  </div>
+<footer class="footer">
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
+  <span><a href="./index.html">目录</a> · <a href="./preface.html">前言</a> · <a href="./outline.html">大纲</a></span>
+</footer>
+</div>
+</main>
+<div class="sidebar-backdrop"></div>
+</body>
+</html>

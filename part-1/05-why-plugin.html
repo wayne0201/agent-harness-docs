@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 5 章 把系统拆成积木 · 深入浅出 AI Agent</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/book.js" defer></script>
+</head>
+<body class="part-1">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+    <span class="crumb">哲学篇 / 第 5 章</span>
+    <span class="spacer"></span>
+    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+  </div>
+</header>
+<main class="layout">
+<aside class="sidebar" id="sidebar">
+<nav class="sidenav">
+<div class="side-group">
+<a href="../index.html">全书概览</a>
+<a href="../preface.html">前言</a>
+<a href="../outline.html">大纲</a>
+</div>
+<details class="side-part" open>
+<summary>第一篇 · 哲学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-1/index.html">篇首导览</a></li>
+<li><a href="../part-1/01-what-is-agent.html">第 1 章 什么是 Agent</a></li>
+<li><a href="../part-1/02-language-interface.html">第 2 章 语言成为新接口</a></li>
+<li><a href="../part-1/03-harness-philosophy.html">第 3 章 与 Agent 共事的哲学</a></li>
+<li><a href="../part-1/04-ai-friendly-project.html">第 4 章 让项目活起来</a></li>
+<li><a class="active" href="../part-1/05-why-plugin.html">第 5 章 把系统拆成积木</a></li>
+<li><a href="../part-1/06-full-chain-engineer.html">第 6 章 全链路工程师</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第二篇 · 科学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-2/index.html">篇首导览</a></li>
+<li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
+<li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
+<li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
+<li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
+<li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
+<li><a href="../part-2/16-agent-loop.html">第 16 章 看心脏怎么跳</a></li>
+<li><a href="../part-2/17-capability-seams.html">第 17 章 换一个器官</a></li>
+<li><a href="../part-2/18-multi-agent.html">第 18 章 一个人变一支队伍</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第三篇 · 艺术篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-3/index.html">篇首导览</a></li>
+<li><a href="../part-3/19-gourmet.html">第 19 章 老吃家的段位</a></li>
+<li><a href="../part-3/20-designing-tools.html">第 20 章 设计一个好工具</a></li>
+<li><a href="../part-3/21-prompts.html">第 21 章 Prompt 与系统提示</a></li>
+<li><a href="../part-3/22-debugging.html">第 22 章 调试与可观测</a></li>
+<li><a href="../part-3/23-evaluation.html">第 23 章 评估与质量</a></li>
+<li><a href="../part-3/24-full-chain-practice.html">第 24 章 全链路闭环实战</a></li>
+<li><a href="../part-3/25-taste-and-growth.html">第 25 章 品味与成长</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>附录 · 工具与参考</summary>
+<ul class="side-chapters">
+<li><a href="../appendix/a-glossary.html">附录 A 术语表</a></li>
+<li><a href="../appendix/b-quickstart.html">附录 B 快速上手</a></li>
+<li><a href="../appendix/c-resources.html">附录 C 扩展阅读与资源</a></li>
+<li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
+</ul>
+</details>
+</nav>
+</aside>
+<div class="container">
+
+
+<div class="hero part-1">
+  <span class="part-badge">第一篇 · 哲学篇</span>
+  <span class="line-tag line-create">创造线</span>
+  <h1>第 5 章 · 把系统拆成积木</h1>
+  <p class="subtitle">组合优于构建——Agent 框架的第一性原理</p>
+</div>
+
+<p class="lead">第 4 章说，活的项目才配得上活的 Agent——会说话、有记性、会成长。可一个项目凭什么「活」得长久：今天加一块、明天拆一块，改而不乱？答案藏在它的身体构造里。第 1 章我们建立过一个心智模型：<b>Agent = 模型 + 记忆 + 工具 + 循环</b>。这四个零件，应该怎样组织在一起？是写进一个庞大的核心系统里，还是做成一块块可以随意拆装的积木？DeepSeek Harness 的回答斩钉截铁：<b>一切皆插件</b>——连模型适配器、工具注册表、会话日志、甚至 Agent 循环本身，都是插件。这一章，我们回答它为什么这么选。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>本章核心问题</div><p>为什么顶级 Agent 框架不约而同走向「组合」？「插件化」到底在解决什么问题？</p></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>理解「插件化 / 可组合」为什么是 Agent 框架的第一性原理；以及一把判断架构是否「真插件化」的尺子——它将成为你阅读第二篇源码时的导航仪。</p></div>
+
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s5-1">5.1 复杂性的代价：为什么大系统会失控</a></li>
+    <li><a href="#s5-2">5.2 组合优于构建：从积木到系统</a></li>
+    <li><a href="#s5-3">5.3 Cordis 的哲学内核：时空 · 依赖 · 无特权核心</a></li>
+    <li><a href="#s5-4">5.4 从「写代码」到「装配能力」</a></li>
+  </ul>
+</div>
+
+<h2 id="s5-1">5.1 复杂性的代价：为什么大系统会失控</h2>
+<p>软件系统有一条残酷的规律：<b>它只会越来越复杂</b>。需求在增长，功能在叠加，代码在膨胀。</p>
+<p>但真正要命的还不是「复杂」，而是<b>变化</b>：模型一个月更新一版；工具想换个提供方；用户今天要这个、明天要那个。</p>
+<p>传统系统是怎么死的？它们把代码写成一整块：改一处，牵动另一处；想换一个零件，发现它和十几个模块缠在一起。工程师给这种系统起了一个生动的名字：<b>大泥球（Big Ball of Mud）</b>。</p>
+<p>想象你有一座整块的<b>花岗岩雕塑</b>。它精美，但你想把左臂改成打招呼的姿势——抱歉，只能敲掉重雕。大泥球就是软件界的雕塑：<b>每一次变化，都是一次新的雕刻</b>。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 244" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="大泥球与积木式对比">
+  <defs><marker id="m51" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <rect x="16" y="14" width="330" height="216" rx="12" fill="#ffffff" stroke="#e7e2d9"/>
+    <text x="181" y="42" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">大泥球 · 改一处，坏一片</text>
+    <ellipse cx="181" cy="126" rx="92" ry="64" fill="#f6f4ee" stroke="#d6d0c4" stroke-width="2"/>
+    <path d="M110 96 C 150 74, 118 140, 168 118 S 236 118, 252 92" fill="none" stroke="#9aa3ad" stroke-width="1.4"/>
+    <path d="M118 158 C 158 130, 192 168, 232 140 S 258 152, 254 120" fill="none" stroke="#9aa3ad" stroke-width="1.4"/>
+    <path d="M132 84 C 178 108, 142 152, 198 162" fill="none" stroke="#9aa3ad" stroke-width="1.4"/>
+    <circle cx="128" cy="102" r="12" fill="#ffffff" stroke="#9aa3ad"/><text x="128" y="107" text-anchor="middle" font-size="11" fill="#4b5563">A</text>
+    <circle cx="216" cy="140" r="12" fill="#ffffff" stroke="#9aa3ad"/><text x="216" y="145" text-anchor="middle" font-size="11" fill="#4b5563">B</text>
+    <circle cx="176" cy="84" r="12" fill="#ffffff" stroke="#9aa3ad"/><text x="176" y="89" text-anchor="middle" font-size="11" fill="#4b5563">C</text>
+    <text x="181" y="214" text-anchor="middle" font-size="12" fill="#b45309" font-weight="600">改 A，B 和 C 跟着一起坏</text>
+    <line x1="360" y1="14" x2="360" y2="230" stroke="#e7e2d9" stroke-dasharray="4 5"/>
+    <rect x="374" y="14" width="330" height="216" rx="12" fill="#ffffff" stroke="#e7e2d9"/>
+    <text x="539" y="42" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">积木式 · 改一处，动一块</text>
+    <rect x="456" y="74" width="72" height="48" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="492" y="103" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="600">A</text>
+    <rect x="550" y="74" width="72" height="48" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="586" y="103" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="600">B</text>
+    <rect x="456" y="148" width="72" height="48" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="492" y="177" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="600">C</text>
+    <rect x="550" y="148" width="72" height="48" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="586" y="177" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="600">D</text>
+    <line x1="530" y1="98" x2="548" y2="98" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m51)"/>
+    <line x1="492" y1="124" x2="492" y2="146" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m51)"/>
+    <line x1="586" y1="124" x2="586" y2="146" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m51)"/>
+    <line x1="530" y1="172" x2="548" y2="172" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m51)"/>
+    <text x="539" y="214" text-anchor="middle" font-size="12" fill="#0f766e" font-weight="600">改 A，只动 A</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 5-1</b> 大泥球：模块彼此缠绕，牵一发而动全身；积木式：边界清晰，改一处只动一块。</div>
+</div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>记住这个判断</div><p>一个系统的寿命，不取决于它今天多好用，而取决于它<b>能不能便宜地改变</b>。Agent 恰恰是最「善变」的软件——因为它的世界（模型、工具、需求）每天都在变。</p></div>
+
+<h2 id="s5-2">5.2 组合优于构建：从积木到系统</h2>
+<p>面对不断增长的复杂度，工程师只有两条路：</p>
+<ul>
+  <li><b>构建（Build）</b>——每次从零写，造一个新整体。贵、慢、不可复用。</li>
+  <li><b>组合（Compose）</b>——把系统拆成标准积木，用现成的积木拼出新品。便宜、快、可复用。</li>
+</ul>
+<p>组合的力量来自<b>指数</b>：10 块积木，理论上能拼出 2¹⁰ 种组合；100 块就是 2¹⁰⁰ 种。你不需要提前造出每一种产品，只需要造好积木，需要时拼一下。<b>汉字</b>就是这个道理——几百个偏旁部首，组合出上万个字。</p>
+<p>回到 Agent：第 1 章的四个零件，就是<b>四块积木</b>。问答助手 = 模型 + 工具；有记忆的顾问 = 模型 + 工具 + 记忆；自主 Agent = 四块全上。<b>不同的产品，是同一套积木的不同拼法。</b></p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="同一套积木的不同拼法">
+  <defs><marker id="m52" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="355" y="24" text-anchor="middle" font-size="13" fill="#4b5563" font-weight="700">同一套积木（第 1 章的心智模型）</text>
+    <rect x="110" y="34" width="110" height="40" rx="8" fill="#eef2ff" stroke="#c7d2fe"/><text x="165" y="59" text-anchor="middle" font-size="14" fill="#312e81" font-weight="700">模型</text>
+    <rect x="240" y="34" width="110" height="40" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="295" y="59" text-anchor="middle" font-size="14" fill="#78350f" font-weight="700">工具</text>
+    <rect x="370" y="34" width="110" height="40" rx="8" fill="#f6f4ee" stroke="#d6d0c4"/><text x="425" y="59" text-anchor="middle" font-size="14" fill="#1f2937" font-weight="700">记忆</text>
+    <rect x="500" y="34" width="110" height="40" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="555" y="59" text-anchor="middle" font-size="14" fill="#134e4a" font-weight="700">循环</text>
+    <line x1="360" y1="78" x2="360" y2="116" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m52)"/>
+    <text x="392" y="102" font-size="12.5" fill="#7b8494">不同拼法</text>
+    <rect x="34" y="128" width="56" height="36" rx="6" fill="#eef2ff" stroke="#c7d2fe"/><text x="62" y="151" text-anchor="middle" font-size="11" fill="#312e81" font-weight="600">模型</text>
+    <rect x="94" y="128" width="56" height="36" rx="6" fill="#fffbeb" stroke="#fde68a"/><text x="122" y="151" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">工具</text>
+    <text x="94" y="188" text-anchor="middle" font-size="12" fill="#4b5563" font-weight="600">问答助手</text>
+    <rect x="224" y="128" width="56" height="36" rx="6" fill="#eef2ff" stroke="#c7d2fe"/><text x="252" y="151" text-anchor="middle" font-size="11" fill="#312e81" font-weight="600">模型</text>
+    <rect x="284" y="128" width="56" height="36" rx="6" fill="#fffbeb" stroke="#fde68a"/><text x="312" y="151" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">工具</text>
+    <rect x="344" y="128" width="56" height="36" rx="6" fill="#f6f4ee" stroke="#d6d0c4"/><text x="372" y="151" text-anchor="middle" font-size="11" fill="#1f2937" font-weight="600">记忆</text>
+    <text x="312" y="188" text-anchor="middle" font-size="12" fill="#4b5563" font-weight="600">有记忆的顾问</text>
+    <rect x="474" y="128" width="48" height="36" rx="6" fill="#eef2ff" stroke="#c7d2fe"/><text x="498" y="151" text-anchor="middle" font-size="11" fill="#312e81" font-weight="600">模型</text>
+    <rect x="522" y="128" width="48" height="36" rx="6" fill="#fffbeb" stroke="#fde68a"/><text x="546" y="151" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">工具</text>
+    <rect x="570" y="128" width="48" height="36" rx="6" fill="#f6f4ee" stroke="#d6d0c4"/><text x="594" y="151" text-anchor="middle" font-size="11" fill="#1f2937" font-weight="600">记忆</text>
+    <rect x="618" y="128" width="48" height="36" rx="6" fill="#ecfdf8" stroke="#5eead4"/><text x="642" y="151" text-anchor="middle" font-size="11" fill="#134e4a" font-weight="600">循环</text>
+    <text x="576" y="188" text-anchor="middle" font-size="12" fill="#4b5563" font-weight="600">自主 Agent</text>
+    <text x="355" y="224" text-anchor="middle" font-size="12.5" fill="#7b8494">不同的产品，是同一套积木的不同拼法</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 5-2</b> 同一套积木（模型/工具/记忆/循环），拼出三种不同的产品。</div>
+</div>
+
+<h3>科普时间：Unix 哲学——组合思想的祖师爷</h3>
+<p>组合不是新发明。1978 年，贝尔实验室的<b>道格·麦克罗伊（Doug McIlroy）</b>写下三条朴素的信条：</p>
+<ul>
+  <li>每个程序只做一件事，并把它做好；</li>
+  <li>程序要能互相协作；</li>
+  <li>程序的输出要能成为另一个程序的输入。</li>
+</ul>
+<p>它的产物就是 Unix 管道：<code>ls | grep "agent" | wc -l</code>——三个小程序，用一根竖线串成一条流水线。没有哪个程序「知道」整件事，但组合起来完成了整件事。</p>
+<p>五十年过去，这套思想依然是软件世界最被验证的真理之一。Agent 框架把「小程序」换成「插件」、把「文本流」换成「事件流」，但灵魂没变：<b>组合优于构建</b>。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>一句话记住本节</div><p>不要造一个新的整体，要造一套新的积木。</p></div>
+
+<h2 id="s5-3">5.3 Cordis 的哲学内核：时空 · 依赖 · 无特权核心</h2>
+<p>DeepSeek Harness 的底层框架叫 <b>Cordis</b>——一个开源的插件<b>元框架</b>。它的设计论文《<a href="https://github.com/cordiverse/paper" target="_blank" rel="noopener">A Programming Paradigm for Spatiotemporal Composability</a>》（时空可组合性的编程范式）与源码仓库（<a href="https://github.com/cordiverse/cordis" target="_blank" rel="noopener">cordiverse/cordis</a>）都是公开的。把论文标题拆开，Cordis 的哲学内核是三件事：<b>怎么拼、先拼谁、谁说了算</b>。</p>
+
+<h3>怎么拼：时空可组合性</h3>
+<ul>
+  <li><b>时间维（temporal）</b>：装得上，也拆得下。插件装载时注册的一切（服务、事件、效应），在卸载时<b>自动撤销</b>，不留残渣。</li>
+  <li><b>空间维（spatial）</b>：拼得进，也共存得了。多个插件能同时待在同一上下文里，互相提供能力、消费能力。</li>
+</ul>
+<p>这两点为什么难？传统插件系统有两样通病：</p>
+<ul>
+  <li><b>装上容易，拆下难</b>——全局状态被污染；</li>
+  <li><b>能装能拆，不能共存</b>——两个插件抢同一个全局变量。</li>
+</ul>
+<p>Cordis 的对策是四个字——<b>「注册即效应」</b>：装载时注册的一切，卸载时自动撤销。这四个字的分量，第 14 章会展开讲。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 244" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="时空可组合性">
+  <defs><marker id="m53" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <rect x="16" y="14" width="330" height="216" rx="12" fill="#ffffff" stroke="#e7e2d9"/>
+    <text x="181" y="42" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">时间维 · 可逆</text>
+    <rect x="30" y="72" width="62" height="40" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="61" y="97" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="600">装载</text>
+    <rect x="112" y="72" width="62" height="40" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="143" y="97" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="600">运行</text>
+    <rect x="194" y="72" width="62" height="40" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="225" y="97" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="600">卸载</text>
+    <rect x="276" y="72" width="62" height="40" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="307" y="97" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="600">无痕</text>
+    <line x1="94" y1="92" x2="108" y2="92" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m53)"/>
+    <line x1="176" y1="92" x2="190" y2="92" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m53)"/>
+    <line x1="258" y1="92" x2="272" y2="92" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m53)"/>
+    <path d="M225 114 C 225 146, 61 146, 61 114" fill="none" stroke="#0f766e" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m53)"/>
+    <text x="143" y="164" text-anchor="middle" font-size="11.5" fill="#0f766e" font-weight="600">可重复：随时再装</text>
+    <text x="181" y="196" text-anchor="middle" font-size="11.5" fill="#4b5563">注册即效应：插件装进来注册的一切</text>
+    <text x="181" y="214" text-anchor="middle" font-size="11.5" fill="#4b5563">在卸载时自动撤销，不留残渣</text>
+    <line x1="360" y1="14" x2="360" y2="230" stroke="#e7e2d9" stroke-dasharray="4 5"/>
+    <rect x="374" y="14" width="330" height="216" rx="12" fill="#ffffff" stroke="#e7e2d9"/>
+    <text x="539" y="42" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">空间维 · 可叠加</text>
+    <rect x="424" y="94" width="70" height="36" rx="8" fill="#eef2ff" stroke="#c7d2fe"/><text x="459" y="117" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="600">插件 A</text>
+    <rect x="504" y="94" width="70" height="36" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="539" y="117" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="600">插件 B</text>
+    <rect x="584" y="94" width="70" height="36" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="619" y="117" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">插件 C</text>
+    <rect x="429" y="146" width="220" height="12" rx="6" fill="#0f766e" opacity="0.15" stroke="#0f766e"/>
+    <text x="539" y="178" text-anchor="middle" font-size="11.5" fill="#0f766e" font-weight="600">共享上下文 ctx</text>
+    <text x="539" y="204" text-anchor="middle" font-size="11.5" fill="#4b5563">多个插件并存于同一上下文</text>
+    <text x="539" y="222" text-anchor="middle" font-size="11.5" fill="#4b5563">互相提供能力、消费能力</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 5-3</b> 时间维：装载—运行—卸载—无痕，循环可逆；空间维：多个插件并存于同一个上下文。</div>
+</div>
+
+<table>
+  <tr><th></th><th>时间维 ✓ 能拆</th><th>时间维 ✗ 拆不掉</th></tr>
+  <tr><td><b>空间维 ✓ 能并存</b></td><td class="cell-hl">Cordis：一切皆插件 ✅</td><td>焊死的整体式系统</td></tr>
+  <tr><td><b>空间维 ✗ 不能并存</b></td><td>卡带式：一次只能插一个</td><td>大泥球：拆不动也拼不上</td></tr>
+</table>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>可组合 = 时间上可逆 + 空间上可叠加</b>。缺一条，都不算真正的可组合。</p></div>
+
+<h3>先拼谁：依赖</h3>
+<p>组合还有一个容易被忽略的维度：<b>积木之间是互相咬合的</b>。插件 A 提供「说话的能力」，插件 B 需要它才能工作——B 就依赖 A。依赖关系一出现，「先装谁、后装谁」这个问题就自动有了答案。</p>
+<p>装修一套房子，工头手里有一份<b>进场清单</b>：水电、油漆工、木工。但油漆工进场前声明：「<b>我必须等木工做完</b>。」于是：</p>
+<ul>
+  <li>清单（注册顺序）是<b>默认规则</b>——没有约束的工人，按清单先后进场；</li>
+  <li>工人的声明（依赖配置）是<b>覆盖规则</b>——油漆工在清单里排前面，也得让位；</li>
+  <li>实际进场（激活顺序）变成：<b>水电 → 木工 → 油漆</b>。</li>
+</ul>
+<p>更妙的是<b>返工规则</b>：如果水电返工，后面贴好的砖、打好的柜子都得拆掉重来。依赖不仅决定顺序，还决定了「牵一发要动多少」。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 272" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="进场清单与实际进场">
+  <defs><marker id="m53f" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#4b5563" font-weight="700">进场清单（默认顺序）vs 实际进场（依赖重排）</text>
+    <text x="24" y="76" font-size="11.5" fill="#7b8494" font-weight="700">进场清单</text>
+    <text x="24" y="190" font-size="11.5" fill="#7b8494" font-weight="700">实际进场</text>
+    <rect x="150" y="44" width="150" height="44" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/><text x="225" y="71" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">① 水电改造</text>
+    <rect x="318" y="44" width="150" height="44" rx="9" fill="#eef2ff" stroke="#c7d2fe"/><text x="393" y="65" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="600">② 油漆工</text>
+    <text x="393" y="80" text-anchor="middle" font-size="9.5" fill="#b45309" font-weight="600">声明：必须等木工</text>
+    <rect x="486" y="44" width="150" height="44" rx="9" fill="#ecfdf8" stroke="#5eead4"/><text x="561" y="71" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">③ 木工</text>
+    <line x1="302" y1="66" x2="316" y2="66" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m53f)"/>
+    <line x1="470" y1="66" x2="484" y2="66" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m53f)"/>
+    <rect x="150" y="158" width="150" height="44" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/><text x="225" y="185" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">① 水电改造</text>
+    <rect x="318" y="158" width="150" height="44" rx="9" fill="#ecfdf8" stroke="#5eead4"/><text x="393" y="185" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">② 木工</text>
+    <rect x="486" y="158" width="150" height="44" rx="9" fill="#eef2ff" stroke="#c7d2fe"/><text x="561" y="185" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="600">③ 油漆工</text>
+    <line x1="302" y1="180" x2="316" y2="180" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m53f)"/>
+    <line x1="470" y1="180" x2="484" y2="180" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m53f)"/>
+    <line x1="225" y1="90" x2="225" y2="154" stroke="#9aa3ad" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#m53f)"/>
+    <path d="M561 90 C 561 124, 393 124, 393 154" fill="none" stroke="#0f766e" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#m53f)"/>
+    <path d="M393 90 C 393 124, 561 124, 561 154" fill="none" stroke="#b45309" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#m53f)"/>
+    <text x="585" y="122" font-size="10.5" fill="#0f766e" font-weight="600">提前</text>
+    <text x="352" y="122" font-size="10.5" fill="#b45309" font-weight="600">让位</text>
+    <text x="360" y="238" text-anchor="middle" font-size="12" fill="#7b8494">工人的依赖声明覆盖清单顺序：注册顺序是默认规则，依赖声明是覆盖规则</text>
+    <text x="360" y="258" text-anchor="middle" font-size="12" fill="#7b8494">若水电返工 → 后面全部拆掉重来：依赖者跟着重来</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 5-3a</b> 进场清单（默认顺序）vs 实际进场（依赖重排）：工人的声明覆盖清单，返工时依赖者跟着重来。</div>
+</div>
+
+<p>换成插件的语言，就是前面说的那个例子：注册顺序是 C → B → A（C 无依赖，B 声明依赖 llm，A 提供 llm），激活顺序却是 C → A → B。<b>清单没有被推翻，只是被依赖重排了。</b>（这套机制怎么运转，第 14 章展开。）</p>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>注册顺序是默认规则，依赖声明是覆盖规则</b>——先注册谁只是起点，谁依赖谁才是终局。</p></div>
+
+<h3>谁说了算：无特权核心</h3>
+<p>「一切皆插件」走到极致，会逼出一个更尖锐的问题：<b>「核心」本身，算不算插件？</b>传统架构的回答是「不算」——系统里总有一个不可动的中心，其他部件都围着它转、依赖它存在。这个中心，就是<b>特权核心（privileged core）</b>。</p>
+<p>特权核心的存在，让「可组合」打了折扣：外围零件随便换，心脏永远换不了。这就像一套<b>乐高</b>，所有积木都能拆，唯独中间那块被焊死了——于是每一块都被它绑架。</p>
+<p><b>「一切皆插件」的哲学推论只有一个：核心也必须是一个插件。</b>没有谁生来特殊，特殊只意味着「被固定住了」。</p>
+<p>这个主张带来三个概念级的自由：</p>
+<ul>
+  <li><b>可替换（自由）</b>——任何一个部件，包括心脏，都可以被换掉：系统获得<b>进化</b>的自由。</li>
+  <li><b>可扩展（生长）</b>——新能力不需要「中心的批准」，装上就能活：系统获得<b>生长</b>的自由。</li>
+  <li><b>可回滚（安全）</b>——任何部件都可以安全拆下：系统获得<b>试错</b>的自由。</li>
+</ul>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 244" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="特权核心与无特权核心对比">
+  <defs><marker id="m54" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <rect x="16" y="14" width="330" height="216" rx="12" fill="#ffffff" stroke="#e7e2d9"/>
+    <text x="181" y="42" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">传统 · 特权核心</text>
+    <rect x="36" y="60" width="290" height="148" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <circle cx="181" cy="134" r="44" fill="#ffffff" stroke="#9aa3ad" stroke-width="2"/>
+    <text x="181" y="138" text-anchor="middle" font-size="14" fill="#1f2937" font-weight="700">核心</text>
+    <rect x="56" y="74" width="64" height="34" rx="6" fill="#ffffff" stroke="#d6d0c4"/><text x="88" y="95" text-anchor="middle" font-size="11" fill="#4b5563">模块 A</text>
+    <rect x="242" y="74" width="64" height="34" rx="6" fill="#ffffff" stroke="#d6d0c4"/><text x="274" y="95" text-anchor="middle" font-size="11" fill="#4b5563">模块 B</text>
+    <rect x="56" y="160" width="64" height="34" rx="6" fill="#ffffff" stroke="#d6d0c4"/><text x="88" y="181" text-anchor="middle" font-size="11" fill="#4b5563">模块 C</text>
+    <rect x="242" y="160" width="64" height="34" rx="6" fill="#ffffff" stroke="#d6d0c4"/><text x="274" y="181" text-anchor="middle" font-size="11" fill="#4b5563">模块 D</text>
+    <line x1="122" y1="92" x2="146" y2="112" stroke="#9aa3ad" stroke-width="1.4" marker-end="url(#m54)"/>
+    <line x1="240" y1="92" x2="216" y2="112" stroke="#9aa3ad" stroke-width="1.4" marker-end="url(#m54)"/>
+    <line x1="122" y1="176" x2="146" y2="156" stroke="#9aa3ad" stroke-width="1.4" marker-end="url(#m54)"/>
+    <line x1="240" y1="176" x2="216" y2="156" stroke="#9aa3ad" stroke-width="1.4" marker-end="url(#m54)"/>
+    <text x="181" y="226" text-anchor="middle" font-size="12" fill="#b45309" font-weight="600">核心不可动：改它 = 改全部</text>
+    <line x1="360" y1="14" x2="360" y2="230" stroke="#e7e2d9" stroke-dasharray="4 5"/>
+    <rect x="374" y="14" width="330" height="216" rx="12" fill="#ffffff" stroke="#e7e2d9"/>
+    <text x="539" y="42" text-anchor="middle" font-size="15" font-weight="700" fill="#0f766e">插件式 · 无特权核心</text>
+    <rect x="461" y="90" width="76" height="56" rx="10" fill="none" stroke="#b45309" stroke-dasharray="4 3"/>
+    <text x="499" y="82" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">可替换</text>
+    <rect x="387" y="96" width="64" height="44" rx="8" fill="#eef2ff" stroke="#c7d2fe"/><text x="419" y="123" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="600">模型</text>
+    <rect x="467" y="96" width="64" height="44" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="499" y="123" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="600">工具</text>
+    <rect x="547" y="96" width="64" height="44" rx="8" fill="#f6f4ee" stroke="#d6d0c4"/><text x="579" y="123" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">记忆</text>
+    <rect x="627" y="96" width="64" height="44" rx="8" fill="#ecfdf8" stroke="#5eead4"/><text x="659" y="123" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">循环</text>
+    <text x="539" y="178" text-anchor="middle" font-size="11.5" fill="#4b5563">没有特权核心：连 Agent 循环本身都是插件</text>
+    <text x="539" y="198" text-anchor="middle" font-size="11.5" fill="#4b5563">每个部件平起平坐，都可替换、可回滚</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 5-3b</b> 传统架构：所有模块围着不可动的核心；插件式：部件平起平坐，个个可替换。</div>
+</div>
+
+<p>你的<b>手机</b>就是无特权核心的日常版本：预装应用和第三方应用平起平坐——卸载预装、替换默认、随时装新应用，系统都不会崩溃。想象一台「所有应用都焊死在系统里」的手机，你就理解了特权核心的世界。</p>
+<p>更进一步的问题是：拆掉了特权核心，<b>秩序从哪里来？</b>答案是——<b>从约定来，而不是从中心来</b>。插件世界里的秩序是「协议」：谁提供什么能力、谁依赖什么、消息怎么传递，都是大家共同遵守的约定。</p>
+<p>原来由中心做的决定，现在由约定来做。中心会老化、会变成瓶颈、会出错；约定却可以被共同演进，被任何一个参与者重新实现。</p>
+
+
+<h3>秩序怎么落地：里程碑与广播</h3>
+
+<p>「约定说了算」落到运行时，是一个朴素到不能再朴素的机制：<b>里程碑 + 广播</b>。Agent 的一生有固定的里程碑——出生（装配完成）、干活前、干活后、出错、退役（卸载）。每到一个里程碑，系统就<b>广播</b>一声，不点名任何人；谁关心这件事，谁就事先挂好自己的耳朵——听到就动手，没兴趣就当没听见。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 272" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="生命周期里程碑与广播">
+  <defs><marker id="m53c" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">Agent 的一生：一路打铃</text>
+    <line x1="40" y1="92" x2="680" y2="92" stroke="#9aa3ad" stroke-width="2"/>
+    <text x="40" y="66" text-anchor="middle" font-size="11" fill="#b45309" font-weight="700">铃</text>
+    <text x="168" y="66" text-anchor="middle" font-size="11" fill="#b45309" font-weight="700">铃</text>
+    <text x="296" y="66" text-anchor="middle" font-size="11" fill="#b45309" font-weight="700">铃</text>
+    <text x="424" y="66" text-anchor="middle" font-size="11" fill="#b45309" font-weight="700">铃</text>
+    <text x="552" y="66" text-anchor="middle" font-size="11" fill="#b45309" font-weight="700">铃</text>
+    <text x="680" y="66" text-anchor="middle" font-size="11" fill="#b45309" font-weight="700">铃</text>
+    <circle cx="40" cy="92" r="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+    <circle cx="168" cy="92" r="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+    <circle cx="296" cy="92" r="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+    <circle cx="424" cy="92" r="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+    <circle cx="552" cy="92" r="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+    <circle cx="680" cy="92" r="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+    <text x="40" y="128" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">出生</text>
+    <text x="168" y="128" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">干活前</text>
+    <text x="296" y="128" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">干活</text>
+    <text x="424" y="128" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">干活后</text>
+    <text x="552" y="128" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">出错</text>
+    <text x="680" y="128" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">退役</text>
+    <rect x="40" y="160" width="196" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="138" y="182" text-anchor="middle" font-size="11.5" fill="#312e81" font-weight="700">注入指令</text>
+    <text x="138" y="200" text-anchor="middle" font-size="10" fill="#6b7280">听「干活前」（第 8 章）</text>
+    <rect x="262" y="160" width="196" height="52" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="360" y="182" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="700">压缩</text>
+    <text x="360" y="200" text-anchor="middle" font-size="10" fill="#6b7280">听「干活前」查水位（第 10 章）</text>
+    <rect x="484" y="160" width="196" height="52" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="582" y="182" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">日志</text>
+    <text x="582" y="200" text-anchor="middle" font-size="10" fill="#6b7280">每一站都听（第 9 章）</text>
+    <line x1="168" y1="106" x2="138" y2="158" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m53c)"/>
+    <line x1="168" y1="106" x2="360" y2="158" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m53c)"/>
+    <line x1="360" y1="94" x2="582" y2="158" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m53c)"/>
+    <text x="360" y="254" text-anchor="middle" font-size="11.5" fill="#7b8494">没有中心指挥，只有里程碑说话——谁关心，谁挂耳朵；铃的学名与代码机制，第 15 章展开</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 5-3c</b> 生命周期六站：出生 → 干活前 → 干活 → 干活后 → 出错 → 退役，每站响一声铃，插件各自挂耳朵。</div>
+</div>
+
+<p>学校里的<b>上课铃</b>就是这个机制：铃不叫某位老师，铃一响，各教室自己就位——新插件挂个耳朵就能参与（可扩展），拆掉插件就是摘掉耳朵（可回滚），心脏也只是打铃的人之一（可替换）。</p>
+
+<p>这些里程碑在科学篇都有自己的学名：第 8 章（开工前注入指令）与第 10 章（压缩查水位）已经响过两回铃；广播与监听的代码机制，第 15 章《让零件通风报信》正式展开。哲学篇这里只记住一件事：<b>没有中心指挥，只有里程碑说话。</b></p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>一把尺子：真插件化的试金石</div><p><b>它敢不敢把自己的心脏（比如 Agent 循环）也做成插件？</b>dsh 敢。不需要看一行源码，你就能用它给任何架构打分。</p></div>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>三件事，一张完整图景</div><p><b>怎么拼，看时空可组合性；先拼谁，看依赖；谁说了算，看无特权核心</b>——殊途同归：<b>约定说了算</b>。</p></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>想进一步了解？</div><p>可以先读它的设计论文（<a href="https://github.com/cordiverse/paper" target="_blank" rel="noopener">github.com/cordiverse/paper</a>）。这套哲学在 dsh 的代码里长什么样——五个关键词、顺序与依赖在第 14 章，消息如何流过一个个可替换的工位在第 15 章；哲学篇只负责让你先相信：<b>没有中心，才是最强的中心。</b></p></div>
+
+<h2 id="s5-4">5.4 从「写代码」到「装配能力」</h2>
+<p>接受这套哲学，工程师的角色就变了：<b>不再把一切写死，而是当积木的设计师 + 装配工</b>——日常工作是一条流水线：</p>
+<ol>
+  <li>理解需求；</li>
+  <li>挑选现成插件；</li>
+  <li>写一个薄薄的自定义插件；</li>
+  <li>装配、调试、交付。</li>
+</ol>
+<p>这件事和你的身份直接相关：<b>大部分能力能「拼」出来，一个人才能跑完整个闭环</b>——不用先造出每个零件（乐高说明书小孩也看得懂：零件是现成的）。第 6 章展开。</p>
+
+<table>
+  <tr><th></th><th>旧思维</th><th>新思维</th></tr>
+  <tr><td><b>遇到需求</b></td><td>从头写一个系统</td><td>先找现成积木</td></tr>
+  <tr><td><b>修改功能</b></td><td>改核心代码，牵一发动全身</td><td>换 / 加一个插件</td></tr>
+  <tr><td><b>出问题</b></td><td>排查全局，回滚版本</td><td>拆掉可疑插件，回到原样</td></tr>
+  <tr><td><b>能力积累</b></td><td>代码库越来越大</td><td>积木库越来越厚</td></tr>
+  <tr><td><b>身份</b></td><td>实现者</td><td>装配师 + 积木设计师</td></tr>
+</table>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>预告</div><p>第 6 章将讲清为什么这个新角色叫「全链路工程师」；而<b>第二篇</b>会带你钻进 dsh 源码，看「注册即效应」「无特权核心」如何在代码里落地——ctx、事件、接缝，一样一样兑现。</p></div>
+
+<h2>一张图总结</h2>
+<div class="diagram">
+  <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="第五章总结">
+  <defs><marker id="m56" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="16" y="28" font-size="13" fill="#7b8494" font-weight="700">第一步 · 为什么</text>
+    <rect x="16" y="38" width="568" height="46" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="300" y="66" text-anchor="middle" font-size="14.5" fill="#78350f" font-weight="600">复杂性与变化永远在增长——大泥球终将「改不起」</text>
+    <line x1="320" y1="88" x2="320" y2="110" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m56)"/>
+    <text x="16" y="126" font-size="13" fill="#7b8494" font-weight="700">第二步 · 怎么办</text>
+    <rect x="16" y="136" width="568" height="50" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="300" y="167" text-anchor="middle" font-size="14.5" fill="#312e81" font-weight="600">组合优于构建：把系统拆成积木，按需拼装</text>
+    <line x1="320" y1="190" x2="320" y2="212" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m56)"/>
+    <text x="16" y="228" font-size="13" fill="#7b8494" font-weight="700">第三步 · dsh 的答案</text>
+    <rect x="16" y="238" width="568" height="50" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="300" y="269" text-anchor="middle" font-size="14" fill="#134e4a" font-weight="600">一切皆插件：没有特权核心，每个部件可替换、可扩展、可回滚</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 5-4</b> 第五章的完整脉络：为什么（大泥球）→ 怎么办（组合）→ dsh 的答案（一切皆插件）。</div>
+</div>
+
+<h2>要点回顾</h2>
+<ul>
+  <li>软件系统的复杂性与变化永远在增长，整块式的「大泥球」会因<b>改不起</b>而死亡。</li>
+  <li>出路是<b>组合优于构建</b>：造积木、拼积木，让 N 块积木覆盖指数级的可能性。</li>
+  <li>Cordis 的哲学内核是三件事：<b>怎么拼</b>（时空可组合性）、<b>先拼谁</b>（依赖）、<b>谁说了算</b>（无特权核心）——最终是<b>约定说了算</b>。</li>
+  <li>dsh <b>没有特权核心</b>：模型、工具、记忆、循环全是插件，全可从配置替换——带来可替换、可扩展、可回滚。</li>
+  <li>工程师的角色随之改变：从「把一切写死」到「设计积木 + 装配能力」——这是全链路工程师的第一块基石。</li>
+</ul>
+
+<h2>动手做</h2>
+<p>这一章同样不需要写代码，只需要「看」与「想」：</p>
+<div class="card">
+  <ol>
+    <li><b>找一个</b>：打开你常用的某个软件，列出它的「可替换部分」与「焊死部分」。如果把它重构成「一切皆插件」，哪个部分最难拆？为什么？</li>
+    <li><b>拼一次</b>：用第 1 章的四个积木（模型 / 工具 / 记忆 / 循环），设计两个「不同的产品」（比如一个客服机器人、一个代码审查助手），写出它们各自用了哪几块积木。</li>
+    <li><b>（可选）看一眼</b>：打开 deepseek-harness 仓库的 <code>packages/</code> 目录——四十多个包，一个包只做一件事。感受那种「一切都是包、一个包一件事」的 Unix 气质。</li>
+  </ol>
+</div>
+        <div class="prevnext">
+    <a href="./04-ai-friendly-project.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 4 章 让项目活起来</div></a>
+    <a class="next" href="./06-full-chain-engineer.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 6 章 全链路工程师</div></a>
+  </div>
+<footer class="footer">
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
+  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+</footer>
+</div>
+</main>
+<div class="sidebar-backdrop"></div>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 7 章 新人报到：先读懂这个项目 · 深入浅出 AI Agent</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/book.js" defer></script>
+</head>
+<body class="part-2">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+    <span class="crumb">科学篇 / 第 7 章</span>
+    <span class="spacer"></span>
+    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+  </div>
+</header>
+<main class="layout">
+<aside class="sidebar" id="sidebar">
+<nav class="sidenav">
+<div class="side-group">
+<a href="../index.html">全书概览</a>
+<a href="../preface.html">前言</a>
+<a href="../outline.html">大纲</a>
+</div>
+<details class="side-part" open>
+<summary>第一篇 · 哲学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-1/index.html">篇首导览</a></li>
+<li><a href="../part-1/01-what-is-agent.html">第 1 章 什么是 Agent</a></li>
+<li><a href="../part-1/02-language-interface.html">第 2 章 语言成为新接口</a></li>
+<li><a href="../part-1/03-harness-philosophy.html">第 3 章 与 Agent 共事的哲学</a></li>
+<li><a href="../part-1/04-ai-friendly-project.html">第 4 章 让项目活起来</a></li>
+<li><a href="../part-1/05-why-plugin.html">第 5 章 把系统拆成积木</a></li>
+<li><a href="../part-1/06-full-chain-engineer.html">第 6 章 全链路工程师</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第二篇 · 科学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-2/index.html">篇首导览</a></li>
+<li><a class="active" href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
+<li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
+<li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
+<li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
+<li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
+<li><a href="../part-2/16-agent-loop.html">第 16 章 看心脏怎么跳</a></li>
+<li><a href="../part-2/17-capability-seams.html">第 17 章 换一个器官</a></li>
+<li><a href="../part-2/18-multi-agent.html">第 18 章 一个人变一支队伍</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第三篇 · 艺术篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-3/index.html">篇首导览</a></li>
+<li><a href="../part-3/19-gourmet.html">第 19 章 老吃家的段位</a></li>
+<li><a href="../part-3/20-designing-tools.html">第 20 章 设计一个好工具</a></li>
+<li><a href="../part-3/21-prompts.html">第 21 章 Prompt 与系统提示</a></li>
+<li><a href="../part-3/22-debugging.html">第 22 章 调试与可观测</a></li>
+<li><a href="../part-3/23-evaluation.html">第 23 章 评估与质量</a></li>
+<li><a href="../part-3/24-full-chain-practice.html">第 24 章 全链路闭环实战</a></li>
+<li><a href="../part-3/25-taste-and-growth.html">第 25 章 品味与成长</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>附录 · 工具与参考</summary>
+<ul class="side-chapters">
+<li><a href="../appendix/a-glossary.html">附录 A 术语表</a></li>
+<li><a href="../appendix/b-quickstart.html">附录 B 快速上手</a></li>
+<li><a href="../appendix/c-resources.html">附录 C 扩展阅读与资源</a></li>
+<li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
+</ul>
+</details>
+</nav>
+</aside>
+<div class="container">
+
+<div class="hero part-2">
+  <span class="part-badge">第二篇 · 科学篇</span>
+  <span class="line-tag line-app">应用线</span>
+  <h1>第 7 章 · 新人报到：先读懂这个项目</h1>
+  <p class="subtitle">入职第一天：读懂这个被 AI 养着的项目</p>
+</div>
+
+<p class="lead">入职第一天，先读懂这个项目。第 4 章立了观念——会说话、有记性、会成长；第 6 章说，第二篇从项目开始。这一章兑现：把观念<b>对号入座</b>，完整解析 dsh 这只活标本怎么用 AI 工程化驾驭自己的项目——记忆分三层，成长靠一条回路。看懂这一章，等于完成了「新人报到」。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>本章核心问题</div><p>dsh 是怎么用 AI 工程化驾驭自己的项目的？观念落在哪里、记忆分几层、成长靠什么？</p></div>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>全书心法 · 工程化</div><p style="font-size:16px"><b>记忆靠文件，成长靠写回。</b></p><p>三层记忆——人记文档，Agent 记决策与技能，机器记复盘与检查。</p></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>一张完整的工程化地图：观念对号入座表、三层记忆的清点、成长机制的四样证据、照做的四动作与体检清单——之后第 13 章再讲这些记忆在 Agent 运行时怎么用。</p></div>
+
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s7-1">7.1 观念对号入座</a></li>
+    <li><a href="#s7-2">7.2 三层记忆：人记 · Agent 记 · 机器记</a></li>
+    <li><a href="#s7-3">7.3 成长的机制：写回与流水线</a></li>
+    <li><a href="#s7-4">7.4 你的项目照做：四动作与体检</a></li>
+  </ul>
+</div>
+
+<h2 id="s7-1">7.1 观念对号入座</h2>
+<p>第 4 章的观念有三个：会说话、有记性、会成长。在 dsh 身上，它们不是口号——每个观念，都有一件看得见、摸得着的实体。</p>
+
+<table>
+  <tr><th>观念（第 4 章）</th><th>dsh 里的实体</th><th>在哪一节展开</th></tr>
+  <tr><td><b>会说话</b>（四特征）</td><td>README · 仓库布局 · AGENTS.md · docs/</td><td>7.2</td></tr>
+  <tr><td><b>有记性</b>（外置记忆）</td><td>三层记忆：人记（文档约定）· Agent 记（notes + skills）· 机器记（复盘 + 检查）</td><td>7.2</td></tr>
+  <tr><td><b>会成长</b>（用 → 写 → 长）</td><td>约定自改 · 翻译流水线 · 格式版本化 · 事故复盘</td><td>7.3</td></tr>
+</table>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 262" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="观念对号入座">
+  <defs><marker id="m71" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="16" y="24" font-size="13" fill="#1f2937" font-weight="700">第 4 章的观念，在 dsh 身上的实体</text>
+    <rect x="16" y="40" width="200" height="56" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="116" y="74" text-anchor="middle" font-size="14" fill="#134e4a" font-weight="700">会说话</text>
+    <line x1="218" y1="68" x2="240" y2="68" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m71)"/>
+    <rect x="244" y="40" width="460" height="56" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="474" y="74" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="600">README · 仓库布局 · AGENTS.md · docs/</text>
+    <rect x="16" y="114" width="200" height="56" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="116" y="148" text-anchor="middle" font-size="14" fill="#312e81" font-weight="700">有记性</text>
+    <line x1="218" y1="142" x2="240" y2="142" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m71)"/>
+    <rect x="244" y="114" width="460" height="56" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="474" y="148" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="600">三层记忆：人记 · Agent 记 · 机器记</text>
+    <rect x="16" y="188" width="200" height="56" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="116" y="222" text-anchor="middle" font-size="14" fill="#78350f" font-weight="700">会成长</text>
+    <line x1="218" y1="216" x2="240" y2="216" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m71)"/>
+    <rect x="244" y="188" width="460" height="56" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="474" y="222" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="600">约定自改 · 翻译流水线 · 格式版本化 · 事故复盘</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 7-1</b> 观念对号入座：说话、记性、成长，各有实体。</div>
+</div>
+
+<p>一句话总结：观念是「为什么」，实体是「长什么样」。这一章做的就是后一半——标本是 <a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">deepseek-harness</a>。</p>
+
+<h2 id="s7-2">7.2 三层记忆：人记 · Agent 记 · 机器记</h2>
+<p>第 4 章说，项目是 Agent 的外置记忆。dsh 的记忆不是摊在一处，而是住三层。先认个门——AI 工程化相关的东西，分别住在哪些目录里：</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="工程化目录地图">
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="16" y="24" font-size="13" fill="#1f2937" font-weight="700">dsh 工程化的目录地图（根目录视角）</text>
+    <text x="16" y="50" font-size="12.5" fill="#1f2937" font-weight="700">deepseek-harness/</text>
+    <text x="16" y="72" font-size="11.5" fill="#4b5563">├─ <tspan fill="#0f766e" font-weight="600">README.md</tspan> —— 入口：是什么 · 怎么跑 · 给 AI 指路</text>
+    <text x="16" y="94" font-size="11.5" fill="#4b5563">├─ <tspan fill="#4338ca" font-weight="600">AGENTS.md · CLAUDE.md</tspan> —— AI 助手的入职说明：改哪里先读什么</text>
+    <text x="16" y="116" font-size="11.5" fill="#4b5563">├─ <tspan fill="#4b5563" font-weight="600">CONTRIBUTING.md</tspan> —— 贡献守则：人和 AI 都守</text>
+    <text x="16" y="138" font-size="11.5" fill="#4b5563">├─ <tspan fill="#b45309" font-weight="600">docs/</tspan> —— 概念文档：architecture · glossary · cordis-primer · agent-lifecycle…</text>
+    <text x="16" y="160" font-size="11.5" fill="#4b5563">│   └─ <tspan fill="#b45309" font-weight="600">postmortem/</tspan> —— 事故复盘：踩过的坑编号归档（0001、0002…）</text>
+    <text x="16" y="182" font-size="11.5" fill="#4b5563">├─ <tspan fill="#0f766e" font-weight="600">*.i18n.yaml</tspan> —— 翻译流水线：每份文档配一份，自动跟进（术语表在 docs/i18n/）</text>
+    <text x="16" y="204" font-size="11.5" fill="#4b5563">├─ <tspan fill="#4b5563" font-weight="600">examples/</tspan> —— 可运行的示例入口</text>
+    <text x="16" y="226" font-size="11.5" fill="#4b5563">├─ <tspan fill="#0f766e" font-weight="600">.agents/notes/</tspan> —— Agent Note：记「为什么」与「放弃了什么」，带状态机</text>
+    <text x="16" y="248" font-size="11.5" fill="#4b5563">├─ <tspan fill="#0f766e" font-weight="600">.agents/skills/</tspan> —— 技能库：把维护方法写成功夫秘籍，Agent 拿起来就会</text>
+    <text x="16" y="270" font-size="11.5" fill="#4b5563">├─ <tspan fill="#4b5563" font-weight="600">lefthook.yml · knip.json · vendor/README.md</tspan> —— 机器守门员：提交前检查 · 死代码扫描 · 框架卫生</text>
+    <text x="16" y="292" font-size="11.5" fill="#4b5563">└─ <tspan fill="#4b5563" font-weight="600">子树 ×8</tspan> —— website / docs / examples / scripts / packages / vendor / .github</text>
+    <text x="40" y="314" font-size="11" fill="#7b8494">各自带一份 AGENTS.md —— 子树约定：走到哪，读到哪（连 CI 都有）</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 7-2a</b> 工程化的目录地图：每一处写下的约定，都是这只活标本的记忆。</div>
+</div>
+
+<p>认完门，把地图收拢成三层：</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 268" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三层记忆">
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="16" y="24" font-size="13" fill="#1f2937" font-weight="700">三层记忆：人记 · Agent 记 · 机器记</text>
+    <rect x="16" y="44" width="224" height="170" rx="12" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="128" y="68" text-anchor="middle" font-size="14" fill="#134e4a" font-weight="700">人记 · 文档与约定</text>
+    <text x="128" y="94" text-anchor="middle" font-size="11.5" fill="#4b5563">README · 入口</text>
+    <text x="128" y="116" text-anchor="middle" font-size="11.5" fill="#4b5563">docs/ · 概念文档</text>
+    <text x="128" y="138" text-anchor="middle" font-size="11.5" fill="#4b5563">子树 AGENTS.md ×8</text>
+    <text x="128" y="168" text-anchor="middle" font-size="10.5" fill="#0f766e" font-weight="600">谁读都行 · 「怎么做」的出处</text>
+    <rect x="248" y="44" width="224" height="170" rx="12" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="360" y="68" text-anchor="middle" font-size="14" fill="#312e81" font-weight="700">Agent 记 · 决策与技能</text>
+    <text x="360" y="94" text-anchor="middle" font-size="11.5" fill="#4b5563">.agents/notes · 决策与放弃</text>
+    <text x="360" y="116" text-anchor="middle" font-size="11.5" fill="#4b5563">.agents/skills · 11 本指导书</text>
+    <text x="360" y="138" text-anchor="middle" font-size="11.5" fill="#4b5563">状态机：proposed→implemented</text>
+    <text x="360" y="168" text-anchor="middle" font-size="10.5" fill="#4338ca" font-weight="600">DSH_AGENTS_HOME · 「为什么」的出处</text>
+    <rect x="480" y="44" width="224" height="170" rx="12" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="592" y="68" text-anchor="middle" font-size="14" fill="#78350f" font-weight="700">机器记 · 复盘与守门</text>
+    <text x="592" y="94" text-anchor="middle" font-size="11.5" fill="#4b5563">postmortem · 编号复盘</text>
+    <text x="592" y="116" text-anchor="middle" font-size="11.5" fill="#4b5563">i18n · 翻译流水线</text>
+    <text x="592" y="138" text-anchor="middle" font-size="11.5" fill="#4b5563">lefthook · knip · 卫生闸门</text>
+    <text x="592" y="168" text-anchor="middle" font-size="10.5" fill="#b45309" font-weight="600">无人值守 · 坑不踩第二遍</text>
+    <text x="360" y="242" text-anchor="middle" font-size="13" fill="#b45309" font-weight="600">三层都住在仓库里——「记忆靠文件」的全部含义</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 7-2</b> 三层记忆：人记文档与约定，Agent 记决策与技能，机器记复盘与检查。</div>
+</div>
+
+<h3>人记：文档与约定</h3>
+<p>第一层，是写给人看、任何读者（包括 Agent）都要读的正式记忆。三个实体，各管一摊：</p>
+<ul>
+  <li><b>README</b>——入口：这是什么、怎么跑、给 AI 的提示写在最显眼处；</li>
+  <li><b>docs/</b>——概念文档（architecture、glossary、cordis-primer、agent-lifecycle、development、testing……）：概念写在前头，代码跟着概念走；</li>
+  <li><b>子树 AGENTS.md ×8</b>——作用域规矩：走到哪，就读得到当地的规矩，连 CI 都有一份。</li>
+</ul>
+<p>这一层还有条分工法则，写在 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/development.zh.md" target="_blank" rel="noopener">docs/development.md</a>里，原话是「设计依据与实现细节属于链接的 Agent Note」——翻译过来一句话：<b>「怎么做」写进 AGENTS.md，「为什么」写进 Agent Note</b>，两个文件各管一半，谁也不抢谁的话。</p>
+<p>看一个真例子——「Node 引擎下限」：</p>
+<ul>
+  <li><b>怎么做（指南）</b>：一行就够——「Node.js 22.19+ 与 24+，pnpm 11.7.0」；</li>
+  <li><b>为什么（Agent Note）</b>：为什么是 22.19 而不是别的版本、权衡了什么，见 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/.agents/notes/implemented/process/2026-07-06-node-engine-floor.zh.md" target="_blank" rel="noopener">Node 引擎下限 Agent Note</a>。</li>
+</ul>
+<p>改版本号之前先读 Note：读完要么照旧，要么改得有理有据。</p>
+<table>
+  <tr><th></th><th>「怎么做」 · AGENTS.md</th><th>「为什么」 · Agent Note</th></tr>
+  <tr><td><b>写什么</b></td><td>命令清单、检查步骤、硬性规范</td><td>设计依据、权衡、放弃了什么</td></tr>
+  <tr><td><b>什么时候读</b></td><td>按部就班执行时</td><td>想改动、想推翻时</td></tr>
+  <tr><td><b>例子</b></td><td>「Node 22.19+ · pnpm 11.7.0」</td><td>「为什么定 22.19 而不是别的」</td></tr>
+</table>
+<p>运行时这套分工怎么被 Agent 用起来（怎么读、怎么写回）——第 8 章《让 Agent 写得出代码》再走一遍。</p>
+
+<h3>Agent 记：决策与技能</h3>
+<p>第二层，藏在点开头的目录里——<b>.agents/</b>，dsh 管它叫「Agent 的家」（DSH_AGENTS_HOME，默认 ~/.agents）。里面两间房：</p>
+<ul>
+  <li><b>notes/</b>——Agent Note：记录代码和文档承载不了的东西，「为什么这么做」与「放弃了什么」，每份带状态（proposed → implemented / archived / rejected），目录自己也有 AGENTS.md 立规矩；</li>
+  <li><b>skills/</b>——技能库：把「怎么维护这个项目」写成一册册作业指导书（代码审查、文档规范、翻译、归档笔记、推送前检查……十一个技能），换哪个 Agent 来，拿起来就会。</li>
+</ul>
+<p>想看实物：<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/.agents/notes/README.zh.md" target="_blank" rel="noopener">notes 的约定</a>、<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/.agents/skills/dsh-prose-standard/SKILL.md" target="_blank" rel="noopener">一个技能示例</a>（GitHub 源码）。</p>
+
+<h3>机器记：复盘与守门</h3>
+<p>第三层没有「人」参与——机器当记忆，像仓库里三个全年无休的门卫：<b>事故档案员</b>（postmortem）、<b>翻译校对员</b>（i18n 流水线）、<b>提交闸机</b>（lefthook + knip）。他们不创造记忆，只让记忆<b>不失效、不走样、不重演</b>。</p>
+<ul>
+  <li><b>事故档案员：docs/postmortem/</b>——每次事故写成一份编号复盘，每份配双语：<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/postmortem/0001-acp-default-export-drops-inject.zh.md" target="_blank" rel="noopener">0001</a> 是「ACP 默认导出丢了 inject」，<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/postmortem/0004-landlock-partial-notice-misclassified-child-failures.zh.md" target="_blank" rel="noopener">0004</a> 是「landlock 部分告警被误判成子进程失败」——事故经过、根因、预防一条龙。编号递增，档案越厚，同一个坑越难踩第二遍。</li>
+  <li><b>翻译校对员：*.i18n.yaml + docs/i18n/</b>——每份文档都配一份 i18n.yaml（连复盘档案都配），术语表与风格样例管着译文不走样；提交时钩子当场对账（verify-translation-pairing），英文改了中文没跟上，直接拦在门外。</li>
+  <li><b>提交闸机：lefthook.yml + knip.json</b>——pre-commit 三个岗位：翻译配对校验、归档笔记校验、lint（oxlint 顺手修掉再放行）；knip 再扫一遍死代码与未用依赖。本地关卡要快，CI 才管大闸——坏东西进不了仓库。</li>
+</ul>
+<table>
+  <tr><th>门卫</th><th>装备</th><th>拦住什么</th></tr>
+  <tr><td>事故档案员</td><td><code>docs/postmortem/</code> 编号档案</td><td>同一个坑踩第二遍</td></tr>
+  <tr><td>翻译校对员</td><td><code>*.i18n.yaml</code> + 术语表</td><td>双语不同步、术语走样</td></tr>
+  <tr><td>提交闸机</td><td><code>lefthook.yml</code> + <code>knip.json</code></td><td>坏提交、死代码</td></tr>
+</table>
+
+<p>管理原则只有三条，恰好对应三层：<b>作用域化</b>（人记——走到哪读到哪）、<b>文档先行</b>（人记与 Agent 记——概念和「为什么」写在前头）、<b>机器可处理</b>（机器记——结构化的流水线，跟进不靠人）。</p>
+<p>这些上下文在 Agent 运行时怎么被读、被管理——第 10 章《记忆是这样被读取的》再讲。</p>
+
+<h2 id="s7-3">7.3 成长的机制：写回与流水线</h2>
+<p>成长的机制不是「勤奋」，是「写回」的约定，加上机器化的流水线。四样证据：</p>
+<ul>
+  <li><b>约定自己会改</b>：根 AGENTS.md 里有一节写着「Remove this section at the first tagged release」——约定文件随项目阶段更新，阶段一到就删，不带着旧规矩过河；</li>
+  <li><b>写一遍，自动跟进</b>：每份文档配 i18n.yaml（如 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/README.i18n.yaml" target="_blank" rel="noopener">README.i18n.yaml</a>），写回一次，翻译流水线自动同步多语言；</li>
+  <li><b>格式有版本</b>：SQLite 的 SCHEMA_VERSION 单调递增、dsh-session 的 SESSION_FORMAT_VERSION 显式声明，旧格式直接拒收——成长的每一步都留痕、可追溯；</li>
+  <li><b>坑不踩第二遍</b>：每次事故写进 docs/postmortem/ 编号归档，每次决策写进 Agent Note 并随状态机流转——复盘与决策都进仓库，下次自己会读。</li>
+</ul>
+
+<div class="diagram">
+  <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="成长的机制">
+  <defs><marker id="m73" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="16" y="26" font-size="13" fill="#1f2937" font-weight="700">成长的机制：写回与流水线</text>
+    <rect x="16" y="48" width="144" height="64" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="88" y="74" text-anchor="middle" font-size="13.5" fill="#134e4a" font-weight="700">① 协作产出</text>
+    <text x="88" y="96" text-anchor="middle" font-size="11" fill="#4b5563">结论 · 变更</text>
+    <rect x="176" y="48" width="144" height="64" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="248" y="74" text-anchor="middle" font-size="13.5" fill="#312e81" font-weight="700">② 写回仓库</text>
+    <text x="248" y="96" text-anchor="middle" font-size="11" fill="#4b5563">AGENTS.md · 文档 · Note</text>
+    <rect x="336" y="48" width="144" height="64" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="408" y="74" text-anchor="middle" font-size="13.5" fill="#78350f" font-weight="700">③ 机器跟进</text>
+    <text x="408" y="96" text-anchor="middle" font-size="11" fill="#4b5563">i18n · lefthook · knip</text>
+    <rect x="496" y="48" width="144" height="64" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="568" y="74" text-anchor="middle" font-size="13.5" fill="#1f2937" font-weight="700">④ 下次更顺</text>
+    <text x="568" y="96" text-anchor="middle" font-size="11" fill="#4b5563">错更少 · 改更快</text>
+    <line x1="162" y1="80" x2="172" y2="80" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m73)"/>
+    <line x1="322" y1="80" x2="332" y2="80" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m73)"/>
+    <line x1="482" y1="80" x2="492" y2="80" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m73)"/>
+    <path d="M568 112 C 568 150, 88 150, 88 112" fill="none" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m73)"/>
+    <text x="328" y="166" text-anchor="middle" font-size="12" fill="#0f766e" font-weight="600">回到 ①：每写回一次，项目就长大一点</text>
+    <text x="320" y="206" text-anchor="middle" font-size="13" fill="#b45309" font-weight="600">写回一次，跟进不靠人——这就是第 4 章「用 → 写 → 长」的实体</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 7-3</b> 成长的回路：协作 → 写回 → 机器跟进 → 下次更顺，实体化第 4 章的「用 → 写 → 长」。</div>
+</div>
+
+<p>和第 4 章 4.4 的「用 → 写 → 长」是同一件事——现在你看到的是它的实体：回路不是比喻，是仓库里的约定、笔记和流水线。</p>
+
+<h2 id="s7-4">7.4 你的项目照做：四动作与体检</h2>
+<p>工程化的方法可以复制。四特征 → 四动作，然后体检：</p>
+
+<table>
+  <tr><th>特征</th><th>动作</th><th>最小可做</th></tr>
+  <tr><td><b>文档可读</b></td><td>写自述</td><td>补三行 README：是什么 · 怎么跑 · 怎么改</td></tr>
+  <tr><td><b>结构清晰</b></td><td>理结构</td><td>拆开一个千行文件，按职责分层</td></tr>
+  <tr><td><b>约定显式</b></td><td>立规矩</td><td>新建一份 AGENTS.md，写下三条 AI 协作规矩</td></tr>
+  <tr><td><b>上下文易取</b></td><td>收上下文</td><td>把聊天记录里的一条结论，写进文档</td></tr>
+</table>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>先最小，再迭代</div><p>不用一次做齐。每个动作都有「最小可做」的版本——做完就跑起来，下一次协作再改。记住：<b>写不完美没关系，回路会帮你改。</b></p></div>
+
+<table>
+  <tr><th>检查项</th><th>通过标准</th><th>打分</th></tr>
+  <tr><td><b>自述</b></td><td>新同事 5 分钟看懂 README</td><td>0 / 1 / 2</td></tr>
+  <tr><td><b>结构</b></td><td>想找的东西 10 秒找到</td><td>0 / 1 / 2</td></tr>
+  <tr><td><b>规矩</b></td><td>规则写在文件里，不靠默契</td><td>0 / 1 / 2</td></tr>
+  <tr><td><b>上下文</b></td><td>关键信息都在仓库，不用问人</td><td>0 / 1 / 2</td></tr>
+  <tr><td><b>回路</b></td><td>上次协作的结论，已经写回仓库</td><td>0 / 1 / 2</td></tr>
+</table>
+
+<div class="callout warn"><div class="c-title"><span class="ic">✦</span>体检不是一次性的</div><p>每次协作结束，都该回来打一次分。第 4 章说过：<b>回路转起来，项目越用越活</b>——这张表就是回路上的仪表盘。</p></div>
+
+<h2>一张图总结</h2>
+<div class="diagram">
+  <svg viewBox="0 0 640 368" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="第七章总结">
+  <defs><marker id="m74" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="16" y="28" font-size="13" fill="#7b8494" font-weight="700">第一步 · 观念对号入座</text>
+    <rect x="16" y="38" width="608" height="46" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="320" y="66" text-anchor="middle" font-size="15" fill="#78350f" font-weight="600">说话 · 记性 · 成长 → README / 三层记忆 / 写回</text>
+    <line x1="320" y1="88" x2="320" y2="104" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m74)"/>
+    <text x="16" y="118" font-size="13" fill="#7b8494" font-weight="700">第二步 · 三层记忆</text>
+    <rect x="16" y="128" width="608" height="46" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="320" y="156" text-anchor="middle" font-size="15" fill="#312e81" font-weight="600">人记文档与约定 · Agent 记决策与技能 · 机器记复盘与守门</text>
+    <line x1="320" y1="178" x2="320" y2="194" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m74)"/>
+    <text x="16" y="208" font-size="13" fill="#7b8494" font-weight="700">第三步 · 成长四机制</text>
+    <rect x="16" y="218" width="608" height="46" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="320" y="246" text-anchor="middle" font-size="14" fill="#134e4a" font-weight="600">约定自改 · 翻译流水线 · 格式版本化 · 坑不踩第二遍</text>
+    <line x1="320" y1="268" x2="320" y2="284" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m74)"/>
+    <text x="16" y="298" font-size="13" fill="#7b8494" font-weight="700">第四步 · 照做</text>
+    <rect x="16" y="308" width="608" height="46" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="320" y="336" text-anchor="middle" font-size="14" fill="#1f2937" font-weight="600">四动作 + 体检清单——下一站：第 8 章让 Agent 写得出代码</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 7-4</b> 第七章的完整脉络：对号入座 → 三层记忆 → 成长四机制 → 照做体检。下一章：同一标本的第二种眼光。</div>
+</div>
+
+<h2>要点回顾</h2>
+<ul>
+  <li>观念有实体：会说话 → README/AGENTS.md/docs/；有记性 → 三层记忆；会成长 → 写回与流水线。</li>
+  <li>三层记忆：<b>人记</b>文档与约定（怎么做）、<b>Agent 记</b>决策与技能（为什么，.agents/ 的家）、<b>机器记</b>复盘与守门（postmortem · i18n · lefthook · knip）。</li>
+  <li>成长四机制：<b>约定自改、翻译流水线、格式版本化、坑不踩第二遍</b>——写回，而不是勤奋。</li>
+  <li>三条管理原则：作用域化 · 文档先行 · 机器可处理——恰好对应三层记忆。</li>
+  <li>照做四动作（写自述 · 理结构 · 立规矩 · 收上下文）+ 体检清单，项目越用越活。</li>
+  <li>这一章看的是「项目怎么被养」；下一幕上手用它开发——第 8 章《让 Agent 写得出代码》。</li>
+</ul>
+
+<h2>动手做</h2>
+<p>三件小事，今天就给项目做一次「对号入座」：</p>
+<div class="card">
+  <ol>
+    <li><b>对号入座</b>：打开你的项目，找出「人记 / Agent 记 / 机器记」各对应哪些文件——找不到的，就是下一轮要建的。</li>
+    <li><b>做一个动作</b>：从四动作里挑一个，完成它的「最小可做」——补三行 README、拆一个文件、新建 AGENTS.md、或收一条上下文。</li>
+    <li><b>（可选）读证据</b>：打开 deepseek-harness 根目录的 AGENTS.md、.agents/ 里的一份笔记和一个技能，各写一句点评。</li>
+  </ol>
+</div>
+
+<p>这一章看的是「项目怎么被养」。下一章把同一标本翻过来——第 8 章《让 Agent 写得出代码》：先上手，让 Agent 接得下活。</p>      <div class="prevnext">
+    <a href="./index.html"><div class="pn-label">← 上一页</div><div class="pn-title">第二篇 · 科学篇</div></a>
+    <a class="next" href="./08-code-with-agent.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 8 章 让 Agent 写得出代码</div></a>
+  </div>
+<footer class="footer">
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
+  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+</footer>
+</div>
+</main>
+<div class="sidebar-backdrop"></div>
+</body>
+</html>

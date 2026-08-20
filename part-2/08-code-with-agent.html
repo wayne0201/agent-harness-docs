@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 8 章 让 Agent 写得出代码 · 深入浅出 AI Agent</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/book.js" defer></script>
+</head>
+<body class="part-2">
+<header class="topbar"><div class="topbar-inner">
+<a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+<span class="crumb">科学篇 / 第 8 章</span>
+<span class="spacer"></span>
+<button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+</div></header>
+<main class="layout">
+<aside class="sidebar" id="sidebar"><nav class="sidenav">
+<div class="side-group">
+<a href="../index.html">全书概览</a>
+<a href="../preface.html">前言</a>
+<a href="../outline.html">大纲</a>
+</div>
+<details class="side-part" open>
+<summary>第一篇 · 哲学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-1/index.html">篇首导览</a></li>
+<li><a href="../part-1/01-what-is-agent.html">第 1 章 什么是 Agent</a></li>
+<li><a href="../part-1/02-language-interface.html">第 2 章 语言成为新接口</a></li>
+<li><a href="../part-1/03-harness-philosophy.html">第 3 章 与 Agent 共事的哲学</a></li>
+<li><a href="../part-1/04-ai-friendly-project.html">第 4 章 让项目活起来</a></li>
+<li><a href="../part-1/05-why-plugin.html">第 5 章 把系统拆成积木</a></li>
+<li><a href="../part-1/06-full-chain-engineer.html">第 6 章 全链路工程师</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第二篇 · 科学篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-2/index.html">篇首导览</a></li>
+<li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
+<li><a class="active" href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
+<li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
+<li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
+<li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
+<li><a href="../part-2/16-agent-loop.html">第 16 章 看心脏怎么跳</a></li>
+<li><a href="../part-2/17-capability-seams.html">第 17 章 换一个器官</a></li>
+<li><a href="../part-2/18-multi-agent.html">第 18 章 一个人变一支队伍</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>第三篇 · 艺术篇</summary>
+<ul class="side-chapters">
+<li><a href="../part-3/index.html">篇首导览</a></li>
+<li><a href="../part-3/19-gourmet.html">第 19 章 老吃家的段位</a></li>
+<li><a href="../part-3/20-designing-tools.html">第 20 章 设计一个好工具</a></li>
+<li><a href="../part-3/21-prompts.html">第 21 章 Prompt 与系统提示</a></li>
+<li><a href="../part-3/22-debugging.html">第 22 章 调试与可观测</a></li>
+<li><a href="../part-3/23-evaluation.html">第 23 章 评估与质量</a></li>
+<li><a href="../part-3/24-full-chain-practice.html">第 24 章 全链路闭环实战</a></li>
+<li><a href="../part-3/25-taste-and-growth.html">第 25 章 品味与成长</a></li>
+</ul>
+</details>
+<details class="side-part" open>
+<summary>附录 · 工具与参考</summary>
+<ul class="side-chapters">
+<li><a href="../appendix/a-glossary.html">附录 A 术语表</a></li>
+<li><a href="../appendix/b-quickstart.html">附录 B 快速上手</a></li>
+<li><a href="../appendix/c-resources.html">附录 C 扩展阅读与资源</a></li>
+<li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
+</ul>
+</details>
+</nav></aside>
+<div class="container">
+
+<div class="hero part-2">
+  <span class="part-badge">第二篇 · 科学篇</span>
+  <span class="line-tag line-app">应用线</span>
+  <h1>第 8 章 · 让 Agent 写得出代码</h1>
+  <p class="subtitle">项目怎么自我介绍，代码怎么写出来，约定怎么被写回</p>
+</div>
+
+<p class="lead">第 7 章结尾说：下一幕上手用它开发。这一章就是上手的第一步——<b>让 Agent 写得出代码</b>。第 3 章的心法是「上下文喂饱」，第 7 章说项目是 Agent 的外置记忆，这一章把两者接起来，补上中间一环：项目怎么把记忆喂给 Agent（<b>交接</b>），Agent 怎么按手册写出代码（<b>干活</b>），又把新经验写回项目（<b>写回</b>）。全章一个比喻：<b>入职交接</b>——项目是师傅，Agent 是那位「行业内资深、刚入职」的工程师。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>Agent 凭什么能看懂你的项目、写出对的代码？</p></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>掌握「交接 → 干活 → 写回」三个动作——喂饱上下文、写出对的代码、让经验沉淀成约定。</p></div>
+
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s8-1">8.1 交接：先让项目自我介绍</a></li>
+    <li><a href="#s8-2">8.2 干活：手册怎么变成代码</a></li>
+    <li><a href="#s8-3">8.3 写回：用 → 写 → 长</a></li>
+    <li><a href="#s8-4">8.4 回路钩子：记忆线的闭合</a></li>
+  </ul>
+</div>
+
+<h2 id="s8-1">8.1 交接：先让项目自我介绍</h2>
+
+<p>再资深的工程师，进新项目的第一天也要听交接：规矩是什么、坑在哪、怎么跑起来。项目不会说话，它的交接方式是<b>一叠手册</b>——第 7 章见过的那条 AGENTS.md 链。</p>
+
+<p>每次会话开工，dsh 的 <code>agent-instructions</code> 插件（<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/context/agent-instructions/README.zh.md" target="_blank" rel="noopener">packages/context/agent-instructions</a>）会把手册折进第一步请求，读的顺序像入职交接：</p>
+<ol>
+  <li><b>先听家规</b>——用户全局的 AGENTS.md（家规管所有项目）；</li>
+  <li><b>再听项目链</b>——从项目根目录到<b>当前所在目录</b>沿途的每一层，AGENTS.md / CLAUDE.md 都读（越靠当前目录的越具体）。注意读的是「路径」不是「范围」：在根下干活就只带根这一份，子目录的规矩要等你走到那里才读；</li>
+  <li><b>还有本地小抄</b>——AGENTS.local.md 之类的本地 overlay，个人习惯不污染仓库；</li>
+  <li>内容完全相同的 AGENTS.md 与 CLAUDE.md 只读一次，不重复占位置。</li>
+</ol>
+
+<p>手册们会被包进一个固定的「交接框」，再折进第一步输入：</p>
+
+<pre><code>&lt;system-reminder&gt;
+The following workspace instructions may be relevant to your work...
+
+Instructions from: ~/AGENTS.md
+...（家规）
+
+Instructions from: AGENTS.md
+...（项目约定）
+&lt;/system-reminder&gt;</code></pre>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="交接链注入">
+  <defs><marker id="m81" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">开工前，手册一叠一叠上桌</text>
+    <rect x="20" y="52" width="210" height="46" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="125" y="72" text-anchor="middle" font-size="12" fill="#312e81" font-weight="700">家规 · 全局 AGENTS.md</text>
+    <text x="125" y="89" text-anchor="middle" font-size="10" fill="#6b7280">管所有项目</text>
+    <rect x="20" y="108" width="210" height="46" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="125" y="128" text-anchor="middle" font-size="12" fill="#312e81" font-weight="700">项目根 AGENTS.md</text>
+    <text x="125" y="145" text-anchor="middle" font-size="10" fill="#6b7280">项目级约定</text>
+    <rect x="20" y="164" width="210" height="46" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="125" y="184" text-anchor="middle" font-size="12" fill="#312e81" font-weight="700">子目录 AGENTS.md</text>
+    <text x="125" y="201" text-anchor="middle" font-size="10" fill="#6b7280">走到哪读到哪</text>
+    <rect x="20" y="220" width="210" height="46" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="125" y="240" text-anchor="middle" font-size="12" fill="#1f2937" font-weight="700">本地小抄 AGENTS.local.md</text>
+    <text x="125" y="257" text-anchor="middle" font-size="10" fill="#6b7280">个人习惯 · 不进仓库</text>
+    <rect x="420" y="92" width="280" height="140" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="560" y="118" text-anchor="middle" font-size="13" fill="#0f766e" font-weight="700">第一步请求</text>
+    <text x="560" y="140" text-anchor="middle" font-size="11" fill="#4b5563">交接框 system-reminder</text>
+    <text x="560" y="160" text-anchor="middle" font-size="11" fill="#4b5563">＋ 你的消息</text>
+    <text x="560" y="184" text-anchor="middle" font-size="10.5" fill="#6b7280">越靠当前目录，约定越具体</text>
+    <text x="560" y="202" text-anchor="middle" font-size="10.5" fill="#6b7280">相同内容只读一次</text>
+    <line x1="230" y1="75" x2="418" y2="130" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m81)"/>
+    <line x1="230" y1="131" x2="418" y2="152" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m81)"/>
+    <line x1="230" y1="187" x2="418" y2="174" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m81)"/>
+    <line x1="230" y1="243" x2="418" y2="196" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m81)"/>
+    <text x="360" y="290" text-anchor="middle" font-size="11.5" fill="#7b8494">第 7 章的分工法则在这里兑现：交接时读到的是「怎么做」；想改的时候，才去翻「为什么」的 Note</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 8-1</b> 交接链：家规、项目链、本地小抄逐层上桌，包进交接框折进第一步请求。</div>
+</div>
+
+<p>一个自然的疑问：读回来的一叠手册，会被「汇总」成摘要再交给模型吗？<b>不是——原文照登</b>。取舍靠三个保证：内容重复的只留一份（去重）；总量超过部署时定好的预算（<code>maxBytes</code>）时，超出的文件被省略——是「不放进请求」，不是「压缩成摘要」；每层手册都按作用域带上。</p>
+
+<p>收集、去重、预算、包框、折进第一步——这套<b>组装流水线</b>第 10 章《记忆是这样被读取的》统一展开，台面装不下时怎么把长历史熬成汤也在那里讲。本章记一件事：<b>交接框紧跟在你的消息之后，一起交给模型。</b></p>
+
+<h3>走一遍例子：从一仓库文档到一条交接框</h3>
+
+<p>就拿本书的标本——dsh 仓库做例子。你在仓库根下干活，任务涉及 <code>packages/core</code>。收集和拼装是这么走的：</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 384" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="dsh 文档收集示例">
+  <g font-family='PingFang SC','Microsoft YaHei',sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">哪些读、哪些不读、哪些走到才读（cwd = 仓库根）</text>
+    <text x="20" y="44" font-size="12.5" fill="#0f766e" font-weight="700">~/AGENTS.md  ✓ 基线就带 · 家规</text>
+    <text x="20" y="68" font-size="12.5" fill="#1f2937" font-weight="600">deepseek-harness/</text>
+    <text x="20" y="92" font-size="12.5" fill="#0f766e" font-weight="700">├─ AGENTS.md  ✓ 基线就带 · 根约定</text>
+    <text x="20" y="116" font-size="12.5" fill="#9aa3ad">├─ CLAUDE.md  ✕ 丢弃 · 与 AGENTS.md 完全相同</text>
+    <text x="20" y="140" font-size="12.5" fill="#9aa3ad">├─ README.md  ✕ 不读 · 不在候选名单</text>
+    <text x="20" y="164" font-size="12.5" fill="#9aa3ad">├─ docs/architecture.md  ✕ 不读 · 不在候选名单</text>
+    <text x="20" y="188" font-size="12.5" fill="#7b8494">├─ AGENTS.local.md  — 没有 → 不产生条目</text>
+    <text x="20" y="212" font-size="12.5" fill="#1f2937" font-weight="600">└─ packages/</text>
+    <text x="20" y="236" font-size="12.5" fill="#b45309" font-weight="700">    ├─ AGENTS.md  ◐ 走到 core 时保鲜补上</text>
+    <text x="20" y="260" font-size="12.5" fill="#9aa3ad">    ├─ schedule/AGENTS.md  ✕ 不在路径上</text>
+    <text x="20" y="284" font-size="12.5" fill="#9aa3ad">    ├─ web/AGENTS.md  ✕ 不在路径上</text>
+    <text x="20" y="308" font-size="12.5" fill="#7b8494">    └─ core/  — 没有自己的 AGENTS.md → 不产生条目</text>
+    <rect x="460" y="44" width="240" height="52" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="580" y="66" text-anchor="middle" font-size="12" fill="#134e4a" font-weight="700">✓ 基线就带 · 2 份</text>
+    <text x="580" y="86" text-anchor="middle" font-size="10.5" fill="#4b5563">家规 + 根 AGENTS.md</text>
+    <rect x="460" y="112" width="240" height="64" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="580" y="134" text-anchor="middle" font-size="12" fill="#78350f" font-weight="700">◐ 走到地盘才带</text>
+    <text x="580" y="154" text-anchor="middle" font-size="10.5" fill="#4b5563">读写 core 的文件 → 注入</text>
+    <text x="580" y="170" text-anchor="middle" font-size="10.5" fill="#4b5563">packages/AGENTS.md</text>
+    <rect x="460" y="192" width="240" height="64" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="580" y="214" text-anchor="middle" font-size="12" fill="#1f2937" font-weight="700">✕ 永不读</text>
+    <text x="580" y="234" text-anchor="middle" font-size="10.5" fill="#4b5563">重复 · 不在名单 · 不在路径</text>
+    <text x="360" y="342" text-anchor="middle" font-size="11.5" fill="#7b8494">总量超过部署预算（maxBytes）时，超出的部分被省略——不进请求，不压缩成摘要</text>
+    <text x="360" y="364" text-anchor="middle" font-size="11.5" fill="#7b8494">想让 Agent 读到 README / docs？写进 AGENTS.md 里引用，或让它自己用读文件的工具去翻</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 8-1b</b> 真实收集示例：基线只带 2 份；走到 packages/core 后，packages/AGENTS.md 作为更新条补上。</div>
+</div>
+
+<p>开工时的基线（cwd = 仓库根）只有两份进框：<b>家规 + 根 AGENTS.md</b>。CLAUDE.md 与 AGENTS.md 内容完全相同 → 丢弃；README.md、docs/ 里的文档不在候选名单 → 不读——<b>根约定里点名的 docs/architecture.md 也一样不自动带上</b>；AGENTS.local.md 仓库里没有 → 不产生条目。</p>
+
+<pre><code>&lt;system-reminder&gt;
+The following workspace instructions may be relevant to your work.
+Use them as guidance when applicable. More specific instructions
+take precedence over broader ones.
+
+Instructions from: ~/AGENTS.md
+
+（家规，示意）
+
+Instructions from: AGENTS.md
+
+DeepSeek Harness is a plugin-based agent harness on vendored
+Cordis: everything is a plugin. Read docs/architecture.md
+before changing packages/; follow docs/AGENTS.md for
+documentation.
+&lt;/system-reminder&gt;</code></pre>
+
+<p>你说：「帮 packages/core 的 agent-loop 补个测试。」Agent 动手读、写 core 下的文件——保鲜机制发现「走到了新地盘」，把 <code>packages/AGENTS.md</code> 作为更新条注入；core 自己没有 AGENTS.md，不产生条目；schedule、web 不在路径上，永不读。从下一步起，模型眼前多出这一段：</p>
+
+<pre><code>Additional instructions from: packages/AGENTS.md
+
+These package-specific rules supplement the repo-wide
+conventions.
+
+- Plugin exports: service packages default-export their service
+  class; function plugins named-export name / inject / Config
+  / apply and have no default export.
+- Optional services use ctx.get(name). Reserve ctx.<name> for
+  declared injections…</code></pre>
+
+<p>这就是最后交给模型的样子：<b>你的消息在前，框跟在后面</b>；框里是原文、出处与顺序，没有一句「摘要」。这个例子里还有三条边界值得记住：</p>
+<ul>
+  <li><b>没进框，不是被吞了</b>——README、docs/ 本来就不在自动注入的候选名单里；</li>
+  <li><b>它们是「用到才读」的资料</b>——想让 Agent 了解某篇概念文档，把引用写进 AGENTS.md，或让它用读文件的工具自己翻；想改一个决策之前，按第 7 章分工法则的指引去翻 .agents/notes 里的「为什么」；</li>
+  <li><b>问题只涉及一个 package 也不怕</b>——Agent 动手读写那个子目录的文件时，保鲜机制自会把那里的手册补进来（图 8-1b 里的 ◐）；想开工前就带上，把新会话的工作目录切过去即可。</li>
+</ul>
+<p>一句话：<b>AGENTS.md 是「每次必读」的规矩，docs/ 与 notes 是「用到才读」的资料</b>——路径外的层，走到才读。</p>
+<p>「用到」的裁判是谁？是 Agent 自己——它判断这活缺哪份资料，就用 read 工具去翻（正是 8.2 的「模型出主意、工具动手」）；判断就有漏的可能，所以重要资料不妨把引用写进 AGENTS.md，或在消息里当场点名「先读 docs/architecture.md」。但无论点不点名，读的动作都由 Agent 用工具完成——引用不是注入，路牌不替你走路。</p>
+
+<p>交接不是一锤子买卖——师傅会<b>随时补叮嘱</b>。Agent 每成功读写一个文件，插件就回头检查各层手册有没有新增、改动或消失，然后把更新条排进下一步输入：</p>
+<ul>
+  <li>新增了某层 AGENTS.md → 注入「Additional instructions from: …」；</li>
+  <li>内容变了 → 注入「Updated instructions from: …」，声明以新版为准；</li>
+  <li>文件删了（或变成重复内容）→ 注入「Instructions removed: …」，旧叮嘱作废。</li>
+</ul>
+
+<p>保鲜的另一个妙用，正好补上「走到地盘」的时机：你在根下、任务却在子目录时，Agent 一旦成功读写那个子目录里的文件，插件发现「走到了新地盘」，就把那里的 AGENTS.md 作为「新增」条注入——<b>从下一步起，新规矩就在模型眼前</b>，不用重开会话，也不用事先 cd。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="手册保鲜">
+  <defs><marker id="m82" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">手册会保鲜：师傅随时补叮嘱</text>
+    <rect x="20" y="66" width="150" height="56" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="95" y="90" text-anchor="middle" font-size="12" fill="#78350f" font-weight="700">① 读写文件</text>
+    <text x="95" y="108" text-anchor="middle" font-size="10" fill="#6b7280">read · write · edit</text>
+    <rect x="200" y="66" width="150" height="56" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="275" y="90" text-anchor="middle" font-size="12" fill="#134e4a" font-weight="700">② 回查各层手册</text>
+    <text x="275" y="108" text-anchor="middle" font-size="10" fill="#6b7280">新增 · 改动 · 消失？</text>
+    <rect x="380" y="66" width="150" height="56" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="455" y="90" text-anchor="middle" font-size="12" fill="#312e81" font-weight="700">③ 排更新条</text>
+    <text x="455" y="108" text-anchor="middle" font-size="10" fill="#6b7280">新增 / 更新 / 移除</text>
+    <rect x="560" y="66" width="140" height="56" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="630" y="90" text-anchor="middle" font-size="12" fill="#1f2937" font-weight="700">④ 下一步输入</text>
+    <text x="630" y="108" text-anchor="middle" font-size="10" fill="#6b7280">不用重开会话</text>
+    <line x1="170" y1="94" x2="198" y2="94" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m82)"/>
+    <line x1="350" y1="94" x2="378" y2="94" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m82)"/>
+    <line x1="530" y1="94" x2="558" y2="94" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m82)"/>
+    <text x="360" y="168" text-anchor="middle" font-size="12" fill="#4b5563" font-weight="600">这就是「项目是活的」的机制形态：手册改一处，下一步就按新规矩来</text>
+    <text x="360" y="194" text-anchor="middle" font-size="11.5" fill="#7b8494">交接的过程本身，也被一条条记进黑匣子——第 9 章见</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 8-2</b> 手册保鲜：每次文件读写后回查各层手册，新增 / 更新 / 移除三种更新条排进下一步输入。</div>
+</div>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>这套注入挂在「每步开工前」的一道关卡上（pre-step），插件们排着队往里塞东西——关卡和排队机制，第 15 章《让零件通风报信》展开。你做的 Agent 产品若支持 AGENTS.md，机制大同小异。</p></div>
+
+<h2 id="s8-2">8.2 干活：手册怎么变成代码</h2>
+
+<p>交接上桌，师傅退到一边，新人开工。写代码不是「一口气生成」，而是<b>读 → 写 → 验</b>的小循环，手册立在旁边当尺子。</p>
+<p>先交代一个底层事实：这三步不是模型「在脑子里」想完的——模型的强项是<b>出主意</b>，动手全靠<b>调用工具</b>，这正是第 1 章心智模型里「工具」那根支柱。模型每出一招，工具落实一招，结果送回模型，再决定下一招；三步不是三段冥想，而是<b>一轮轮工具调用</b>：</p>
+<ol>
+  <li><b>读</b>——交接框只给了「规矩」，具体代码长什么样，Agent 动手前自己翻，靠读文件的工具（<code>read</code> / <code>grep</code> / <code>glob</code>）；8.1 的「用到才读」在这里兑现；</li>
+  <li><b>写</b>——按手册的规矩产出改动，落盘靠写文件的工具（<code>write</code> / <code>edit</code>）。规矩不是背景板，会直接长进代码的形状里；</li>
+  <li><b>验</b>——跑测试、类型检查、lint，靠执行命令的工具（<code>bash</code>），第 7 章的机器门卫把结果反馈回来：红了回炉再改，绿了才算落袋。</li>
+</ol>
+
+<p>模型凭什么知道该叫哪个工具？每个工具注册时都自带一份<b>「说明书」</b>——名称、干什么、参数长什么样，开工时随请求一起交给模型：</p>
+
+<pre><code>// 工具自带的说明书（以 read 为例，真实描述）
+name: read
+description: Read a UTF-8 text file and return
+             line-numbered content.
+parameters: file_path / offset / limit</code></pre>
+
+<p>模型是读说明书出招的：要翻代码，就按这份说明叫 <code>read</code>、把路径传对。这和 8.1 是同一个道理——<b>项目用手册让模型懂项目，工具用说明书让模型懂工具</b>。dsh 的真规矩甚至写明：说明书要站在<b>模型的视角</b>写，只讲任务相关的概念，不讲人看的界面话。说明书怎么定义、怎么随请求装配——第 14 章展开。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="写代码小循环">
+  <defs><marker id="m86" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">写代码的小循环：读 → 写 → 验</text>
+    <rect x="280" y="40" width="160" height="56" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="360" y="62" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="700">手册 · 交接框</text>
+    <text x="360" y="80" text-anchor="middle" font-size="10.5" fill="#6b7280">白纸黑字的规矩</text>
+    <line x1="360" y1="96" x2="360" y2="118" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m86)"/>
+    <text x="370" y="111" font-size="10" fill="#7b8494">当尺子</text>
+    <rect x="20" y="120" width="150" height="70" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="95" y="144" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">① 读</text>
+    <text x="95" y="164" text-anchor="middle" font-size="10.5" fill="#4b5563">翻相关源码</text>
+    <text x="95" y="180" text-anchor="middle" font-size="10" fill="#6b7280">read · grep 工具</text>
+    <rect x="285" y="120" width="150" height="70" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="360" y="144" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">② 写</text>
+    <text x="360" y="164" text-anchor="middle" font-size="10.5" fill="#4b5563">按手册规矩</text>
+    <text x="360" y="180" text-anchor="middle" font-size="10" fill="#6b7280">write · edit 工具</text>
+    <rect x="550" y="120" width="150" height="70" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="625" y="144" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">③ 验</text>
+    <text x="625" y="164" text-anchor="middle" font-size="10.5" fill="#4b5563">测试 · 检查</text>
+    <text x="625" y="180" text-anchor="middle" font-size="10" fill="#6b7280">bash 工具</text>
+    <line x1="170" y1="155" x2="283" y2="155" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m86)"/>
+    <line x1="435" y1="155" x2="548" y2="155" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m86)"/>
+    <path d="M625 192 C625 228 95 228 95 192" fill="none" stroke="#b45309" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m86)"/>
+    <text x="360" y="222" text-anchor="middle" font-size="11.5" fill="#b45309" font-weight="600">红了 → 回炉再改</text>
+    <text x="360" y="258" text-anchor="middle" font-size="11.5" fill="#4b5563">写得出 ≠ 写得对：「验」是第一道门——红了回炉，绿了落袋</text>
+    <text x="360" y="280" text-anchor="middle" font-size="11" fill="#7b8494">每一圈都记进黑匣子——第 9 章；要不要人把最后一道关——第 12 章《什么时候把钥匙交给它》</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 8-3</b> 写代码的小循环：读（翻源码）→ 写（按手册产出）→ 验（红了回炉）——模型出主意，工具动手，手册立在旁边当尺子。</div>
+</div>
+
+<p>「手册直接长进代码」听上去玄，接着 8.1 的例子看就清楚了。你在 dsh 仓库里让 Agent 动手写点东西：写一个新的工具插件，动手位置在 <code>packages/</code> 下。交接框里因此多出 <code>packages/AGENTS.md</code>（图 8-1b 里 ◐ 的那份），它有一条真规则——<b>函数插件必须具名导出 <code>name</code> / <code>inject</code> / <code>Config</code> / <code>apply</code>，且不得有 default 导出</b>。Agent 产出的文件骨架，就长成规则的样子：</p>
+
+<pre><code>// 按手册规矩长出来的插件骨架
+export const name = 'tool-todo'
+export const inject = ['tools']
+export const Config: z&lt;Config&gt; = z.object({ … })
+export function apply(ctx: Context) { … }
+// 没有 export default —— 手册明令禁止</code></pre>
+
+<p>这不是示意——<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/todo/tool-todo/src/index.ts" target="_blank" rel="noopener">packages/todo/tool-todo</a> 现成躺在 dsh 仓库里，骨架正是这副形状。<b>手册怎么写，代码就怎么长。</b></p>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>这一节站在「用」的位子上看 Agent 产出代码。这个骨架为什么必须是这四个导出、读 / 写 / 验用的工具本身怎么被插件注册进来、<code>apply</code> 里怎么写——第 14 章《把功能插上插头》展开。</p></div>
+
+<p>小循环把「写得出」升级成「写得对」：<b>「读」解决认不认识代码，「写」解决规不规矩，「验」解决跑不跑得动。</b>每一轮工具调用都记进黑匣子——第 9 章；这个「出主意 → 动手 → 看结果」的循环怎么自动转起来——第 16 章《看心脏怎么跳》。「验」够不够、哪些环节还必须你亲自把最后一道关——第 12 章《什么时候把钥匙交给它》。</p>
+
+<h2 id="s8-3">8.3 写回：用 → 写 → 长</h2>
+
+<p>活干完了，这一轮还差最后一步。交接是单向的——好项目会把它变成<b>双向</b>。第 4 章 4.4 说「用 → 写 → 长」，第 7 章管它叫成长机制——这一节看动作本身：把这次的经验写回项目。三个去处：</p>
+
+<table>
+  <tr><th>写回哪</th><th>写什么</th><th>什么时候写</th><th>下次怎么被用</th></tr>
+  <tr><td><code>AGENTS.md</code> 增补</td><td>新的「怎么做」约定</td><td>踩出套路、立了新规矩时</td><td>交接时自动上桌（8.1）</td></tr>
+  <tr><td><code>.agents/notes</code></td><td>「为什么」与「放弃了什么」</td><td>做了有分量的决策时</td><td>想改动时，先读它当初的「为什么」</td></tr>
+  <tr><td><code>.agents/skills</code></td><td>可复用的流程（作业指导书）</td><td>同一件事反复做时</td><td>按需调用（第 11 章）</td></tr>
+</table>
+
+<p>其中 notes 是带<b>状态机</b>的（第 7 章见过）：<code>proposed</code> 提议 → <code>implemented</code> 落地 / <code>archived</code> 归档 / <code>rejected</code> 否决。一条经验从「试试看」到「正式规矩」，走完这个流转才算长大。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="写回三去处">
+  <defs><marker id="m83" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">写回三个去处，下次自动上桌</text>
+    <rect x="270" y="40" width="180" height="52" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="62" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="700">① 干活产出</text>
+    <text x="360" y="80" text-anchor="middle" font-size="10.5" fill="#6b7280">结论 · 套路 · 教训</text>
+    <line x1="290" y1="94" x2="170" y2="128" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m83)"/>
+    <line x1="360" y1="94" x2="360" y2="128" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m83)"/>
+    <line x1="430" y1="94" x2="550" y2="128" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m83)"/>
+    <rect x="40" y="130" width="210" height="74" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="145" y="154" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">② AGENTS.md 增补</text>
+    <text x="145" y="174" text-anchor="middle" font-size="10.5" fill="#4b5563">「怎么做」的新约定</text>
+    <text x="145" y="192" text-anchor="middle" font-size="10" fill="#6b7280">交接时自动上桌</text>
+    <rect x="255" y="130" width="210" height="74" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="360" y="154" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">② .agents/notes</text>
+    <text x="360" y="174" text-anchor="middle" font-size="10.5" fill="#4b5563">「为什么」「放弃了什么」</text>
+    <text x="360" y="192" text-anchor="middle" font-size="10" fill="#6b7280">proposed → implemented</text>
+    <rect x="470" y="130" width="210" height="74" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="575" y="154" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">② .agents/skills</text>
+    <text x="575" y="174" text-anchor="middle" font-size="10.5" fill="#4b5563">可复用的作业指导书</text>
+    <text x="575" y="192" text-anchor="middle" font-size="10" fill="#6b7280">第 11 章展开</text>
+    <line x1="145" y1="206" x2="360" y2="238" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m83)"/>
+    <line x1="360" y1="206" x2="360" y2="238" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m83)"/>
+    <line x1="575" y1="206" x2="360" y2="238" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m83)"/>
+    <rect x="250" y="240" width="220" height="34" rx="17" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="262" text-anchor="middle" font-size="11.5" fill="#0f766e" font-weight="600">③ 下次开工，自动上桌</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 8-4</b> 写回三去处：约定进 AGENTS.md、决策进 notes、流程进 skills——下次开工全部自动上桌。</div>
+</div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>写回不是「顺手整理」，而是协作的收尾动作。</b>每次干完活问一句：这次学到的，该写回哪里？哪怕只补一行 AGENTS.md，项目就长大一点。</p></div>
+
+<h2 id="s8-4">8.4 回路钩子：记忆线的闭合</h2>
+
+<p>把记忆线完整走一遍，你会发现它是个圈：</p>
+<ul>
+  <li><b>第 7 章提供</b>——记忆放进文件（AGENTS.md、notes、skills）；</li>
+  <li><b>本章消费</b>——开工时交接上桌（8.1），按手册干活（8.2）；</li>
+  <li><b>第 9 章记录</b>——干活的过程一条条落进黑匣子（会话日志）；</li>
+  <li><b>本章写回</b>——经验落回文件，再被第 7 章的机制吸收，成为下一次交接的内容。</li>
+</ul>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="记忆线闭合">
+  <defs><marker id="m84" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">记忆线：提供 → 消费 → 记录 → 写回 → 再提供</text>
+    <rect x="20" y="80" width="150" height="64" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="95" y="104" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">第 7 章 · 提供</text>
+    <text x="95" y="124" text-anchor="middle" font-size="10.5" fill="#6b7280">记忆放进文件</text>
+    <rect x="200" y="80" width="150" height="64" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="275" y="104" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">本章 · 消费</text>
+    <text x="275" y="124" text-anchor="middle" font-size="10.5" fill="#6b7280">交接上桌</text>
+    <rect x="380" y="80" width="150" height="64" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="455" y="104" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">第 9 章 · 记录</text>
+    <text x="455" y="124" text-anchor="middle" font-size="10.5" fill="#6b7280">过程落黑匣子</text>
+    <rect x="560" y="80" width="140" height="64" rx="9" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="630" y="104" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="700">本章 · 写回</text>
+    <text x="630" y="124" text-anchor="middle" font-size="10.5" fill="#6b7280">经验落文件</text>
+    <line x1="170" y1="112" x2="198" y2="112" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m84)"/>
+    <line x1="350" y1="112" x2="378" y2="112" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m84)"/>
+    <line x1="530" y1="112" x2="558" y2="112" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m84)"/>
+    <path d="M630 146 C630 196 95 196 95 146" fill="none" stroke="#b45309" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m84)"/>
+    <text x="360" y="188" text-anchor="middle" font-size="11.5" fill="#b45309" font-weight="600">写回 → 被第 7 章吸收 → 再提供（用 → 写 → 长）</text>
+    <text x="360" y="214" text-anchor="middle" font-size="11.5" fill="#7b8494">记忆怎么被窗口取舍、被压缩熬汤——第 10 章《记忆是这样被读取的》</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 8-5</b> 记忆线闭合：7 提供 → 本章消费 → 9 记录 → 本章写回 → 再被 7 吸收——一个圈。</div>
+</div>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>全书心法 · 交接 → 干活 → 写回</div><p style="font-size:16px"><b>交接把手册喂给 Agent，干活按手册写出代码，写回把经验存进项目。</b></p><p>三件事合成一条回路——这就是「项目是 Agent 的外置记忆」的完整含义。</p></div>
+
+<h2 id="s8-5">一张图总结</h2>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="入职交接全景">
+  <defs><marker id="m85" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">本章全景：入职交接</text>
+    <rect x="20" y="60" width="180" height="90" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="110" y="88" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="700">师傅 = 项目手册</text>
+    <text x="110" y="110" text-anchor="middle" font-size="10.5" fill="#4b5563">家规 + 项目链</text>
+    <text x="110" y="128" text-anchor="middle" font-size="10.5" fill="#6b7280">（第 7 章的文件记忆）</text>
+    <rect x="270" y="60" width="180" height="90" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="360" y="88" text-anchor="middle" font-size="13" fill="#312e81" font-weight="700">交接 = 注入</text>
+    <text x="360" y="110" text-anchor="middle" font-size="10.5" fill="#4b5563">手册折进第一步</text>
+    <text x="360" y="128" text-anchor="middle" font-size="10.5" fill="#6b7280">改了随时补叮嘱</text>
+    <rect x="520" y="60" width="180" height="90" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="610" y="88" text-anchor="middle" font-size="13" fill="#78350f" font-weight="700">新人 = Agent</text>
+    <text x="610" y="110" text-anchor="middle" font-size="10.5" fill="#4b5563">资深 · 刚入职</text>
+    <text x="610" y="128" text-anchor="middle" font-size="10.5" fill="#6b7280">干活：读 → 写 → 验</text>
+    <line x1="200" y1="105" x2="268" y2="105" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m85)"/>
+    <line x1="450" y1="105" x2="518" y2="105" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m85)"/>
+    <rect x="270" y="190" width="180" height="70" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="216" text-anchor="middle" font-size="13" fill="#0f766e" font-weight="700">写回 = 交心得</text>
+    <text x="360" y="236" text-anchor="middle" font-size="10.5" fill="#4b5563">约定 · 决策 · 技能</text>
+    <text x="360" y="252" text-anchor="middle" font-size="10" fill="#6b7280">写回手册，下次自动上桌</text>
+    <line x1="360" y1="150" x2="360" y2="188" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m85)"/>
+    <path d="M268 225 C120 225 120 105 198 105" fill="none" stroke="#b45309" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m85)"/>
+    <text x="120" y="200" text-anchor="middle" font-size="10.5" fill="#b45309" font-weight="600">手册变厚 → 项目长大</text>
+    <text x="360" y="284" text-anchor="middle" font-size="12" fill="#7b8494">一条主线：听交接 → 干活 → 写心得回手册——用 → 写 → 长。</text>
+  </g>
+</svg>
+  <div class="figcaption"><b>图 8-6</b> 入职交接全景：师傅手册 → 交接上桌 → 新人干活（读 → 写 → 验）→ 心得写回手册，手册越用越厚。</div>
+</div>
+
+<h2>要点回顾</h2>
+
+<ul>
+  <li><b>交接</b>：开工时家规 + 项目链（每层 AGENTS.md / CLAUDE.md）包成交接框折进第一步；读写文件后手册自动保鲜。</li>
+  <li><b>干活</b>：读 → 写 → 验小循环，模型出主意、工具动手（read / grep 读、write / edit 写、bash 验）；工具靠说明书自我介绍，手册怎么写，代码就怎么长。</li>
+  <li><b>写回三去处</b>：新约定进 AGENTS.md、决策进 notes（状态机流转）、流程进 skills——下次开工自动上桌。</li>
+  <li><b>记忆线</b>：7 提供 → 本章消费 → 9 记录 → 本章写回 → 再被 7 吸收，一个圈。</li>
+  <li><b>一句话</b>：交接喂饱上下文，干活写出代码，经验写回手册。</li>
+</ul>
+
+<h2>动手做</h2>
+
+<div class="card">
+<ol>
+  <li>开一次 dsh 会话做个小任务：先看会话日志里的 <code>system-reminder</code> 段，确认手册上了桌；再观察 Agent 是不是「先翻代码 → 再产出 → 检查没过再改」，把读 → 写 → 验对一遍。</li>
+  <li>干完活后，亲手补写一条 AGENTS.md 约定（哪怕一行），下次会话观察它有没有被自动读到。</li>
+  <li>拿一次真实协作的经历做盘点：这次学到的，该写回三去处的哪一个？为什么不是另外两个？</li>
+</ol>
+</div>
+
+<p>这一章走完了「交接 → 干活 → 写回」三个动作。干活的每一步都记在黑匣子里：干岔了怎么办、黑匣子怎么读——下一章《复盘先读黑匣子》。</p>
+
+        <div class="prevnext">
+    <a href="./07-newbie-tour.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 7 章 新人报到：先读懂这个项目</div></a>
+    <a class="next" href="./09-session-log.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 9 章 复盘先读黑匣子</div></a>
+  </div>
+<footer class="footer">
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
+  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+</footer>
+</div>
+</main>
+</body>
+</html>
