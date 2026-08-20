@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>第 12 章 什么时候把钥匙交给它 · 深入浅出 AI Agent</title>
+<title>第 12 章 信任的分级与把关 · 深入浅出 AI Agent</title>
 <link rel="stylesheet" href="../assets/style.css">
 <script src="../assets/book.js" defer></script>
 </head>
@@ -39,10 +39,10 @@
 <li><a href="../part-2/index.html">篇首导览</a></li>
 <li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
 <li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
-<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 Agent 的执行日志</a></li>
 <li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
 <li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
-<li><a class="active" href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a class="active" href="../part-2/12-trust-review.html">第 12 章 信任的分级与把关</a></li>
 <li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
 <li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
 <li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
@@ -79,24 +79,25 @@
 <div class="hero part-2">
   <span class="part-badge">第二篇 · 科学篇</span>
   <span class="line-tag line-app">应用线</span>
-  <h1>第 12 章 · 什么时候把钥匙交给它</h1>
+  <h1>第 12 章 · 信任的分级与把关</h1>
   <p class="subtitle">信任不是态度，是可校准的机制</p>
 </div>
 
-<p>第 11 章结尾留了个话头：技能会挑了、也会验收了——剩最后一问：<b>哪些环节该你点头，哪些能放心全自动</b>。本章把这两半掰开，按三步走：<b>先看完全放开的危害，再立防止危害的标准，最后看机制怎么落地</b>。</p>
+<p>第 11 章结尾留了个话头：技能会挑了、也会验收了——剩最后一问：<b>哪些环节该你点头，哪些能放心全自动</b>。本章按三步走：<b>先看完全放开的危害，再立防止危害的标准，最后看机制怎么落地</b>。</p>
 
-<p>这不是新问题：第 8 章 8.2 埋过同一颗种子（「验」够不够、要不要人把最后一道关），第 6 章也点过名——产出怎么查、信任怎么校准，第 12 章逐个展开。全章一个比喻：<b>管家与钥匙</b>——信任分档就是钥匙分级，查账本的账本，就是第 9 章的黑匣子；分工一句话：<b>机器管每一刀，你管抽查与拍板</b>。</p>
+<p>第 8 章 8.2 埋过同一颗种子（要不要人把最后一道关），第 6 章也点过名——产出怎么查、信任怎么校准。全章一个比喻：<b>管家与钥匙</b>——信任分档就是钥匙分级，查账本的账本就是第 9 章的执行日志（黑匣子）；分工一句话：<b>机器管每一刀，你管抽查与拍板</b>。</p>
 
 <div class="callout idea"><div class="c-title"><span class="ic">◆</span>本章核心问题</div><p>何时能信 Agent 的产出？信任如何校准？</p></div>
 
-<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>一套可落地的信任校准方法——以第 9 章的会话日志为审查依据。</p></div>
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>一套可落地的信任校准方法——以第 9 章的 Agent 执行日志为审查依据。</p></div>
 
 <div class="card">
   <div class="sections"><b>本章导览</b></div>
   <ul class="section-list">
     <li><a href="#s12-1">12.1 完全放开的危害：把关全拆了会怎样</a></li>
     <li><a href="#s12-2">12.2 防止危害的标准：要防住什么</a></li>
-    <li><a href="#s12-3">12.3 机制怎么落地：Agent 是怎么做到的</a></li>
+    <li><a href="#s12-3">12.3 机器管每一刀：判断链与四道关卡</a></li>
+    <li><a href="#s12-4">12.4 你管抽查与拍板：三时点、旋钮与调档</a></li>
   </ul>
 </div>
 
@@ -127,12 +128,12 @@
   <tr><th>危害</th><th>要防住它的标准</th></tr>
   <tr><td>越界写</td><td>划定活动范围：沙箱三档 <code>read-only</code> / <code>workspace-write</code> / <code>danger-full-access</code></td></tr>
   <tr><td>不可逆误操作</td><td>危险动作必须问人：批准通道，没人应答 = 否决</td></tr>
-  <tr><td>静默错误产物</td><td>每一步可查：账本（第 9 章日志）+ 收工复盘三问</td></tr>
+  <tr><td>静默错误产物</td><td>每一步可查：账本（第 9 章执行日志）+ 收工复盘三问</td></tr>
   <tr><td>信任不校准</td><td>信任随战绩浮动：出错降档、连赢升档</td></tr>
   <tr><td>靠自觉兜底</td><td>判断权在模型之外：代码裁决 + 人拍板</td></tr>
 </table>
 
-<p>标准有了，还要回答「每件活该上哪条标准」——这就靠<b>给动作分级</b>。Agent 是一位能干的管家：懂得多、干得快、不知疲倦。分级不是一句「我信它」的态度宣言，而是一套按动作发钥匙的规矩：</p>
+<p>标准有了，还要回答「每件活该上哪条标准」——这就靠<b>给动作分级</b>。分级不是一句「我信它」的态度宣言，而是一套按动作发钥匙的规矩：</p>
 
 <table>
   <tr><th>档位</th><th>钥匙</th><th>什么活</th><th>例子</th></tr>
@@ -148,14 +149,14 @@
   <li><b>可不可验证？</b>测试能自动判定对错 vs 只有人看得出好不好。</li>
 </ol>
 
-<p>三问都轻 → 全信；有一问重 → 核查；有一问致命 → 亲为。这正是第 6 章「环节越机械越交给 AI，判断越关键越留给你」的落地版。拿四件日常活试一遍三问：</p>
+<p>三问都轻 → 全信；有一问重 → 核查；有一问致命 → 亲为。拿四件日常活试一遍三问：</p>
 <ul>
   <li><b>重命名本地变量、跑一遍测试</b> → 全信：影响小、可回滚、测试自动判定；</li>
   <li><b>批量改 20 个文件的函数签名</b> → 核查：git 可撤、测试可验，但影响不小；</li>
   <li><b>删掉 docs/ 里一个文件</b> → 核查：影响虽小，不可逆、好坏只有人看得出；</li>
   <li><b>往 npm 发布一个版本</b> → 亲为：覆水难收，只有用户知道好不好。</li>
 </ul>
-<p>规律一眼可见：<b>三问的对象永远是动作，不是这个人</b>——同一个 Agent，跑测试可以全信，删文件就得核查。</p>
+<p>规律一眼可见：<b>三问的对象永远是动作，不是这个人</b>——同一个 Agent，跑测试可以全信，删文件就得核查。这正是第 6 章「环节越机械越交给 AI，判断越关键越留给你」的落地版。</p>
 
 <div class="diagram">
   <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三把钥匙">
@@ -185,13 +186,13 @@
 
 <div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>全信不是「它不会错」，而是「错了也伤不着、查得出、撤得回」。</b></p></div>
 
-<h2 id="s12-3">12.3 机制怎么落地：Agent 是怎么做到的</h2>
+<h2 id="s12-3">12.3 机器管每一刀：判断链与四道关卡</h2>
 
-<p>标准是「要防住什么」，这一节看 dsh 怎么把它变成会跑的机制。分工一句话先立住：</p>
+<p>标准是「要防住什么」，从这一节起看 dsh 怎么把它变成会跑的机制。分工一句话先立住：</p>
 
-<div class="callout note"><div class="c-title"><span class="ic">▶</span>分工口诀</div><p><b>机器管每一刀，你管抽查与拍板</b>——模型只出主意、不是裁判；四道关卡自动把守，你的活是三时点 + 六个旋钮（本节末尾清单）。</p></div>
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>分工口诀</div><p><b>机器管每一刀，你管抽查与拍板</b>——模型只出主意、不是裁判；机器的活是四道关卡，你的活是三时点 + 六个旋钮（12.4 末尾清单）。</p></div>
 
-<p>再堵一个常见误解：<b>这条判断链上，模型不是裁判</b>。模型只出主意——决定调哪个工具、传什么参数；它没有权力决定「能不能干」。能不能干，由代码和人分着判，各按各的准则：</p>
+<p>先堵一个常见误解：<b>这条判断链上，模型不是裁判</b>。模型只出主意——决定调哪个工具、传什么参数；它没有权力决定「能不能干」。能不能干，由代码和人分着判，各按各的准则：</p>
 <table>
   <tr><th>谁在判</th><th>判什么</th><th>判断依据</th></tr>
   <tr><td>模型（出主意）</td><td>想干什么</td><td>任务目标 + 工具说明书；<b>无权判能不能</b></td></tr>
@@ -202,7 +203,7 @@
 </table>
 <p>由此两条推论：<b>模型永远说服不了代码放行</b>——被拒只能换方案，判断权在模型之外；<b>默认裁判是确定性规则</b>——沙箱那句「越不越界」是操作系统在系统调用层执行的，可预测、不可绕过。</p>
 
-<p>「机器管每一刀」的实体，是每次工具调用都要过的那道闸门。dsh 不靠 Agent 自觉——<b>每次工具调用都要过一次闸门</b>。四道关卡：</p>
+<p>「机器管每一刀」的实体，是每次工具调用都要过的那道闸门。dsh 不靠 Agent 自觉，四道关卡：</p>
 
 <table>
   <tr><th>关卡</th><th>干什么</th><th>说人话</th></tr>
@@ -212,11 +213,11 @@
   <tr><td>沙箱（<code>sandbox-local</code>）</td><td><code>read-only</code> / <code>workspace-write</code> / <code>danger-full-access</code> 三档活动范围；沙箱不可用直接拒，绝不悄悄放开</td><td>划界</td></tr>
 </table>
 
-<p>四道关卡的出处，仓库里都可点开核对：</p>
+<p>「询问」是谁点的？不是一份笼统的「危险操作清单」，而是两层可查的规则：</p>
 <ul>
-  <li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/core/tools/src/index.ts" target="_blank" rel="noopener">pre-execute 与单调守卫</a>——<code>packages/core/tools/src/index.ts</code>；</li>
-  <li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/interaction/user-approval/README.zh.md" target="_blank" rel="noopener">批准通道</a>——<code>packages/interaction/user-approval</code>；</li>
-  <li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/sandbox/sandbox-local/README.zh.md" target="_blank" rel="noopener">沙箱三档</a>——<code>packages/sandbox/sandbox-local</code>。</li>
+  <li><b>按工具名匹配的规则表</b>——dsh 桥接你现有的 Claude Code hooks 配置（<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/hooks/hooks-claude-code/README.zh.md" target="_blank" rel="noopener">hooks.json 或 settings 文件的 hooks key</a>）：<code>PreToolUse</code> 规则按工具名匹配，跑你的命令，按输出表态 allow / deny / ask；多条规则串行执行、按最严格折叠（deny &gt; ask &gt; allow）。位置：<code>cordis.yml</code> 里 <code>dsh-hooks-claude-code</code> 的 <code>configPath</code>（如 <code>./.claude/hooks.json</code>）；</li>
+  <li><b>权限预设</b>——<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/interaction/permission-presets/README.zh.md" target="_blank" rel="noopener">dsh-permission-presets</a> 把「沙箱模式 × 批准策略」打包成命名档（组合见下表「配套批准」列）；UI 一个选择器 / 一句 <code>/permissionPresets</code> 切换，<code>defaultPreset</code> 决定新会话默认；</li>
+  <li><b>代码级</b>——原生插件直接注册 <code>tools/pre-execute</code> 监听器表态三选一，或用 <code>tools.restrict({allow, deny})</code> 按工具名圈白 / 黑名单——这是插件 API，不是配置文件（插件写法，第 14 章）。</li>
 </ul>
 
 <p>沙箱这一档，三种模式拆开看——<b>前两档是「墙」，第三档是「拆墙」</b>：</p>
@@ -226,21 +227,67 @@
   <tr><td><code>workspace-write</code> 工作区</td><td>工作区内 + 临时区可读写；工作区外仍拒</td><td>墙：同一套内核机制，白名单 = 工作区根 + /tmp；越界即拒，想越界要升权</td><td><code>ask</code>（预设 workspace-write）</td></tr>
   <tr><td><code>danger-full-access</code>（Full access）</td><td>绕过限制，敏感操作直接做</td><td><b>拆墙：不做文件策略约束（bypass）</b>——等于没有沙箱，不是墙更高</td><td><code>never</code>（预设 danger-full-access，无确认弹窗）</td></tr>
 </table>
-<p>三个机制要点：<b>判定维度只有文件效果</b>——网络、进程可见性不在这个词汇表里（所以 Full access 也不管 <code>git push</code>）；<b>升权是阶梯</b>——read-only → workspace-write → danger-full-access，只能往更宽升，且必须带理由走批准通道、一次一问、执行前裁决；<b>换挡有记录</b>——会话级切换写进日志（<code>sandbox/mode</code> 事件）、会话创建时固定；强制完整度不足时报 <code>partial</code>，绝不悄悄降级为不受限。</p>
 
-<p>「询问」是谁点的？不是一份笼统的「危险操作清单」，而是两层可查的规则：</p>
+<div class="diagram">
+  <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="沙箱三档墙与拆墙">
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="18" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">沙箱三档：前两档是墙，第三档是拆墙</text>
+    <rect x="20" y="64" width="210" height="140" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="125" y="92" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">read-only · 只读</text>
+    <text x="125" y="118" text-anchor="middle" font-size="10.5" fill="#4b5563">墙：只能读，改动一律被拦</text>
+    <text x="125" y="138" text-anchor="middle" font-size="10" fill="#6b7280">写的那一刻拦截 · 兜底默认</text>
+    <rect x="34" y="156" width="26" height="26" fill="#ffffff" stroke="#5eead4"/>
+    <rect x="60" y="156" width="6" height="26" fill="#4b5563"/>
+    <rect x="66" y="156" width="150" height="26" fill="#e9e9e9"/>
+    <text x="141" y="174" text-anchor="middle" font-size="10" fill="#6b7280">全部文件改动被拦</text>
+    <rect x="255" y="64" width="210" height="140" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="360" y="92" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="700">workspace-write · 工作区</text>
+    <text x="360" y="118" text-anchor="middle" font-size="10.5" fill="#4b5563">墙：工作区 + /tmp 可写</text>
+    <text x="360" y="138" text-anchor="middle" font-size="10" fill="#6b7280">越界即拦 → 带理由升权</text>
+    <rect x="269" y="156" width="67" height="26" fill="#ffffff" stroke="#5eead4"/>
+    <rect x="336" y="156" width="6" height="26" fill="#4b5563"/>
+    <rect x="342" y="156" width="109" height="26" fill="#e9e9e9"/>
+    <text x="396" y="174" text-anchor="middle" font-size="10" fill="#6b7280">工作区外被拦</text>
+    <rect x="490" y="64" width="210" height="140" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="595" y="92" text-anchor="middle" font-size="13" fill="#78350f" font-weight="700">danger-full-access</text>
+    <text x="595" y="118" text-anchor="middle" font-size="10.5" fill="#4b5563">Full access · 拆墙：没有沙箱</text>
+    <text x="595" y="138" text-anchor="middle" font-size="10" fill="#6b7280">敏感操作直接做 · 批准 never</text>
+    <rect x="504" y="156" width="182" height="26" fill="#ffffff" stroke="#fde68a"/>
+    <text x="595" y="174" text-anchor="middle" font-size="10" fill="#6b7280">没有墙 · 随便写</text>
+    <rect x="60" y="232" width="600" height="44" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="360" y="259" text-anchor="middle" font-size="12" fill="#312e81" font-weight="600">想越界只能升权：read-only → workspace-write → danger-full-access —— 带理由、一次一问、执行前裁决</text>
+    <text x="360" y="298" text-anchor="middle" font-size="11.5" fill="#7b8494">判定维度只有文件效果——网络、进程可见性不在其中</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 12-2</b> 沙箱三档：前两档是墙——能写的地盘到墙为止，墙外被拦；第三档拆墙——没有墙。Full access 的「自动感」来自批准策略 never。</div>
+</div>
+
 <ul>
-  <li><b>按工具名匹配的规则表</b>——dsh 桥接你现有的 Claude Code hooks 配置（<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/hooks/hooks-claude-code/README.zh.md" target="_blank" rel="noopener">hooks.json 或 settings 文件的 hooks key</a>）：<code>PreToolUse</code> 规则按工具名匹配，跑你的命令，按输出表态 allow / deny / ask；多条规则串行执行、按最严格折叠（deny &gt; ask &gt; allow）。位置：<code>cordis.yml</code> 里 <code>dsh-hooks-claude-code</code> 的 <code>configPath</code>（如 <code>./.claude/hooks.json</code>）；</li>
-  <li><b>权限预设</b>——<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/interaction/permission-presets/README.zh.md" target="_blank" rel="noopener">dsh-permission-presets</a> 把「沙箱模式 × 批准策略」打包成命名档：<code>workspace-write</code>（workspace-write + ask）、<code>danger-full-access</code>（danger-full-access + never）；UI 一个选择器 / 一句 <code>/permissionPresets</code> 切换，<code>defaultPreset</code> 决定新会话默认。你在用的会话那两行（文件策略 workspace-write、批准策略 ask）就是预设 <code>workspace-write</code> 展开的值；</li>
-  <li><b>代码级</b>——原生插件直接注册 <code>tools/pre-execute</code> 监听器表态三选一，或用 <code>tools.restrict({allow, deny})</code> 按工具名圈白 / 黑名单——这是插件 API，不是配置文件（插件写法，第 14 章）。</li>
+  <li><b>判定维度只有文件效果</b>——网络、进程可见性不在词汇表里（所以 Full access 也不管 <code>git push</code>）；</li>
+  <li><b>升权是阶梯</b>——只能往更宽升，且必须带理由走批准通道、一次一问、执行前裁决（被拒什么都没跑）；</li>
+  <li><b>换挡有记录</b>——会话级切换写进日志（<code>sandbox/mode</code> 事件）、会话创建时固定；强制完整度不足时报 <code>partial</code>，绝不悄悄降级为不受限。</li>
 </ul>
-<p>两个默认值先记下：沙箱策略的<b>兜底</b>默认是 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/sandbox/sandbox-policy/README.zh.md" target="_blank" rel="noopener"><code>read-only</code></a>（故障安全），批准策略默认 <code>ask</code>（无人应答则失败关闭）；而 dsh 的 web 版默认组合把它配成 <code>workspace-write</code> + <code>ask</code>（= 权限预设 workspace-write 这一档）——你正在用的会话就是它。</p>
 
-<p>回到直觉：「git 命令有些能用、有些不能用」——对，但默认不是按命令名分的，而是按<b>文件效果</b>分的。而且要精确到「写的那一刻」：沙箱不做命令分析，它只给整个 bash 进程划好可写范围，命令执行到哪一步想往范围外写，那一步才被拦——<code>git status</code>（只读）任何档位都能跑；<code>git add</code> / <code>git commit</code>（写工作区内的 <code>.git/</code> 与文件）在 workspace-write 放行；往工作区外写（如 <code>git config --global</code>）→ 沙箱拒，想跑得升权。网络操作（<code>git push</code>）文件沙箱不管，默认不拦。想按命令名细分（比如禁 <code>git reset --hard</code>），默认没有——要在 hooks 规则或插件里自己写（hooks 的 matcher 只到工具名 <code>bash</code>，命令参数要脚本自己读）。</p>
+<p>两个默认值先记下：沙箱策略的<b>兜底</b>默认是 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/sandbox/sandbox-policy/README.zh.md" target="_blank" rel="noopener"><code>read-only</code></a>（故障安全），批准策略默认 <code>ask</code>（无人应答则失败关闭）；而 dsh 的 web 版默认组合把它配成 <code>workspace-write</code> + <code>ask</code>（= 权限预设 workspace-write 这一档）。四道关卡的出处也可点开核对：<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/core/tools/src/index.ts" target="_blank" rel="noopener">pre-execute 与单调守卫</a>、<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/interaction/user-approval/README.zh.md" target="_blank" rel="noopener">批准通道</a>、<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/sandbox/sandbox-local/README.zh.md" target="_blank" rel="noopener">沙箱三档</a>。</p>
+
+<p>回到直觉：「git 命令有些能用、有些不能用」——对，但默认不是按命令名分的，而是按<b>文件效果</b>分的，而且拦发生在「写的那一刻」（沙箱不分析命令，只给整个 bash 进程划好可写范围）：</p>
+<table>
+  <tr><th>git 操作</th><th>默认（workspace-write）</th><th>原因</th></tr>
+  <tr><td>status / diff / log</td><td>放行</td><td>只读，任何档位都能跑</td></tr>
+  <tr><td>add / commit</td><td>放行</td><td>写工作区内的 <code>.git/</code> 与文件</td></tr>
+  <tr><td>写工作区外（如 <code>config --global</code>）</td><td>拒 → 升权</td><td>越界，写的那一刻被拦</td></tr>
+  <tr><td>push / fetch（网络）</td><td>默认不拦</td><td>文件沙箱不管网络</td></tr>
+</table>
+<p>想按命令名细分（比如禁 <code>git reset --hard</code>），默认没有——要在 hooks 规则或插件里自己写（hooks 的 matcher 只到工具名 <code>bash</code>，命令参数要脚本自己读）。</p>
 
 <p>两道关卡还互相咬合：<b>想越出沙箱档位，得走批准通道升权</b>——一次一问、只能往更宽的档升、批准了才生效；没批准，执行前就被拦下，什么都没跑。真实顺序：预检 →（询问）→ 守卫 → 沙箱（执行时最后一道）；一次调用的完整九道关，第 16 章 16.3 展开。这些关卡为什么能排队挂在调用前——事件与监听机制，第 15 章《让零件通风报信》。</p>
 
-<p>「你管抽查与拍板」落在三个时点：</p>
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>这排关卡全是插件，挂在 waterfall 事件上——想拦什么，写个监听器就行（插件怎么写，第 14 章《把功能插上插头》；事件机制，第 15 章）。dsh 自己的子 agent 就装了单调守卫：<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/subagent/subagent-in-process-driver/src/structured.ts" target="_blank" rel="noopener">结构化输出一交卷，后续工具调用一律拦下</a>——第 18 章《一个人变一支队伍》里，子 agent 的工具箱就是这么圈起来的。</p></div>
+
+<h2 id="s12-4">12.4 你管抽查与拍板：三时点、旋钮与调档</h2>
+
+<p>机器的半边是四道关卡（12.3），你的半边是<b>三个时点 + 六个旋钮 + 信任调档</b>。三个时点：</p>
+
 <ul>
   <li><b>查计划</b>——动手之前：它打算干什么？路线对不对？</li>
   <li><b>查执行</b>——过程之中：机器把守每一刀，你抽查日志里的关键几刀；</li>
@@ -254,7 +301,7 @@
   <li><b>硬执行</b>——真按住模型手的，还是沙箱与批准策略：plan mode 不碰它们。</li>
 </ul>
 
-<p>计划状态也写进黑匣子（<code>plan/mode</code> 事件），第 9 章日志里查得到；这门怎么在循环里转——第 16 章《看心脏怎么跳》。</p>
+<p>计划状态也写进黑匣子（<code>plan/mode</code> 事件），第 9 章执行日志里查得到；这门怎么在循环里转——第 16 章《看心脏怎么跳》。</p>
 
 <div class="diagram">
   <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="审查工作流">
@@ -262,7 +309,7 @@
   <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
     <text x="360" y="24" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">审查工作流：你的三个时点 + 机器的四道关卡</text>
     <rect x="20" y="44" width="180" height="120" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
-    <text x="110" y="72" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="700">账本 = 第 9 章日志</text>
+    <text x="110" y="72" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="700">账本 = 第 9 章执行日志</text>
     <text x="110" y="96" text-anchor="middle" font-size="10.5" fill="#4b5563">干过什么</text>
     <text x="110" y="114" text-anchor="middle" font-size="10.5" fill="#4b5563">为什么这么干</text>
     <text x="110" y="136" text-anchor="middle" font-size="10.5" fill="#6b7280">三个时点都查它</text>
@@ -292,7 +339,7 @@
     <text x="360" y="296" text-anchor="middle" font-size="11.5" fill="#7b8494">坏消息全部结构化：否决、超时、沙箱拦截——都是给模型看的消息，循环照常转</text>
   </g>
   </svg>
-  <div class="figcaption"><b>图 12-2</b> 审查工作流：查计划、查执行、查产物三时点，配上执行的四道关卡——信任长在关卡上。</div>
+  <div class="figcaption"><b>图 12-3</b> 审查工作流：查计划、查执行、查产物三时点，配上执行的四道关卡——信任长在关卡上。</div>
 </div>
 
 <p>走一遍真实的控制旅程：你让 Agent 删掉一个<b>工作区之外</b>的文件（比如 <code>~/Downloads/x.txt</code>），当前会话在 <code>workspace-write</code> 档下：</p>
@@ -301,28 +348,28 @@
   <li><b>沙箱拦下</b>——执行前按档位把关：这一刀越界，被拒。模型收到结构化消息 <code>[sandbox: file access denied under workspace-write mode]</code>，还附一句提示：带 <code>sandbox_permissions</code>（升到够用的最窄一档）+ 一句理由，原样重试一次，批准弹窗会问你；</li>
   <li><b>申请升权</b>——模型带理由重试，申请升到 <code>danger-full-access</code>；</li>
   <li><b>你拍板</b>——批准弹窗到你面前：升到哪档、为什么。你点头（<code>allowed-once</code>），这一刀放行；不答或拒绝，<b>失败关闭</b>，模型收到被拒的结果，继续想别的办法；</li>
-  <li><b>全程留痕</b>——<code>approval/asked</code> 与 <code>approval/decided</code> 审计记录写进第 9 章的日志，复盘查得到。</li>
+  <li><b>全程留痕</b>——<code>approval/asked</code> 与 <code>approval/decided</code> 审计记录写进第 9 章的执行日志，复盘查得到。</li>
 </ol>
 <p>全程你只做了两件事：<b>点了一次头、扫了一眼日志</b>。剩下的每一刀，机器都在把守。</p>
 
 <p>注意两套三档别混：12.2 的三把钥匙，是你<b>抽查多勤</b>；这里的沙箱三档，是机制<b>把墙砌多高</b>。墙砌得矮，钥匙给得再大方也越不了界。</p>
 
-<p>最后把「怎么控制」收成一张旋钮清单——机器有四道自动关卡（上表），你手里有六个旋钮：</p>
+<p>把「怎么控制」收成一张旋钮清单——机器有四道自动关卡（上表），你手里有六个旋钮：</p>
 <table>
   <tr><th>你手里的旋钮</th><th>管什么</th><th>对应</th></tr>
   <tr><td><code>/plan</code> 勘探模式</td><td>动手前的路线</td><td>查计划</td></tr>
   <tr><td>批准弹窗：点头 / 拒绝 / 不答</td><td>危险与越界的每一刀</td><td>查执行</td></tr>
   <tr><td>文件策略三档 + 升权申请</td><td>它能碰的活动范围</td><td>沙箱</td></tr>
-  <tr><td>第 9 章日志 + 复盘三问</td><td>收工后的核对</td><td>查产物</td></tr>
+  <tr><td>第 9 章执行日志 + 复盘三问</td><td>收工后的核对</td><td>查产物</td></tr>
   <tr><td>AGENTS.md 写约定（如推送前跑 pre-push-checks）</td><td>把把关固化成每次都做</td><td>写回（8.3）</td></tr>
   <tr><td>postmortem · lefthook · knip</td><td>教训变成机器守门</td><td>升降级 · 固化</td></tr>
 </table>
 
 <div class="callout note"><div class="c-title"><span class="ic">▶</span>产品形态实证</div><p>你在用的 dsh 会话里就写着两行——<b>文件策略 workspace-write</b>（沙箱第二档）、<b>批准策略 ask</b>：没有可用应答者时，请求<b>失败关闭</b>。本章的关卡不是概念，是你眼前正在跑的值。</p></div>
 
-<p>坏消息也全部结构化：否决、超时、沙箱拦截，都变成一条给模型看的工具结果——它知道自己被拦了、为什么，循环照常转（取消与自救，第 16 章 16.4）。</p>
+<p>被拦的这些坏消息，模型都看得见、循环照常转——取消与自救，第 16 章 16.4。</p>
 
-<p>最后，标准里的「信任随战绩浮动」怎么落地？信任不是发一次钥匙就定终身，它随战绩浮动：</p>
+<p>最后，标准里的「信任随战绩浮动」怎么落地？信任不是发一次钥匙就定终身：</p>
 
 <ul>
   <li><b>降级</b>——出一次错，同类活降一档：全信 → 核查，核查 → 亲为。出错不丢人，装作没看见才丢人；</li>
@@ -356,12 +403,10 @@
     <text x="360" y="280" text-anchor="middle" font-size="11.5" fill="#7b8494">信任 = 战绩的积分，不是态度的宣言</text>
   </g>
   </svg>
-  <div class="figcaption"><b>图 12-3</b> 升降级循环：定档 → 干活 → 查账本 → 复盘调档；教训固化成护栏，机器替你把关。</div>
+  <div class="figcaption"><b>图 12-4</b> 升降级循环：定档 → 干活 → 查账本 → 复盘调档；教训固化成护栏，机器替你把关。</div>
 </div>
 
-<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>这排关卡全是插件，挂在 waterfall 事件上——想拦什么，写个监听器就行（插件怎么写，第 14 章《把功能插上插头》；事件机制，第 15 章）。dsh 自己的子 agent 就装了单调守卫：<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/subagent/subagent-in-process-driver/src/structured.ts" target="_blank" rel="noopener">结构化输出一交卷，后续工具调用一律拦下</a>——第 18 章《一个人变一支队伍》里，子 agent 的工具箱就是这么圈起来的。</p></div>
-
-<div class="callout note"><div class="c-title"><span class="ic">▶</span>回路钩子 · 信任线的闭合</div><p>信任线在这里闭合：第 9 章日志提供现场 → 本章查账本校准 → 教训写回第 7 章护栏 / 第 8 章 8.3 约定，下一轮自动上桌。排序只是让章节相邻，回路靠这根钩子接上。</p></div>
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>回路钩子 · 信任线的闭合</div><p>信任线在这里闭合：第 9 章执行日志提供现场 → 本章查账本校准 → 教训写回第 7 章护栏 / 第 8 章 8.3 约定，下一轮自动上桌。排序只是让章节相邻，回路靠这根钩子接上。</p></div>
 
 <p>信任校准到位，第二幕（使用项目）到站。下一章把 Agent 翻过来——钥匙在哪道关卡上、这具身体怎么拼起来的：<b>第 13 章《Agent 是怎么拼起来的》</b>，第三幕开场。</p>
 
@@ -384,10 +429,10 @@
     <text x="360" y="148" text-anchor="middle" font-size="10.5" fill="#0f766e" font-weight="600">三问定档：三把钥匙</text>
     <text x="360" y="168" text-anchor="middle" font-size="10.5" fill="#6b7280">全信 · 核查 · 亲为</text>
     <rect x="500" y="52" width="200" height="140" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
-    <text x="600" y="82" text-anchor="middle" font-size="14" fill="#312e81" font-weight="700">机制（12.3）</text>
+    <text x="600" y="82" text-anchor="middle" font-size="14" fill="#312e81" font-weight="700">机制（12.3 · 12.4）</text>
     <text x="600" y="108" text-anchor="middle" font-size="10.5" fill="#4b5563">机器：四道关卡</text>
     <text x="600" y="128" text-anchor="middle" font-size="10.5" fill="#4b5563">你：三时点 · 六个旋钮</text>
-    <text x="600" y="148" text-anchor="middle" font-size="10.5" fill="#6b7280">账本 = 第 9 章日志</text>
+    <text x="600" y="148" text-anchor="middle" font-size="10.5" fill="#6b7280">账本 = 第 9 章执行日志</text>
     <text x="600" y="168" text-anchor="middle" font-size="10.5" fill="#6b7280">信任长在关卡上</text>
     <line x1="222" y1="120" x2="258" y2="120" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m124)"/>
     <line x1="462" y1="120" x2="498" y2="120" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m124)"/>
@@ -397,7 +442,7 @@
     <text x="360" y="290" text-anchor="middle" font-size="12" fill="#7b8494">一条主线：信任不是态度，是可校准的机制——危害、标准、机制三步走。</text>
   </g>
   </svg>
-  <div class="figcaption"><b>图 12-4</b> 本章全景：危害（把关全拆）→ 标准（分级与守则）→ 机制（关卡与时点），再配升降级——信任是一套可校准的机制。</div>
+  <div class="figcaption"><b>图 12-5</b> 本章全景：危害（把关全拆）→ 标准（分级与守则）→ 机制（机器关卡 + 你的时点），再配升降级——信任是一套可校准的机制。</div>
 </div>
 
 <h2>要点回顾</h2>
@@ -405,7 +450,7 @@
 <ul>
   <li><b>危害</b>：把关全拆 = 越界写、不可逆误操作、静默错误、信任不校准——都落在「影响大、不可逆、验证不了」的动作上；靠模型自觉兜不住。</li>
   <li><b>标准</b>：防住它 = 划范围 + 问人 + 可查 + 可调 + 判断权在模型外；每件活先按三问分三档（全信 / 核查 / 亲为）。</li>
-  <li><b>机制</b>：机器管每一刀（预检 → 批准 → 守卫 → 沙箱四道自动关卡），你管抽查与拍板（三时点 + 六个旋钮）；<b>模型不是裁判、只出主意</b>；账本是第 9 章的黑匣子。</li>
+  <li><b>机制</b>：机器管每一刀（预检 → 批准 → 守卫 → 沙箱；沙箱三档=只读 / 工作区 / Full access，前两档是墙、第三档拆墙），你管抽查与拍板（三时点 + 六个旋钮）；<b>模型不是裁判、只出主意</b>。</li>
   <li><b>升降级</b>：出错降一档、连赢升一档；教训固化成机器守门（postmortem · lefthook · knip），不靠人记着。</li>
   <li><b>一条主线</b>：信任不是态度，是可校准的机制——危害、标准、机制三步走。</li>
 </ul>
@@ -415,7 +460,7 @@
 <div class="card">
 <ol>
   <li>做一次「拆掉一个」：挑一件 Agent 干的活，说出「如果没把关会怎样」（对照 12.1 危害表），再反推它该上哪条标准（对照 12.2 标准表）、该定哪一档。</li>
-  <li>做一次「故意越界」实验：让 Agent 删一个工作区之外的文件，看它撞上哪道关、你收到什么批准弹窗，再到第 9 章的日志里找 <code>approval/asked</code> 与 <code>approval/decided</code> 两条留痕；最后跑一句 <code>/permissionPresets</code>，看当前档位与可选预设表。</li>
+  <li>做一次「故意越界」实验：让 Agent 删一个工作区之外的文件，看它撞上哪道关、你收到什么批准弹窗，再到第 9 章的执行日志里找 <code>approval/asked</code> 与 <code>approval/decided</code> 两条留痕；最后跑一句 <code>/permissionPresets</code>，看当前档位与可选预设表。</li>
   <li>从 <a href="https://github.com/deepseek-ai/deepseek-harness/tree/master/docs/postmortem" target="_blank" rel="noopener">docs/postmortem/</a> 挑一篇复盘，指出它对应本章的哪一档调整、固化了哪道护栏。</li>
 </ol>
 </div>

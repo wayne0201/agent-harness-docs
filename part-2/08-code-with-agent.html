@@ -39,10 +39,10 @@
 <li><a href="../part-2/index.html">篇首导览</a></li>
 <li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
 <li><a class="active" href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
-<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 Agent 的执行日志</a></li>
 <li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
 <li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
-<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 信任的分级与把关</a></li>
 <li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
 <li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
 <li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
@@ -323,7 +323,7 @@ parameters: file_path / offset / limit</code></pre>
     <path d="M625 192 C625 228 95 228 95 192" fill="none" stroke="#b45309" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m86)"/>
     <text x="360" y="222" text-anchor="middle" font-size="11.5" fill="#b45309" font-weight="600">红了 → 回炉再改</text>
     <text x="360" y="258" text-anchor="middle" font-size="11.5" fill="#4b5563">写得出 ≠ 写得对：「验」是第一道门——红了回炉，绿了落袋</text>
-    <text x="360" y="280" text-anchor="middle" font-size="11" fill="#7b8494">每一圈都记进黑匣子——第 9 章；要不要人把最后一道关——第 12 章《什么时候把钥匙交给它》</text>
+    <text x="360" y="280" text-anchor="middle" font-size="11" fill="#7b8494">每一圈都记进黑匣子——第 9 章；要不要人把最后一道关——第 12 章《信任的分级与把关》</text>
   </g>
 </svg>
   <div class="figcaption"><b>图 8-3</b> 写代码的小循环：读（翻源码）→ 写（按手册产出）→ 验（红了回炉）——模型出主意，工具动手，手册立在旁边当尺子。</div>
@@ -342,7 +342,7 @@ export function apply(ctx: Context) { … }
 
 <div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>这一节站在「用」的位子上看 Agent 产出代码。这个骨架为什么必须是这四个导出、读 / 写 / 验用的工具本身怎么被插件注册进来、<code>apply</code> 里怎么写——第 14 章《把功能插上插头》展开。</p></div>
 
-<p>小循环把「写得出」升级成「写得对」：<b>「读」解决认不认识代码，「写」解决规不规矩，「验」解决跑不跑得动。</b>每一轮工具调用都记进黑匣子——第 9 章；这个「出主意 → 动手 → 看结果」的循环怎么自动转起来——第 16 章《看心脏怎么跳》。「验」够不够、哪些环节还必须你亲自把最后一道关——第 12 章《什么时候把钥匙交给它》。</p>
+<p>小循环把「写得出」升级成「写得对」：<b>「读」解决认不认识代码，「写」解决规不规矩，「验」解决跑不跑得动。</b>每一轮工具调用都记进黑匣子——第 9 章；这个「出主意 → 动手 → 看结果」的循环怎么自动转起来——第 16 章《看心脏怎么跳》。「验」够不够、哪些环节还必须你亲自把最后一道关——第 12 章《信任的分级与把关》。</p>
 
 <h2 id="s8-3">8.3 写回：用 → 写 → 长</h2>
 
@@ -486,11 +486,11 @@ export function apply(ctx: Context) { … }
 </ol>
 </div>
 
-<p>这一章走完了「交接 → 干活 → 写回」三个动作。干活的每一步都记在黑匣子里：干岔了怎么办、黑匣子怎么读——下一章《复盘先读黑匣子》。</p>
+<p>这一章走完了「交接 → 干活 → 写回」三个动作。干活的每一步都记在黑匣子里：干岔了怎么办、黑匣子怎么读——下一章《Agent 的执行日志》。</p>
 
         <div class="prevnext">
     <a href="./07-newbie-tour.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 7 章 新人报到：先读懂这个项目</div></a>
-    <a class="next" href="./09-session-log.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 9 章 复盘先读黑匣子</div></a>
+    <a class="next" href="./09-session-log.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 9 章 Agent 的执行日志</div></a>
   </div>
 <footer class="footer">
   <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>

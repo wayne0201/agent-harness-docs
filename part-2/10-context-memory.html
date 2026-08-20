@@ -42,10 +42,10 @@
 <li><a href="../part-2/index.html">篇首导览</a></li>
 <li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
 <li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
-<li><a href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a href="../part-2/09-session-log.html">第 9 章 Agent 的执行日志</a></li>
 <li><a class="active" href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
 <li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
-<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 信任的分级与把关</a></li>
 <li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
 <li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
 <li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
@@ -86,7 +86,7 @@
   <p class="subtitle">备菜台——窗口有限，取舍有方</p>
 </div>
 
-<p class="lead">第 9 章结尾说：黑匣子记录一切，可记录不是为了供着。这一章看「读取」——日志和文件里的记忆，怎么变成模型眼前的上下文。这是记忆线的「消费」一站：<b>7 提供 → 9 记录 → 本章消费 → 8 写回</b>。全章一个比喻：<b>厨房</b>——库房（日志与文件）很大，备菜台（上下文窗口）很小，模型就着台面炒菜；台面装不下，就把历史熬成高汤。</p>
+<p class="lead">第 9 章结尾说：执行日志记录一切，可记录不是为了供着。这一章看「读取」——执行日志和文件里的记忆，怎么变成模型眼前的上下文。这是记忆线的「消费」一站：<b>7 提供 → 9 记录 → 本章消费 → 8 写回</b>。全章一个比喻：<b>厨房</b>——库房（执行日志与文件）很大，备菜台（上下文窗口）很小，模型就着台面炒菜；台面装不下，就把历史熬成高汤。</p>
 
 <div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>日志和文件里的记忆，怎么变成模型眼前的上下文？</p></div>
 
@@ -382,7 +382,7 @@ Agent：参考 croner 搭插件骨架（调用 write）
 
 <p>消费线还剩最机灵的一层没展开：skills 是「按需调用」的作业指导书——Agent 什么时候想起它、怎么把它调进来。第 11 章《技能是这样被使用的》。</p>
   <div class="prevnext">
-    <a href="./09-session-log.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 9 章 复盘先读黑匣子</div></a>
+    <a href="./09-session-log.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 9 章 Agent 的执行日志</div></a>
     <a class="next" href="./11-skills.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 11 章 技能是这样被使用的</div></a>
   </div>
 <footer class="footer">

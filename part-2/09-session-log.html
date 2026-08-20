@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>第 9 章 复盘先读黑匣子 · 深入浅出 AI Agent</title>
+<title>第 9 章 Agent 的执行日志 · 深入浅出 AI Agent</title>
 <link rel="stylesheet" href="../assets/style.css">
 <script src="../assets/book.js" defer></script>
 </head>
@@ -42,10 +42,10 @@
 <li><a href="../part-2/index.html">篇首导览</a></li>
 <li><a href="../part-2/07-newbie-tour.html">第 7 章 新人报到：先读懂这个项目</a></li>
 <li><a href="../part-2/08-code-with-agent.html">第 8 章 让 Agent 写得出代码</a></li>
-<li><a class="active" href="../part-2/09-session-log.html">第 9 章 复盘先读黑匣子</a></li>
+<li><a class="active" href="../part-2/09-session-log.html">第 9 章 Agent 的执行日志</a></li>
 <li><a href="../part-2/10-context-memory.html">第 10 章 记忆是这样被读取的</a></li>
 <li><a href="../part-2/11-skills.html">第 11 章 技能是这样被使用的</a></li>
-<li><a href="../part-2/12-trust-review.html">第 12 章 什么时候把钥匙交给它</a></li>
+<li><a href="../part-2/12-trust-review.html">第 12 章 信任的分级与把关</a></li>
 <li><a href="../part-2/13-anatomy.html">第 13 章 Agent 是怎么拼起来的</a></li>
 <li><a href="../part-2/14-plugin-context.html">第 14 章 把功能插上插头</a></li>
 <li><a href="../part-2/15-event-driven.html">第 15 章 让零件通风报信</a></li>
@@ -82,31 +82,31 @@
 <div class="hero part-2">
   <span class="part-badge">第二篇 · 科学篇</span>
   <span class="line-tag line-app">应用线</span>
-  <h1>第 9 章 · 复盘先读黑匣子</h1>
-  <p class="subtitle">会话日志——复盘、调试、审计的第一现场</p>
+  <h1>第 9 章 · Agent 的执行日志</h1>
+  <p class="subtitle">Agent 的执行日志——复盘、调试、审计的第一现场</p>
 </div>
 
-<p class="lead">第 8 章结尾说：干活的每一步都记进黑匣子里，干岔了怎么办、黑匣子怎么读。这一章就打开黑匣子。全章一个比喻：<b>飞机的黑匣子</b>——飞行中你感觉不到它，出事时它救你。记忆线上它是「记录」一站：<b>第 7 章提供</b>（记忆放进文件）→ <b>本章记录</b>（过程落成日志）→ <b>第 10 章消费</b>（喂回模型）→ <b>第 8 章写回</b>。</p>
+<p class="lead">第 8 章结尾说：干活的每一步都被记进一份<b>执行日志</b>——界面上叫「Session log」（会话日志），也就是我们说的黑匣子；干岔了怎么办、日志怎么读。这一章就打开它。全章一个比喻：<b>飞机的黑匣子</b>——飞行中你感觉不到它，出事时它救你。记忆线上它是「记录」一站：<b>第 7 章提供</b>（记忆放进文件）→ <b>本章记录</b>（过程落成日志）→ <b>第 10 章消费</b>（喂回模型）→ <b>第 8 章写回</b>。</p>
 
-<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>干岔了怎么办？Agent 的每一步记在哪、怎么读？</p></div>
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>干岔了怎么办？Agent 的执行日志记了什么、怎么读？</p></div>
 
-<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>会读会话日志：复现问题、回放过程、为验收取证。</p></div>
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>会读 Agent 的执行日志：复现问题、回放过程、为验收取证。</p></div>
 
 <div class="card">
   <div class="sections"><b>本章导览</b></div>
   <ul class="section-list">
-    <li><a href="#s9-1">9.1 为什么要有黑匣子：先记后用</a></li>
+    <li><a href="#s9-1">9.1 为什么要有执行日志：先记后用</a></li>
     <li><a href="#s9-2">9.2 一条不变量：模型可见 ⟺ 已记录</a></li>
-    <li><a href="#s9-3">9.3 一份日志，五种派生</a></li>
-    <li><a href="#s9-4">9.4 复盘实操：从日志定位问题</a></li>
+    <li><a href="#s9-3">9.3 一份执行日志，五种派生</a></li>
+    <li><a href="#s9-4">9.4 复盘实操：从执行日志定位问题</a></li>
   </ul>
 </div>
 
-<h2 id="s9-1">9.1 为什么要有黑匣子：先记后用</h2>
+<h2 id="s9-1">9.1 为什么要有执行日志：先记后用</h2>
 
-<p>先问为什么：为什么要一台黑匣子？因为 Agent 干活的每一步——你的消息、模型的每个分片、工具的每次调用、喂进去的交接框——本来都是<b>转瞬即逝</b>的。干得顺，没人回头看；一旦干岔，没有记录，你就只能对着最后的结果猜「它刚才看见了什么、做了什么」。</p>
+<p>先问为什么：为什么要记日志？因为 Agent 干活的每一步——你的消息、模型的每个分片、工具的每次调用、喂进去的交接框——本来都是<b>转瞬即逝</b>的。干得顺，没人回头看；一旦干岔，没有记录，你就只能对着最后的结果猜「它刚才看见了什么、做了什么」。</p>
 
-<p>所以黑匣子的第一条规矩是<b>先记后用</b>：每一件事发生之前，先落成一行记录，再让下一步继续。飞机的黑匣子为事故留证据，dsh 的日志为<b>复盘、审计、续写</b>留证据——你平时感觉不到它，出事时它救你。</p>
+<p>所以日志的第一条规矩是<b>先记后用</b>：每一件事发生之前，先落成一行记录，再让下一步继续。飞机的黑匣子为事故留证据，dsh 的日志为<b>复盘、审计、续写</b>留证据——你平时感觉不到它，出事时它救你。</p>
 
 <h3>它长什么样：追加式 JSONL</h3>
 
@@ -169,7 +169,7 @@
 
 <p>黑匣子为什么可信？因为它守着一条<b>不变量</b>：</p>
 
-<div class="callout idea"><div class="c-title"><span class="ic">◆</span>全书心法 · 会话日志</div><p style="font-size:16px"><b>凡是模型看得到的，一定先落了日志；凡是日志里的，都能完整重放。</b></p><p>先记后用，不是用了再补。</p></div>
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>全书心法 · 执行日志</div><p style="font-size:16px"><b>凡是模型看得到的，一定先落了日志；凡是日志里的，都能完整重放。</b></p><p>先记后用，不是用了再补。</p></div>
 
 <p>看两个方向：</p>
 <ul>
@@ -202,7 +202,7 @@
 
 <div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 创造线视角</div><p>这条不变量不是 dsh 的专利——你给自己的 Agent 装黑匣子，照抄两句：<b>只追加、先记后用</b>。审计、回放、信任，全都建立在这条不变量上。</p></div>
 
-<h2 id="s9-3">9.3 一份日志，五种派生</h2>
+<h2 id="s9-3">9.3 一份执行日志，五种派生</h2>
 
 <p>黑匣子只有一个，读它的人各取所需。日志之上，dsh 长出一批<b>派生视图</b>——全部只读日志，绝不另造真相：</p>
 
@@ -219,9 +219,9 @@
   <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一份日志五种派生">
   <defs><marker id="m93" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
   <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
-    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">一份日志，五种派生——都只读日志，不另造真相</text>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">一份执行日志，五种派生——都只读日志，不另造真相</text>
     <rect x="270" y="120" width="180" height="76" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
-    <text x="360" y="150" text-anchor="middle" font-size="14" fill="#0f766e" font-weight="700">会话日志</text>
+    <text x="360" y="150" text-anchor="middle" font-size="14" fill="#0f766e" font-weight="700">执行日志</text>
     <text x="360" y="170" text-anchor="middle" font-size="10.5" fill="#4b5563">真相的唯一来源</text>
     <text x="360" y="186" text-anchor="middle" font-size="10.5" fill="#6b7280">只追加 · 不改写</text>
     <rect x="20" y="40" width="190" height="56" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
@@ -247,7 +247,7 @@
     <text x="360" y="284" text-anchor="middle" font-size="12" fill="#7b8494">派生视图可以随意重建、随意换实现——只要日志在，真相就在</text>
   </g>
 </svg>
-  <div class="figcaption"><b>图 9-3</b> 一份日志，五种派生：历史、压缩、恢复、遥测、标题——全部只读日志，可随意重建。</div>
+  <div class="figcaption"><b>图 9-3</b> 一份执行日志，五种派生：历史、压缩、恢复、遥测、标题——全部只读日志，可随意重建。</div>
 </div>
 
 <p>会话列表里的标题、用量面板里的数字，都不是「另存了一份数据」，而是从同一份日志现算出来的——日志删了，它们全消失。<b>历史</b>与<b>压缩</b>两路，正是下一章的主角。</p>
@@ -261,7 +261,7 @@
 
 <p>于是日志有了公私之分：<b>日志留在本地，教训走进仓库</b>——复盘出的约定写进 AGENTS.md / notes / skills，随 git 交给全队；过程日志留在各自的 <code>DSH_SESSION_ROOT</code> 路径下，<b>不随项目提交</b>。想看别人出问题的现场，让对方把那一次的日志分享给你（「Session log」导出的 ZIP 发过来就行），你拿过来照 9.4 的复盘三问分析。你是 Agent 的使用者，它是复盘现场；你是 Agent 的开发者，它就是调试你作品的现场——第三幕会常回来找它。</p>
 
-<h2 id="s9-4">9.4 复盘实操：从日志定位问题</h2>
+<h2 id="s9-4">9.4 复盘实操：从执行日志定位问题</h2>
 
 <p>接着第 8 章的例子走一遍复盘。你让 Agent 在 <code>packages/</code> 下写一个新工具插件，它交出的代码没按手册的导出规矩来。别急着骂模型——打开黑匣子，按<b>复盘三问</b>查：</p>
 <ol>
@@ -317,7 +317,7 @@
   <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
     <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">本章全景：飞机的黑匣子</text>
     <rect x="240" y="44" width="240" height="96" rx="12" fill="#ecfdf8" stroke="#0f766e"/>
-    <text x="360" y="76" text-anchor="middle" font-size="15" fill="#0f766e" font-weight="700">会话日志</text>
+    <text x="360" y="76" text-anchor="middle" font-size="15" fill="#0f766e" font-weight="700">执行日志</text>
     <text x="360" y="100" text-anchor="middle" font-size="11" fill="#4b5563">只追加 · 不改写</text>
     <text x="360" y="118" text-anchor="middle" font-size="11" fill="#4b5563">模型可见 ⟺ 已记录</text>
     <rect x="20" y="172" width="200" height="64" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
@@ -357,7 +357,7 @@
 </ol>
 </div>
 
-<p>黑匣子记录一切，可记录不是为了供着——下一步看这些记录怎么被喂回 Agent。记忆线的「消费」一站，第 10 章《记忆是这样被读取的》。</p>
+<p>日志记录一切，可记录不是为了供着——下一步看这些记录怎么被喂回 Agent。记忆线的「消费」一站，第 10 章《记忆是这样被读取的》。</p>
 
 
   <div class="prevnext">
