@@ -21,8 +21,6 @@
 <nav class="sidenav">
 <div class="side-group">
 <a href="../index.html">全书概览</a>
-<a href="../preface.html">前言</a>
-<a href="../outline.html">大纲</a>
 </div>
 <details class="side-part" open>
 <summary>第一篇 · 哲学篇</summary>
@@ -173,6 +171,15 @@
 </table>
 
 <p>别被「做齐」吓住——四个词先记住，第 7 章会给可执行的清单，再配上体检表逐个打勾。</p>
+<p>两个开源标本，正好是「会说话」的两份样板——它们各自把规矩写进了仓库根目录的 <code>AGENTS.md</code>：</p>
+<table>
+  <tr><th></th><th>dsh（DeepSeek Harness）</th><th>codex</th></tr>
+  <tr><td><b>自述文件</b></td><td><code>AGENTS.md</code>（151 行）</td><td><code>AGENTS.md</code>（322 行）</td></tr>
+  <tr><td><b>写的是什么</b></td><td>定位与写作宪法、体例、插图规范、协作流程</td><td>工程约定：crate 命名、代码评审、测试、TUI 规范、上下文纪律</td></tr>
+  <tr><td><b>谁来读</b></td><td>进仓库的 Agent 开工必读</td><td>进仓库的 Agent 开工必读</td></tr>
+  <tr><td><b>额外管理</b></td><td>—</td><td><code>agents_md_manager</code>：自动维护这份自述</td></tr>
+</table>
+<p>同一份「约定显式」，两种写法：dsh 写的是<b>「这本书怎么协作写出来」</b>，codex 写的是<b>「这个 Rust 仓库怎么改得对」</b>——都是把规矩立在纸面上，让 Agent 不用问人。第 7 章会把两只标本怎么说话、有记性、会成长完整对照一遍。</p>
 
 <h2 id="s4-3">4.3 项目即外置记忆：有记性</h2>
 <p>「活」的第二步：<b>有记性</b>。把项目当成 Agent 的外置记忆。</p>
@@ -230,8 +237,8 @@
 </div>
 
 <p>这条「用 → 写 → 长」的回路，就是项目的新陈代谢。它转起来，项目越用越顺；它停下来，项目就慢慢变成一具标本。这正是第 3 章十六字的最后一句——<b>「共同进化」</b>——在项目尺度上的样子。</p>
-<p>回路怎么转得稳——第 7 章（解析 dsh 的 AI 工程化，看它怎么养自己）、第 10 章（记忆的读取与压缩）、第 12 章（信任与审查）、第 23 章（评估与质量）会逐段展开。而 dsh 自己就是一只活标本——第 7 章先看它怎么说话、怎么长大。</p>
-<p>最后留一个问题给下一章：项目要「活」，身体得经得起折腾——今天加一块、明天拆一块，改而不乱。dsh 凭什么做到？答案是构建哲学的第一条：<b>一切皆插件</b>。</p>
+<p>回路怎么转得稳——第 7 章（两个标本的新人报到：dsh 与 codex 怎么养自己）、第 10 章（记忆的读取与压缩）、第 12 章（信任与审查）、第 23 章（评估与质量）会逐段展开。而 dsh 与 codex 自己就是两只活标本——第 7 章先看它们怎么说话、怎么长大。</p>
+<p>最后留一个问题给下一章：项目要「活」，身体得经得起折腾——今天加一块、明天拆一块，改而不乱。凭什么做到？答案是构建哲学：把系统拆成积木、按需拼装。dsh 与 codex 给了两种不同的拼法——下一章，我们看这「组合优于构建」的通用三问，和两个标本各自的答案。</p>
 
 <h2>一张图总结</h2>
 <div class="diagram">
@@ -264,7 +271,7 @@
   <li><b>会说话</b>：好自述四特征——文档可读 · 结构清晰 · 约定显式 · 上下文易取。</li>
   <li><b>有记性</b>：项目是 Agent 的外置记忆——写进仓库，就是存一条长期记忆。</li>
   <li><b>会成长</b>：每次协作把结论写回仓库，项目就长大一点——「用 → 写 → 长」的新陈代谢。</li>
-  <li>静态改造的清单在第 7 章；dsh 就是一只活标本（第 8 章）。</li>
+  <li>静态改造的清单在第 7 章；dsh 与 codex 就是两只活标本——第 7 章《新人报到：先读懂这个项目》带你读懂它们。</li>
 </ul>
 
 <h2>动手做</h2>
@@ -280,8 +287,8 @@
     <a class="next" href="./05-why-plugin.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 5 章 把系统拆成积木</div></a>
   </div>
 <footer class="footer">
-  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
-  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness 与 Codex</span>
+  <span><a href="../index.html">目录</a></span>
 </footer>
 </div>
 </main>

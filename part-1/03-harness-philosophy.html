@@ -21,8 +21,6 @@
 <nav class="sidenav">
 <div class="side-group">
 <a href="../index.html">全书概览</a>
-<a href="../preface.html">前言</a>
-<a href="../outline.html">大纲</a>
 </div>
 <details class="side-part" open>
 <summary>第一篇 · 哲学篇</summary>
@@ -153,7 +151,7 @@
   <li><b>边界</b>——不能做什么、哪些不能动；</li>
   <li><b>验收</b>——怎么算完成、怎么验证。</li>
 </ul>
-<p>再进一步：<b>把工作方式写进文件</b>。dsh 仓库的 AGENTS.md 就是范例——把规则、约定、边界写成文档，Agent 每次开工自动加载。文档从此不再是给人看的说明书，而是<b>入职手册、人机共享的接口</b>。读到这里的你其实正在实践这件事：这本书的 agents.md，就是这么用的。</p>
+<p>再进一步：<b>把工作方式写进文件</b>。dsh 与 codex 仓库里的 AGENTS.md 都是范例——把规则、约定、边界写成文档，Agent 每次开工自动加载（两者怎么写出好自述，第 4 章对照）。文档从此不再是给人看的说明书，而是<b>入职手册、人机共享的接口</b>。读到这里的你其实正在实践这件事：这本书的 agents.md，就是这么用的。</p>
 
 <div class="diagram">
   <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="任务三要素">
@@ -180,9 +178,9 @@
 <div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话</div><p><b>上下文是新的代码</b>——你交付的不只有实现，还有让实现得以正确发生的全部背景。</p></div>
 
 <h2 id="s3-3">3.3 边界管住：护栏与信任</h2>
-<p>能力越强，越要管住边界。Agent 是概率的（第 1 章讲过），它<b>会</b>犯错——而强者的错，往往更贵。出错时，第一反应不是怪它，而是先查两样东西：<b>边界够不够牢，上下文够不够清</b>。共事哲学的核心张力在于：<b>既放手</b>（否则发挥不出它的价值），<b>又设护栏</b>（否则错误失控）。这两个词放在一起，就是经典原则：<b>信任，但验证</b>。</p>
+<p>能力越强，越要管住边界。Agent 是概率的（第 1 章讲过），它<b>会</b>犯错——而强者的错，往往更贵。出错时，第一反应不是怪它，而是先查两样东西：<b>边界够不够牢，上下文够不够清</b>。共事哲学的核心张力在于：<b>既放手</b>（否则发挥不出它的价值），<b>又设护栏</b>（否则错误失控）。这两个词放在一起，就是经典原则：<b>信任，但验证</b>（「验证」的旋钮清单，第 12 章展开）。</p>
 <p>边界不是固定的，而是<b>随验证逐步放宽</b>——就像试用期：<b>第一天，只让它读代码；第一周，允许它改测试；第一个月，才让它动生产。</b>放权 = 放宽边界，而不是提高能力——它的能力不需要你培养，它的权限需要你验证后再放开。</p>
-<p>还记得第 5 章的「可回滚」吗？沙箱、审批、可撤销这些机制（科学篇会讲）都是边界管理的实现——它们都在兑现同一个心法：<b>让错误变得便宜</b>。</p>
+<p>还记得第 5 章的「可回滚」吗？沙箱、审批、可撤销这些机制（科学篇会讲）都是边界管理的实现——它们都在兑现同一个心法：<b>让错误变得便宜</b>。codex 把「管边界」做成了你眼前的产品：它在终端里一步步展示自己在做什么；想做有后果的操作（执行命令、写文件）就先停下来向你请求批准；还能把命令放进沙箱隔离执行。这些机制的学名——approval、guardian、sandbox——第 12 章逐个拆开。</p>
 
 <div class="diagram">
   <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="边界放宽阶梯">
@@ -216,7 +214,7 @@
 
 <h2 id="s3-5">3.5 共同进化：自举飞轮</h2>
 <p>最好的资深工程师，会顺手升级工具链，还会帮团队带新人——这就是<b>自举（bootstrapping）</b>：用 Agent 来构建 Agent 的工具、流程与护栏。</p>
-<p>dsh 团队用 AGENTS.md 加 Agent 工作流开发 dsh 本身——Agent 在给自己造更好的工具；而这本书也是自举的产物：人定方向、做判断，Agent 协作产出，再用 agents.md 沉淀共识、指导下一轮。</p>
+<p>dsh 与 codex 两个团队，都用 AGENTS.md 加 Agent 工作流开发各自的仓库——Agent 在给自己造更好的工具（两只都是「用 AI 养大的项目」，第 7 章对照）。这本书也是自举的产物：人定方向、做判断，Agent 协作产出，再用 agents.md 沉淀共识、指导下一轮。</p>
 <p>自举会形成飞轮：<b>Agent 帮你造工具 → 工具让 Agent 更强 → 更强的 Agent 造更好的工具</b>。</p>
 
 <div class="diagram">
@@ -278,18 +276,18 @@
   <ol>
     <li><b>写一份任务书</b>：挑一件本周要做的小事，用「目标 + 边界 + 验收」三段式写一份给 Agent 的任务书。</li>
     <li><b>圈出你的主场</b>：观察自己做一件事时，哪些环节在「动手」、哪些在「判断」？把「判断」圈出来——那才是未来你的主场。</li>
-    <li><b>（可选）读一份 AGENTS.md</b>：打开 deepseek-harness 根目录的 AGENTS.md 读一遍，想想哪些约定值得写进你自己的 AGENTS.md。</li>
+    <li><b>（可选）读两份 AGENTS.md</b>：打开 deepseek-harness 与 codex 根目录的 AGENTS.md 各读一遍，对比它们怎么自我介绍，想想哪些约定值得写进你自己的 AGENTS.md。</li>
   </ol>
 </div>
 
-<p>十六字心法之后，下一章讲怎么<b>让项目活起来</b>——把「上下文喂饱」落成世界观，让项目天生容得下这位新同事。至于 dsh 这具标本的内部构造——到第 8 章，我们再解析它的架构。</p>
+<p>十六字心法之后，下一章讲怎么<b>让项目活起来</b>——把「上下文喂饱」落成世界观，让项目天生容得下这位新同事。至于这两具标本的内部构造——到第 7 章《新人报到：先读懂这个项目》，我们再分别解析 dsh 与 codex 的架构。</p>
         <div class="prevnext">
     <a href="./02-language-interface.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 2 章 语言成为新接口</div></a>
     <a class="next" href="./04-ai-friendly-project.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 4 章 让项目活起来</div></a>
   </div>
 <footer class="footer">
-  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
-  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness 与 Codex</span>
+  <span><a href="../index.html">目录</a></span>
 </footer>
 </div>
 </main>

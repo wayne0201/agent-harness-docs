@@ -1,0 +1,20 @@
+<svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="主干与枝干">
+  <defs>
+    <marker id="p4arr" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 Z" fill="#9aa3ad"/></marker>
+  </defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="360" y="26" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">通用哲学是主干，dsh 与 codex 是枝干</text>
+    <rect x="36" y="46" width="252" height="68" rx="12" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="162" y="72" text-anchor="middle" font-size="14" fill="#312e81" font-weight="700">枝干 · dsh</text>
+    <text x="162" y="94" text-anchor="middle" font-size="11.5" fill="#4b5563">一切皆插件 · 无特权核心</text>
+    <rect x="432" y="46" width="252" height="68" rx="12" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="558" y="72" text-anchor="middle" font-size="14" fill="#134e4a" font-weight="700">枝干 · codex</text>
+    <text x="558" y="94" text-anchor="middle" font-size="11.5" fill="#4b5563">模块化单体 · 插件 · 沙箱</text>
+    <rect x="294" y="160" width="132" height="66" rx="12" fill="#4338ca"/>
+    <text x="360" y="190" text-anchor="middle" font-size="15" fill="#ffffff" font-weight="700">通用哲学</text>
+    <text x="360" y="210" text-anchor="middle" font-size="11" fill="#e0e7ff">主干</text>
+    <line x1="180" y1="114" x2="300" y2="158" stroke="#9aa3ad" stroke-width="2" marker-end="url(#p4arr)"/>
+    <line x1="540" y1="114" x2="420" y2="158" stroke="#9aa3ad" stroke-width="2" marker-end="url(#p4arr)"/>
+    <text x="360" y="252" text-anchor="middle" font-size="12" fill="#7b8494">删掉枝干，主干仍然成立；没有主干，枝干无处可依</text>
+  </g>
+</svg>

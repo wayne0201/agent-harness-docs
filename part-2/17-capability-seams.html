@@ -8,21 +8,16 @@
 <script src="../assets/book.js" defer></script>
 </head>
 <body class="part-2">
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
-    <span class="crumb">科学篇 / 第 17 章</span>
-    <span class="spacer"></span>
-    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
-  </div>
-</header>
+<header class="topbar"><div class="topbar-inner">
+<a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+<span class="crumb">科学篇 / 第 17 章</span>
+<span class="spacer"></span>
+<button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+</div></header>
 <main class="layout">
-<aside class="sidebar" id="sidebar">
-<nav class="sidenav">
+<aside class="sidebar" id="sidebar"><nav class="sidenav">
 <div class="side-group">
 <a href="../index.html">全书概览</a>
-<a href="../preface.html">前言</a>
-<a href="../outline.html">大纲</a>
 </div>
 <details class="side-part" open>
 <summary>第一篇 · 哲学篇</summary>
@@ -76,8 +71,7 @@
 <li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
 </ul>
 </details>
-</nav>
-</aside>
+</nav></aside>
 <div class="container">
 
 <div class="hero part-2">
@@ -87,23 +81,271 @@
   <p class="subtitle">设计可替换的能力接缝，让系统可插拔</p>
 </div>
 
-<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>如何让能力可替换，而不改动核心？</p></div>
+<p class="lead">第 16 章我们盯着心脏看它怎么跳。这一章把视线从心脏移开，落在身体的<b>接缝</b>上——哪些部件能整个换掉，怎么换，换了之后别处怎么不受牵连。第 13 章埋过线：<code>ctx.llm</code> 是接口，背后挂哪个适配器由配置说了算；第 14 章铺好地基：按键找服务、依赖持续跟踪，提供者换人、依赖者自动重载。这一章把这条线拉直：接缝是什么、dsh 里有哪些真接缝、一次替换如何改变全产品、什么时候你该给自己设计一条接缝。全章一个比喻，接着第 5 章的<b>乐高积木</b>。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>本章核心问题</div><p>如何让能力可替换，而不改动核心？</p></div>
 
 <div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>设计「可插拔能力」的方法论。</p></div>
 
-<h2>本章结构</h2>
-<ul class="section-list" style="grid-template-columns:1fr"><li>17.1 接缝与三角色：凸点、积木、搭积木的人</li><li>17.2 dsh 里的真实接缝：一张替换清单</li><li>17.3 一次替换，全产品改变</li><li>17.4 何时为一个能力设计接缝</li></ul>
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s17-1">17.1 接缝与三角色：凸点、积木、搭积木的人</a></li>
+    <li><a href="#s17-2">17.2 dsh 里的真实接缝：一张替换清单</a></li>
+    <li><a href="#s17-3">17.3 一次替换，全产品改变</a></li>
+    <li><a href="#s17-4">17.4 何时为一个能力设计接缝</a></li>
+  </ul>
+</div>
 
-<div class="callout warn stub-note"><div class="c-title"><span class="ic">✦</span>本章正文待撰写</div><p>骨架已就位（第三幕 · 开发项目 · 第 5 站）。正文（导语、图文详解、一张图、要点回顾、动手做）将在骨架确认后逐章撰写。草案：docs/.drafts/part-2-bodies/15-capability-seams.html。当前页面用于确认章节骨架与导航结构。</p><p>写正文备忘：承接第 11 章的预告——MCP（模型上下文协议，行业标准的外部能力接缝，dsh 已有 packages/mcp/mcp-client 早期形态）在 17.2 的接缝清单里与 dsh 自身插件接缝对比讲，附协议官网链接（modelcontextprotocol.io）。</p></div>
+<h2 id="s17-1">17.1 接缝与三角色：凸点、积木、搭积木的人</h2>
 
+<p>乐高好玩，是因为<b>所有积木的凸点尺寸统一</b>：任何一块都能被另一块替掉，而整个模型不会散架。软件里的「凸点」叫 <b>接缝（Seam）</b>——一个能力的<b>接口</b>与它的<b>实现</b>之间那道缝。缝的两侧，谁也看不见谁。</p>
 
-  <div class="prevnext">
+<p>站在缝边上的是三个角色（正是第 14 章「按键找服务，不 import 实现」的升级版）：</p>
+<ul>
+  <li><b>能力定义（Service Definition）</b>——凸点本身：这个能力「能做什么」的接口约定，在 dsh 里就是 <code>ctx.xxx</code> 上的服务；</li>
+  <li><b>提供者（Provider）</b>——积木内部：真正干活的实现，注册到凸点上，可以有多个、可随时换；</li>
+  <li><b>消费者（Consumer）</b>——搭积木的人：只通过凸点用能力，<b>不知道也不关心</b>是谁在实现。</li>
+</ul>
+
+<div class="diagram">
+  <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="接缝三角色">
+  <defs><marker id="m171" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="320" y="22" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">接缝的三角色：凸点、积木、搭积木的人</text>
+    <rect x="20" y="64" width="150" height="72" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="95" y="90" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">消费者</text>
+    <text x="95" y="110" text-anchor="middle" font-size="10.5" fill="#6b7280">agent-loop</text>
+    <text x="95" y="126" text-anchor="middle" font-size="10.5" fill="#6b7280">只用 ctx.llm</text>
+    <rect x="245" y="64" width="150" height="72" rx="9" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="320" y="90" text-anchor="middle" font-size="13" fill="#0f766e" font-weight="700">能力定义 = 凸点</text>
+    <text x="320" y="110" text-anchor="middle" font-size="11" fill="#134e4a">ctx.llm</text>
+    <text x="320" y="126" text-anchor="middle" font-size="10.5" fill="#6b7280">接口约定，不含实现</text>
+    <rect x="470" y="40" width="150" height="44" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="545" y="58" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">提供者 llm-deepseek</text>
+    <text x="545" y="75" text-anchor="middle" font-size="10.5" fill="#6b7280">直连 DeepSeek</text>
+    <rect x="470" y="100" width="150" height="44" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="545" y="118" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">提供者 llm-pi-ai</text>
+    <text x="545" y="135" text-anchor="middle" font-size="10.5" fill="#6b7280">多提供方路由</text>
+    <line x1="170" y1="100" x2="243" y2="100" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m171)"/>
+    <line x1="468" y1="62" x2="397" y2="88" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m171)"/>
+    <line x1="468" y1="122" x2="397" y2="112" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m171)"/>
+    <text x="320" y="214" text-anchor="middle" font-size="12" fill="#7b8494">消费者只认凸点，提供者只负责积木内部——两边老死不相往来</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 17-1</b> 三角色：消费者认凸点（ctx.llm），提供者交实现（deepseek / pi-ai），谁换谁都不惊动对方。</div>
+</div>
+
+<p>缝的价值在于：<b>实现会过时、会变贵、会被更好的取代——接口应该比实现长寿</b>。搭积木的人手里握着凸点标准，今天换这块、明天换那块，模型照样严丝合缝。</p>
+
+<p>这套三角色不是 dsh 的发明——Claude Code、LangChain、CrewAI 换模型、换记忆、换工具时，靠的也是同一套角色。dsh 只是把每个角色都做成了插件，名字叫 <code>ctx.xxx</code>。这一章后面全是它的具体样子，但请记住：<b>换器官这件事，任何 Agent 应用都会遇到</b>。</p>
+
+<h2 id="s17-2">17.2 dsh 里的真实接缝：一张替换清单</h2>
+
+<p>先别急着看 dsh 的键名——任何 Agent 应用都有几个<b>必换件</b>：</p>
+<ul>
+  <li><b>模型</b>——同一个能力可以换不同模型跑（换厂商、换大小、换成本）；</li>
+  <li><b>记忆 / 存储</b>——会话与状态落盘在哪（文件、数据库、内存）；</li>
+  <li><b>工具</b>——Agent 能碰什么（本地命令、外部 API、浏览器）；</li>
+  <li><b>执行环境</b>——代码在哪儿跑（本机、沙箱、云端容器）。</li>
+</ul>
+
+<p>dsh 没发明这些可换件，它只是给每个都开了一道缝、起了名字：<code>ctx.llm</code>、<code>ctx.sessionPersistence</code>、<code>ctx.tools</code>、<code>ctx.subprocess</code>。仓库里有一张官方清单 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/capability-seams.zh.md" target="_blank" rel="noopener">docs/capability-seams.zh.md</a>，摘几处最典型的：</p>
+
+<table>
+  <tr><th>接缝（ctx 键）</th><th>能力</th><th>现成实现</th><th>换掉会怎样</th></tr>
+  <tr><td><code>ctx.llm</code></td><td>模型调用</td><td>llm-deepseek · llm-pi-ai · llm-replay</td><td>换模型 / 换成回放，全产品跟着变</td></tr>
+  <tr><td><code>ctx.sessionPersistence</code></td><td>会话落盘</td><td>jsonl · sqlite</td><td>换存储格式，回放与查询不动</td></tr>
+  <tr><td><code>ctx.subprocess</code></td><td>进程执行</td><td>subprocess-local · subprocess-e2b</td><td>本机执行变远程隔离，bash / 终端 / LSP 跟着搬家</td></tr>
+  <tr><td><code>ctx.credentials</code></td><td>凭据管理</td><td>credentials-local</td><td>换密钥来源</td></tr>
+  <tr><td><code>ctx.storage</code></td><td>存储中枢</td><td>storage-json · storage-sqlite</td><td>换存储引擎</td></tr>
+  <tr><td><code>ctx.sessionTelemetry</code></td><td>会话遥测</td><td>session-telemetry-otel</td><td>换观测后端</td></tr>
+</table>
+
+<p>注意 llm 那行：<code>llm</code> 包本身<b>身兼两职</b>——既定义接口，又是消费者（组装流式分片，第 16 章的心脏就靠它）；llm-deepseek、llm-pi-ai 是提供者，注册到 <code>ctx.llm</code> 上；llm-retry（重试）、token-meter（计量）则是独立消费者，只监听事件、不碰实现。一个接缝养活五个包，各自只认自己的角色。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="接口与实现分离">
+  <defs><marker id="m172" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="22" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">接口与实现分离：一个凸点，两侧各自生长</text>
+    <rect x="20" y="52" width="150" height="40" rx="8" fill="#f6f4ee" stroke="#d6d0c4"/><text x="95" y="77" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="600">agent-loop</text>
+    <rect x="20" y="112" width="150" height="40" rx="8" fill="#f6f4ee" stroke="#d6d0c4"/><text x="95" y="137" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="600">system-prompt</text>
+    <rect x="20" y="172" width="150" height="40" rx="8" fill="#f6f4ee" stroke="#d6d0c4"/><text x="95" y="197" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="600">llm-retry · token-meter</text>
+    <rect x="300" y="108" width="120" height="80" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="140" text-anchor="middle" font-size="13.5" fill="#0f766e" font-weight="700">ctx.llm</text>
+    <text x="360" y="158" text-anchor="middle" font-size="10.5" fill="#6b7280">接缝</text>
+    <text x="360" y="174" text-anchor="middle" font-size="10.5" fill="#6b7280">定义 + 消费</text>
+    <rect x="550" y="52" width="150" height="40" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="625" y="77" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">llm-deepseek</text>
+    <rect x="550" y="112" width="150" height="40" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="625" y="137" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">llm-pi-ai</text>
+    <rect x="550" y="172" width="150" height="40" rx="8" fill="#fffbeb" stroke="#fde68a"/><text x="625" y="197" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">llm-replay</text>
+    <line x1="170" y1="72" x2="298" y2="130" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m172)"/>
+    <line x1="170" y1="132" x2="298" y2="148" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m172)"/>
+    <line x1="170" y1="192" x2="298" y2="166" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m172)"/>
+    <line x1="548" y1="72" x2="422" y2="130" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m172)"/>
+    <line x1="548" y1="132" x2="422" y2="148" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m172)"/>
+    <line x1="548" y1="192" x2="422" y2="166" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m172)"/>
+    <text x="360" y="250" text-anchor="middle" font-size="12" fill="#4b5563" font-weight="600">换模型 = 换右边一行；左边六个包一行代码都不用改</text>
+    <text x="360" y="278" text-anchor="middle" font-size="12" fill="#7b8494">这就是第 14 章「依赖持续跟踪」的回报：提供者换人，依赖者自动重载</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 17-2</b> 接口与实现分离：消费者与提供者隔着 ctx.llm 互不相识，换模型只动右侧一行。</div>
+</div>
+
+<p>上面这些接缝都在「进程内」——换的是同一进程里的实现。dsh 还留着一个向「进程外」的接缝：<b>MCP</b>（Model Context Protocol，模型上下文协议），行业标准的外部能力接缝（官网：<a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">modelcontextprotocol.io</a>）。第 11 章预告过它，这里兑现：dsh 的 <code>packages/mcp/mcp-client</code> 是它的早期形态——接一个外部 MCP 服务器，把它列出的每个工具注册到 <code>ctx.tools</code>，模型当原生工具用，名字形如 <code>mcp__服务器名__工具名</code>（与 Claude Code、Codex 同一套形状）。</p>
+
+<table>
+  <tr><th>维度</th><th>dsh 插件接缝</th><th>MCP 接缝</th></tr>
+  <tr><td><b>缝在哪</b></td><td>进程内：ctx.xxx 服务键</td><td>进程外：标准协议（stdio / HTTP）</td></tr>
+  <tr><td><b>谁来接</b></td><td>dsh 插件（llm-deepseek 等）</td><td>任意 MCP 服务器（GitHub、浏览器…）</td></tr>
+  <tr><td><b>换什么</b></td><td>换实现，不换接口</td><td>换服务器，工具名自动带前缀</td></tr>
+  <tr><td><b>成本</b></td><td>要懂 dsh 的 Cordis</td><td>只需实现标准协议</td></tr>
+</table>
+
+<p>两种接缝不是对立的：dsh 插件接缝管「进程内换实现」，MCP 管「进程外接生态」。想给 Agent 加一个 dsh 没有的工具，最快的一步往往不是写插件，而是挂一个现成的 MCP 服务器。</p>
+
+<h2 id="s17-3">17.3 一次替换，全产品改变</h2>
+
+<p>缝的威力，要用一次真实的替换来感受。dsh 的 <code>subprocess</code> 家族（<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/subprocess/README.zh.md" target="_blank" rel="noopener">packages/subprocess/README.zh.md</a>）管着进程执行：<code>subprocess-local</code> 在本机开子进程，<code>subprocess-e2b</code> 则把执行整个搬进 E2B 远程沙箱（e2b 家族说明见 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/e2b/README.zh.md" target="_blank" rel="noopener">packages/e2b/README.zh.md</a>）。</p>
+
+<p>为什么换掉一个提供者，bash、终端、LSP 会一起搬家？因为这三个消费方都<b>不自己开进程</b>——它们把执行环境的所有操作委托给 <code>ctx.fs</code> 和 <code>ctx.subprocess</code> 两个接缝（官方文档原话：现有实现「无需 E2B 专用 fork」）。于是你只做一件事：在配置里把本地方案换成远程方案，三者涉及可变状态的工作就都发生在同一个远程沙箱里了。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一次替换全产品改变">
+  <defs><marker id="m173" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="22" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">一次替换，全产品改变</text>
+    <text x="360" y="52" text-anchor="middle" font-size="11" fill="#4b5563" font-weight="600">替换前：Agent 的命令在本机跑</text>
+    <rect x="90" y="66" width="180" height="48" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/><text x="180" y="95" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">Agent 循环</text>
+    <line x1="272" y1="90" x2="330" y2="90" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m173)"/>
+    <rect x="332" y="66" width="180" height="48" rx="9" fill="#fffbeb" stroke="#fde68a"/><text x="422" y="95" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="600">本机 shell</text>
+    <rect x="532" y="66" width="100" height="48" rx="9" fill="#ffffff" stroke="#d6d0c4"/><text x="582" y="90" text-anchor="middle" font-size="11" fill="#4b5563">bash</text>
+    <text x="582" y="106" text-anchor="middle" font-size="10" fill="#6b7280">终端 · LSP</text>
+    <line x1="360" y1="122" x2="360" y2="158" stroke="#0f766e" stroke-width="1.8" marker-end="url(#m173)"/>
+    <text x="380" y="144" font-size="11" fill="#0f766e" font-weight="700">换一个提供者</text>
+    <text x="360" y="188" text-anchor="middle" font-size="11" fill="#4b5563" font-weight="600">替换后：同一批命令，搬进远程隔离环境</text>
+    <rect x="90" y="202" width="180" height="48" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/><text x="180" y="231" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">Agent 循环</text>
+    <text x="180" y="247" text-anchor="middle" font-size="10" fill="#6b7280">纹丝不动</text>
+    <line x1="272" y1="226" x2="330" y2="226" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m173)"/>
+    <rect x="332" y="202" width="180" height="48" rx="9" fill="#ecfdf8" stroke="#0f766e"/><text x="422" y="231" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="600">远程沙箱（e2b）</text>
+    <rect x="532" y="202" width="100" height="48" rx="9" fill="#ffffff" stroke="#d6d0c4"/><text x="582" y="226" text-anchor="middle" font-size="11" fill="#4b5563">bash</text>
+    <text x="582" y="242" text-anchor="middle" font-size="10" fill="#6b7280">终端 · LSP</text>
+    <text x="582" y="258" text-anchor="middle" font-size="10" fill="#6b7280">一起搬家</text>
+    <text x="360" y="298" text-anchor="middle" font-size="12" fill="#7b8494">其余环节纹丝不动：循环没改、日志没改、提示没改——只有实现换了</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 17-3</b> 一次替换，全产品改变：换掉 subprocess 提供者，bash、终端、LSP 跟着搬家，其余环节纹丝不动。</div>
+</div>
+
+<p>把 dsh 的名字摘掉，这个实验就是每个 Agent 应用都会做的一件事：<b>把执行环境从本机换成云端</b>——本地跑、容器跑、远程沙箱跑，命令、终端、代码补全一概不知道差别。换的不是「某个产品」，而是一道标准接缝。</p>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 应用线视角</div><p>你不写插件，但「换个模型、换个执行环境，整个 Agent 就跟着变」正是你每天在用的体验——改个配置就是换器官。看懂接缝，你就知道哪些部件能放心换、换了会影响谁。</p></div>
+
+<h2 id="s17-4">17.4 何时为一个能力设计接缝</h2>
+
+<p>看到这里你可能想把所有东西都做成接缝。别急——<b>接缝有成本</b>：多一层接口、多一份文档、多一处间接。缝要开在「会变的地方」，而不是到处开。</p>
+
+<p>三个信号，命中一个就该开缝：</p>
+<ol>
+  <li><b>环境会变</b>——本机 vs 远程、开发 vs 生产、单机 vs 集群（subprocess、存储）；</li>
+  <li><b>实现可选</b>——同一个能力有多个正当实现，用户各有偏好（模型、落盘格式）；</li>
+  <li><b>测试要换</b>——测试时想换成假实现或回放（llm-replay：把真实模型调用录下来重放）。</li>
+</ol>
+
+<div class="diagram">
+  <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="接缝判断流程">
+  <defs><marker id="m174" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="320" y="22" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">这个能力，会变吗？</text>
+    <rect x="210" y="40" width="220" height="52" rx="26" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="320" y="62" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">环境会变？实现可选？</text>
+    <text x="320" y="80" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">测试要换？</text>
+    <line x1="220" y1="66" x2="150" y2="66" stroke="#9aa3ad" stroke-width="1.5"/>
+    <text x="185" y="58" text-anchor="middle" font-size="11" fill="#0f766e" font-weight="700">中一个</text>
+    <rect x="20" y="132" width="180" height="84" rx="9" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="110" y="160" text-anchor="middle" font-size="13" fill="#0f766e" font-weight="700">开一道缝</text>
+    <text x="110" y="182" text-anchor="middle" font-size="10.5" fill="#4b5563">定义接口 + 一个实现</text>
+    <text x="110" y="200" text-anchor="middle" font-size="10.5" fill="#4b5563">其他实现各就各位</text>
+    <line x1="420" y1="66" x2="490" y2="66" stroke="#9aa3ad" stroke-width="1.5"/>
+    <text x="455" y="58" text-anchor="middle" font-size="11" fill="#b45309" font-weight="700">都不中</text>
+    <rect x="440" y="132" width="180" height="84" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="530" y="160" text-anchor="middle" font-size="13" fill="#78350f" font-weight="700">先写死</text>
+    <text x="530" y="182" text-anchor="middle" font-size="10.5" fill="#4b5563">不为想象的变化</text>
+    <text x="530" y="200" text-anchor="middle" font-size="10.5" fill="#4b5563">提前买单</text>
+    <line x1="110" y1="218" x2="110" y2="238" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m174)"/>
+    <line x1="530" y1="218" x2="530" y2="238" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m174)"/>
+    <text x="320" y="258" text-anchor="middle" font-size="12" fill="#7b8494">缝开在会变处：接口比实现长寿，但接口也有成本</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 17-4</b> 接缝判断：三个信号中一个就开缝；都不中就先写死，不为想象的变化买单。</div>
+</div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>缝开在会变处。</b>判断标准不是「这个东西重不重要」，而是「这个东西变不变」。重要的不变之物，写死反而更清晰。这套判断不挑框架——换模型、换记忆、换执行环境，任何 Agent 应用都适用。（怎么把接口设计得让模型用得好，第 20 章《设计一个好工具》再展开。）</p></div>
+
+<h2>一张图总结</h2>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="乐高全景">
+  <defs><marker id="m175" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">本章全景：乐高积木的凸点</text>
+    <rect x="20" y="44" width="200" height="120" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="120" y="72" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">搭积木的人 = 消费者</text>
+    <text x="120" y="96" text-anchor="middle" font-size="10.5" fill="#4b5563">agent-loop · system-prompt</text>
+    <text x="120" y="114" text-anchor="middle" font-size="10.5" fill="#4b5563">llm-retry · token-meter</text>
+    <text x="120" y="136" text-anchor="middle" font-size="10.5" fill="#6b7280">只认凸点，不认实现</text>
+    <rect x="260" y="110" width="200" height="76" rx="10" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="360" y="140" text-anchor="middle" font-size="14" fill="#0f766e" font-weight="700">凸点 = 接缝</text>
+    <text x="360" y="160" text-anchor="middle" font-size="10.5" fill="#4b5563">ctx.llm · ctx.subprocess</text>
+    <text x="360" y="176" text-anchor="middle" font-size="10.5" fill="#6b7280">ctx.sessionPersistence…</text>
+    <rect x="500" y="44" width="200" height="120" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="600" y="72" text-anchor="middle" font-size="13" fill="#78350f" font-weight="700">积木 = 提供者</text>
+    <text x="600" y="96" text-anchor="middle" font-size="10.5" fill="#4b5563">llm-deepseek · llm-pi-ai</text>
+    <text x="600" y="114" text-anchor="middle" font-size="10.5" fill="#4b5563">jsonl · sqlite</text>
+    <text x="600" y="136" text-anchor="middle" font-size="10.5" fill="#6b7280">subprocess-local · e2b</text>
+    <line x1="220" y1="104" x2="258" y2="140" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m175)"/>
+    <line x1="498" y1="104" x2="462" y2="140" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m175)"/>
+    <rect x="20" y="196" width="330" height="64" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="185" y="222" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">三信号：环境会变 · 实现可选 · 测试要换</text>
+    <text x="185" y="242" text-anchor="middle" font-size="11" fill="#4b5563">中一个就开缝；都不中先写死</text>
+    <rect x="370" y="196" width="330" height="64" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="535" y="222" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">一次替换 = 全产品改变</text>
+    <text x="535" y="242" text-anchor="middle" font-size="11" fill="#4b5563">依赖跟踪 + 自动重载，消费方零改动</text>
+    <text x="360" y="300" text-anchor="middle" font-size="12" fill="#7b8494">一条主线：凸点尺寸统一，任何积木都能替——接口比实现长寿。</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 17-5</b> 乐高全景：消费者、凸点、积木三角色 + 开缝三信号 + 替换的威力。</div>
+</div>
+
+<h2>要点回顾</h2>
+
+<ul>
+  <li><b>接缝 = 接口与实现之间的缝</b>：三角色各司其职——定义（凸点）、提供者（积木）、消费者（搭积木的人）。</li>
+  <li><b>dsh 把会变的能力全开成缝</b>：ctx.llm、ctx.sessionPersistence、ctx.subprocess、ctx.credentials…各配多个实现。</li>
+  <li><b>一次替换，全产品改变</b>：换掉 subprocess 提供者，bash、终端、LSP 一起搬家，消费方零改动。</li>
+  <li><b>进程外还有一条缝</b>：MCP 让 dsh 接整个外部生态，与进程内接缝互补。</li>
+  <li><b>缝开在会变处</b>：环境会变、实现可选、测试要换——中一个就开；都不中先写死。</li>
+</ul>
+
+<h2>动手做</h2>
+
+<div class="card">
+<ol>
+  <li>打开 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/capability-seams.zh.md" target="_blank" rel="noopener">docs/capability-seams.zh.md</a>，挑一个你没见过的接缝，说出它的定义、提供者与消费者。</li>
+  <li>列出你手头项目里「最想换掉的一个能力」（存储？模型？执行环境？），用三信号判断它该不该开缝，为它起一个 <code>ctx.xxx</code> 键名。</li>
+  <li>设想给这个缝写一个「假实现」（像 llm-replay 那样），说说测试会因此变简单多少。</li>
+</ol>
+</div>
+
+<p>会换一个能力，就敢动手改一个 Agent。可一个人忙不过来时，换多少个零件也没用——下一章《一个人变一支队伍》：从主厨到后厨团队。</p>
+
+        <div class="prevnext">
     <a href="./16-agent-loop.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 16 章 看心脏怎么跳</div></a>
     <a class="next" href="./18-multi-agent.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 18 章 一个人变一支队伍</div></a>
   </div>
 <footer class="footer">
-  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
-  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness 与 Codex</span>
+  <span><a href="../index.html">目录</a></span>
 </footer>
 </div>
 </main>

@@ -21,8 +21,6 @@
 <nav class="sidenav">
 <div class="side-group">
 <a href="../index.html">全书概览</a>
-<a href="../preface.html">前言</a>
-<a href="../outline.html">大纲</a>
 </div>
 <details class="side-part" open>
 <summary>第一篇 · 哲学篇</summary>
@@ -141,7 +139,7 @@
 <p>这些器官不是硬编码拼起来的。底座 vendor/ 里 vendor 了 <b>Cordis</b>——「一切皆插件」的内核（第 5 章的哲学，这里是它的代码形态）。所有插件，都挂到一个共享的 <b>Context</b> 上，它提供三样东西：</p>
 <ul>
   <li><b>服务</b>——每个服务挂在一个稳定的 <code>ctx.xxx</code> 键上（<code>ctx.llm</code>、<code>ctx.tools</code>、<code>ctx.sessions</code>…），插件按「键」找服务；</li>
-  <li><b>类型化事件</b>——插件之间靠事件通信，四种派发模式各司其职；</li>
+  <li><b>类型化事件</b>——插件之间靠事件通信，五种派发模式各司其职；</li>
   <li><b>可逆效应</b>——一切注册都通过 <code>ctx.effect()</code> / <code>ctx.on()</code> 进行，卸载时全部收回。</li>
 </ul>
 
@@ -167,7 +165,7 @@
     <text x="150" y="246" text-anchor="middle" font-size="10.5" fill="#6b7280">ctx.llm · ctx.tools</text>
     <rect x="270" y="204" width="180" height="52" rx="9" fill="#ffffff" stroke="#fde68a"/>
     <text x="360" y="226" text-anchor="middle" font-size="13.5" fill="#78350f" font-weight="700">类型化事件 Events</text>
-    <text x="360" y="246" text-anchor="middle" font-size="10.5" fill="#6b7280">emit · waterfall · serial</text>
+    <text x="360" y="246" text-anchor="middle" font-size="10.5" fill="#6b7280">emit · waterfall · …</text>
     <rect x="480" y="204" width="180" height="52" rx="9" fill="#ffffff" stroke="#5eead4"/>
     <text x="570" y="226" text-anchor="middle" font-size="13.5" fill="#0f766e" font-weight="700">可逆效应 Effects</text>
     <text x="570" y="246" text-anchor="middle" font-size="10.5" fill="#6b7280">卸载时自动收回</text>
@@ -177,7 +175,7 @@
   <div class="figcaption"><b>图 13-2</b> Cordis 的骨架：插件把服务、事件、效应注入共享的上下文，卸载时全部收回。</div>
 </div>
 
-<p>插件一多，顺序就是问题。Cordis 用两条规则回答：<b>注册顺序是默认规则，依赖声明是覆盖规则</b>——谁先谁后由框架算出来，不靠人肉排。这套机制是第 14 章的主角（事件派发的四种模式见第 15 章），这里先记住轮廓。</p>
+<p>插件一多，顺序就是问题。Cordis 用两条规则回答：<b>注册顺序是默认规则，依赖声明是覆盖规则</b>——谁先谁后由框架算出来，不靠人肉排。这套机制是第 14 章的主角（事件派发的五种模式见第 15 章），这里先记住轮廓。</p>
 
 <div class="callout note"><div class="c-title"><span class="ic">▶</span>延伸阅读</div><p>想进一步了解 Cordis：设计论文 <a href="https://github.com/cordiverse/paper" target="_blank" rel="noopener">github.com/cordiverse/paper</a>；源码仓库 <a href="https://github.com/cordiverse/cordis" target="_blank" rel="noopener">github.com/cordiverse/cordis</a>；dsh 的入门文档 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-primer.zh.md" target="_blank" rel="noopener">deepseek-harness/docs/cordis-primer.zh.md</a>。第 14 章会带你亲手写一个插件。</p></div>
 
@@ -221,7 +219,33 @@
   <tr><td><b>循环</b></td><td><code>packages/core</code> 的 agent + agent-loop</td><td>「想—做—看—再想」的主循环</td></tr>
 </table>
 
-<p>注意一个细节：<code>ctx.llm</code> 是<b>接口</b>，背后挂哪个模型适配器由配置说了算——这种「接口与实现分离」正是第 15 章能力接缝的主题。记忆三件套在运行时怎么协作——第 9 章；循环的心脏怎么跳——第 17 章。</p>
+<p><b>agent-loop 是心脏，这句不是比喻</b>——它向框架声明的依赖，源码里写得明明白白：</p>
+
+<pre><code>// packages/core/agent-loop/src/index.ts
+static inject = ['agents', 'sessions', 'llm', 'tools', 'systemPrompt']</code></pre>
+
+<p>这五样就是主流程，各挂一个 <code>ctx.xxx</code> 键：</p>
+<table>
+  <tr><th>依赖</th><th>服务键</th><th>提供插件</th><th>它还要什么</th></tr>
+  <tr><td><code>agents</code></td><td><code>ctx.agents</code></td><td>dsh-agent</td><td>typert</td></tr>
+  <tr><td><code>sessions</code></td><td><code>ctx.sessions</code></td><td>dsh-session</td><td>typert</td></tr>
+  <tr><td><code>llm</code></td><td><code>ctx.llm</code></td><td>dsh-llm</td><td>—（背后挂适配器）</td></tr>
+  <tr><td><code>tools</code></td><td><code>ctx.tools</code></td><td>dsh-tools</td><td>systemPrompt</td></tr>
+  <tr><td><code>systemPrompt</code></td><td><code>ctx.systemPrompt</code></td><td>dsh-system-prompt</td><td>—</td></tr>
+</table>
+
+<p>主流程里 <code>agents</code> 和 <code>agent-loop</code> 是一对互补——别把它们当成同一个东西：</p>
+<ul>
+  <li><b><code>agent</code>（dsh-agent）= 注册表</b>：提供 <code>ctx.agents</code> 服务，负责「记账」——跟踪哪些 agent 活着、谁来当工厂。它自己不会跑 agent，只认一个 <code>AgentFactory</code> 接口（找不到工厂时它报错：no agent factory registered）；</li>
+  <li><b><code>agent-loop</code>（dsh-agent-loop）= 引擎</b>：实现 <code>AgentFactory</code>，在 <code>apply</code> 时把自己注册成工厂，然后真正把 <code>ReactLoopAgent</code>（想—做—看 的循环）转起来。</li>
+</ul>
+<p>所以是引擎找注册表、注册表认引擎——<code>agent-loop</code> 声明 <code>inject: ['agents', …]</code>（要注册表可用），再把 <code>setFactory(this)</code> 填进注册表。注册表不依赖具体引擎，这正是「接口（<code>AgentFactory</code>）最重要」的又一个活例。</p>
+
+<p>所以「最少要哪些插件才能跑起一个 Agent」的答案，就是这条主干加一个叶子 typert——<b>agent-loop + agent + session + llm + tools + system-prompt</b>，已经能想、能看、能写日志。要真动手（行动）再加 shell 与沙箱，要记得住（记忆）再加 session 持久化与上下文插件——但主流程就这么几颗，没有别的「总部」。</p>
+
+<p>注意 base 组合包的注释原话：<b>「行序不承载加载语义，激活由服务可用性驱动」</b>——插件清单里谁先谁后不重要，框架按 <code>inject</code> 依赖算好图，服务就绪才激活对应插件；服务没了，依赖者自动卸载。这正是第 14 章的主角。</p>
+
+<p>注意一个细节：<code>ctx.llm</code> 是<b>接口</b>，背后挂哪个模型适配器由配置说了算——这种「接口与实现分离」正是第 17 章能力接缝的主题。记忆三件套在运行时怎么协作——第 10 章；循环的心脏怎么跳——第 16 章。</p>
 
 <h2 id="s13-4">13.4 一次完整的工作链路</h2>
 <p>光有器官还不够，看一次血流。假设你在 dsh 里说了一句：「帮我把这个项目的测试跑通。」这条消息依次经过六站——注意看，每一站都是什么：</p>
@@ -272,6 +296,7 @@
 
 <p>六站之间没有任何直接的互相调用——连接它们的，是底座 Cordis 的 Context：提示分区与工具清单是<b>效应</b>（注册上去、卸载可收回），模型调用与工具执行是<b>服务</b>（按 <code>ctx.xxx</code> 键取用），结果流动靠<b>事件</b>。所谓「没有特权核心」，机制上就是这句话：没有一站是必须经过的总部，接线都走在 Context 里。</p>
 <p>现在做一次真实的「替换」：你想让 Agent 的命令在<b>远程沙箱</b>里执行，而不是本机。你要做的只有一件事——在配置里把本地 shell 插件换成沙箱插件。<b>其余五个环节纹丝不动</b>，而 Agent 的 bash、终端、LSP 会全部跟着搬进沙箱。这就是「一切皆插件」最值钱的时刻：一次替换，全产品改变。</p>
+<p>为什么能这样？因为替换的唯一锚点是<b>接口</b>：消费者只通过同一把服务键（<code>ctx.shell</code> 这类）调接口，从不 import 具体实现——所以你在同一把键上挂一个匹配抽象接口的新实现，里面怎么写完全自由。<b>系统不关心你的插件怎么实现，只认它挂的键和接口</b>。这正是第 17 章《换一个器官》要展开的地基。</p>
 
 <div class="callout note"><div class="c-title"><span class="ic">▶</span>再品一遍那句话</div><p>「没有特权核心」的直观含义：在 dsh 里，你<b>找不到一个所有请求都必须经过的总部</b>——请求流经的每一个工位，都是一个可以单独替换的插件。</p></div>
 
@@ -279,7 +304,7 @@
 
 <h2>一张图总结</h2>
 <div class="diagram">
-  <svg viewBox="0 0 640 368" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="第八章总结">
+  <svg viewBox="0 0 640 368" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="第十三章总结">
   <defs><marker id="m135" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
   <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
     <text x="16" y="28" font-size="13" fill="#7b8494" font-weight="700">第一步 · 关键节点</text>
@@ -299,14 +324,14 @@
     <text x="320" y="336" text-anchor="middle" font-size="14" fill="#1f2937" font-weight="600">一条消息六站，Cordis 在底下接线——下一站：第 14 章亲手写插件</text>
   </g>
 </svg>
-  <div class="figcaption"><b>图 13-5</b> 第八章的完整脉络：关键节点 → 插件管理 → 分工 → 完整链路。之后各章逐个放大。</div>
+  <div class="figcaption"><b>图 13-5</b> 第十三章的完整脉络：关键节点 → 插件管理 → 分工 → 完整链路。之后各章逐个放大。</div>
 </div>
 
 <h2>要点回顾</h2>
 <ul>
   <li>心智模型四部件各有家：<b>core</b>（循环与装配）、<b>llm</b>（模型）、<b>session/context/compaction</b>（记忆）、能力插件（工具），底座是 vendored Cordis。</li>
   <li>一切皆插件的代码形态：插件挂到 <b>Context</b>，提供服务、事件、效应；顺序由「注册顺序 + 依赖声明」两条规则算出。</li>
-  <li>分工：<b>ctx.llm</b> 思考、<b>ctx.tools</b> 行动、<b>ctx.sessions</b> 记忆、<b>agent-loop</b> 循环。</li>
+  <li>分工：<b>ctx.llm</b> 思考、<b>ctx.tools</b> 行动、<b>ctx.sessions</b> 记忆、<b>agent-loop</b> 循环；它的依赖主干就是 <code>agents · sessions · llm · tools · systemPrompt</code> 这五颗（加个叶子 typert），就是跑起一个 Agent 的最少集合。</li>
   <li>一条消息六站，每站一个插件；站与站不直接调用，接线全走 Cordis 的 Context——效应注册、服务取用、事件流动。换掉 shell 插件，其余五站纹丝不动。</li>
   <li>第 9–16 章逐个放大：插件、记忆、事件、接缝、循环、日志……</li>
 </ul>
@@ -315,9 +340,9 @@
 <p>三件小事，把这张地图变成你的：</p>
 <div class="card">
   <ol>
-    <li><b>对着地图找家</b>：打开 packages/ 目录，按表 8-1 找到四个部件各自的包，给每个包写一句话点评。</li>
+    <li><b>对着地图找家</b>：打开 packages/ 目录，按上文表格找到四个部件各自的包，给每个包写一句话点评。</li>
     <li><b>走一遍链路</b>：运行 <code>npx @deepseek-ai/dsh web</code>，发一条会调用工具的消息，对着图 13-4 指出你观察到的每一步。</li>
-    <li><b>（可选）读入门</b>：打开 <code>docs/cordis-primer.md</code> 的「Cordis In Five Ideas」一节，为第 14 章热身。</li>
+    <li><b>（可选）读入门</b>：打开 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-primer.zh.md" target="_blank" rel="noopener">deepseek-harness/docs/cordis-primer.zh.md</a> 的「Cordis In Five Ideas」一节，为第 14 章热身。</li>
   </ol>
 </div>
 
@@ -326,8 +351,8 @@
     <a class="next" href="./14-plugin-context.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 14 章 把功能插上插头</div></a>
   </div>
 <footer class="footer">
-  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
-  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness 与 Codex</span>
+  <span><a href="../index.html">目录</a></span>
 </footer>
 </div>
 </main>

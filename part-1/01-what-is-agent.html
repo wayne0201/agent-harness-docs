@@ -21,8 +21,6 @@
 <nav class="sidenav">
 <div class="side-group">
 <a href="../index.html">全书概览</a>
-<a href="../preface.html">前言</a>
-<a href="../outline.html">大纲</a>
 </div>
 <details class="side-part" open>
 <summary>第一篇 · 哲学篇</summary>
@@ -368,7 +366,7 @@
   <li>拆掉<b>模型</b> → 又退回成按固定流程走的自动化脚本（还记得 1.4 的 RPA 吗）。</li>
 </ul>
 
-<p>这套心智模型不是凭空造的词，它精确对应 DeepSeek Harness 的真实结构（第二篇会逐一解剖）：</p>
+<p>这套心智模型不是凭空造的词，它精确对应两个真实 Agent 标本的结构——dsh 与 codex（第二篇逐一解剖）。先看 dsh 的长相：</p>
 
 <div class="diagram">
   <svg viewBox="0 0 640 312" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Agent 心智模型与 dsh 映射">
@@ -401,15 +399,15 @@
     <line x1="320" y1="198" x2="320" y2="224" stroke="#6b7280" stroke-width="1.6" marker-start="url(#m15b)" marker-end="url(#m15a)"/>
   </g>
 </svg>
-  <div class="figcaption"><b>图 1-5</b> 心智模型与 DeepSeek Harness 的对应关系：一个概念，对应一个包。</div>
+  <div class="figcaption"><b>图 1-5</b> 心智模型与 dsh 的对应关系：一个概念，对应一个包。codex 也有自己的一套名字（见下表）。</div>
 </div>
 
 <table>
-  <tr><th>心智模型</th><th>职责</th><th>dsh 对应</th></tr>
-  <tr><td><b>模型</b> Model</td><td>思考 · 决策</td><td><code>llm</code> 包（模型适配器）</td></tr>
-  <tr><td><b>记忆</b> Memory</td><td>上下文累积</td><td><code>session</code> 包（会话日志）</td></tr>
-  <tr><td><b>工具</b> Tools</td><td>行动 · 执行</td><td><code>tools</code> 包（工具注册表与执行管线）</td></tr>
-  <tr><td><b>循环</b> Loop</td><td>串联「想—做—看」</td><td><code>agent-loop</code> 包（默认驱动器）</td></tr>
+  <tr><th>心智模型</th><th>职责</th><th>dsh 对应</th><th>codex 对应</th></tr>
+  <tr><td><b>模型</b> Model</td><td>思考 · 决策</td><td><code>llm</code> 包（模型适配器）</td><td><code>model-provider</code> crate（模型提供方抽象）</td></tr>
+  <tr><td><b>记忆</b> Memory</td><td>上下文累积</td><td><code>session</code> 包（会话日志）</td><td><code>context-fragments</code>（上下文片段）</td></tr>
+  <tr><td><b>工具</b> Tools</td><td>行动 · 执行</td><td><code>tools</code> 包（工具注册表与执行管线）</td><td><code>function_tool</code>（工具调用）</td></tr>
+  <tr><td><b>循环</b> Loop</td><td>串联「想—做—看」</td><td><code>agent-loop</code> 包（默认驱动器）</td><td><code>codex_thread</code>（线程循环）</td></tr>
 </table>
 
 <div class="callout idea"><div class="c-title"><span class="ic">◆</span>用这个模型做判断</div><p>记住它，你就能回答大多数「XX 是不是 Agent」的问题：它有没有<b>自主决策</b>的模型？有没有<b>持久记忆</b>？能不能<b>调用工具</b>？有没有把它们串起来的<b>循环</b>？缺一个，它就只是 Agent 的某个零件，而不是 Agent。</p></div>
@@ -452,7 +450,7 @@
   <li>Agent 不是凭空出现的新物种：它是<b>控制论反馈环</b>的现代版——环的结构不变，只是「决策器」从规则升级成了 LLM。</li>
   <li>LLM 的跃迁在于「决策」这步的质变：从<b>确定规则</b>到<b>概率生成</b>，换来泛化能力，代价是不确定性。</li>
   <li>Agent 与普通程序 / RPA / Chatbot 的边界在于<b>是否形成闭环</b>，而非是否用了 LLM。</li>
-  <li>全书心智模型：<b>Agent = 模型 + 记忆 + 工具 + 循环</b>，对应 dsh 的 <code>llm</code> / <code>session</code> / <code>tools</code> / <code>agent-loop</code>。</li>
+  <li>全书心智模型：<b>Agent = 模型 + 记忆 + 工具 + 循环</b>——dsh 叫 <code>llm</code> / <code>session</code> / <code>tools</code> / <code>agent-loop</code>，codex 叫 <code>model-provider</code> / <code>context-fragments</code> / <code>function_tool</code> / <code>codex_thread</code>：同一套心智模型，两个标本各有各的名字。</li>
 </ul>
 
 <h2>动手做</h2>
@@ -461,7 +459,7 @@
   <ol>
     <li><b>找一个</b>你常用的软件（订外卖 App、git、搜索引擎……），判断它具备四要素中的哪几项，它是不是 Agent？</li>
     <li><b>拆一件</b>你最近重复做的事（比如「每天整理下载文件夹」），把它写成四步：感知什么 → 决定什么 → 做什么 → 记住什么。</li>
-    <li><b>（可选）体验</b>一次真实的 Agent：运行 <code>npx @deepseek-ai/dsh web</code>，和它对话，观察它什么时候在「想」、什么时候在「调用工具」、什么时候「记住了」你说过的话。</li>
+    <li><b>（可选）体验</b>一次真实的 Agent：运行 <code>npx @deepseek-ai/dsh web</code> 或 codex 命令行，和它对话，观察它什么时候在「想」、什么时候在「调用工具」、什么时候「记住了」你说过的话。</li>
   </ol>
 </div>
 
@@ -472,8 +470,8 @@
     <a class="next" href="./02-language-interface.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 2 章 语言成为新接口</div></a>
   </div>
 <footer class="footer">
-  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
-  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness 与 Codex</span>
+  <span><a href="../index.html">目录</a></span>
 </footer>
 </div>
 </main>

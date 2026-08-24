@@ -8,21 +8,16 @@
 <script src="../assets/book.js" defer></script>
 </head>
 <body class="part-2">
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
-    <span class="crumb">科学篇 / 第 16 章</span>
-    <span class="spacer"></span>
-    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
-  </div>
-</header>
+<header class="topbar"><div class="topbar-inner">
+<a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+<span class="crumb">科学篇 / 第 16 章</span>
+<span class="spacer"></span>
+<button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+</div></header>
 <main class="layout">
-<aside class="sidebar" id="sidebar">
-<nav class="sidenav">
+<aside class="sidebar" id="sidebar"><nav class="sidenav">
 <div class="side-group">
 <a href="../index.html">全书概览</a>
-<a href="../preface.html">前言</a>
-<a href="../outline.html">大纲</a>
 </div>
 <details class="side-part" open>
 <summary>第一篇 · 哲学篇</summary>
@@ -76,8 +71,7 @@
 <li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
 </ul>
 </details>
-</nav>
-</aside>
+</nav></aside>
 <div class="container">
 
 <div class="hero part-2">
@@ -87,23 +81,333 @@
   <p class="subtitle">拆解 Agent 循环与工具管线，看懂引擎如何运转</p>
 </div>
 
-<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>Agent 到底怎么「转」起来？</p></div>
+<p class="lead">第 15 章结尾问：谁来指挥模型一轮轮想、做、看？这一章看<b>心脏</b>——Agent 循环（第 1 章 1.5 心智模型里那个 Loop，在这里有了学名：<b>ReAct</b>）。第 8 章 8.2 的「模型出主意、工具动手」，在这一章放大成一次完整的搏动。先分清两种粒度，再走一遍主循环、拆一次工具管线，最后看它出错时怎么自救。全章一个比喻：<b>心脏的搏动</b>。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>本章核心问题</div><p>Agent 到底怎么「转」起来？</p></div>
 
 <div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>理解 Agent 运行时引擎，能定位每一步发生在哪。</p></div>
 
-<h2>本章结构</h2>
-<ul class="section-list" style="grid-template-columns:1fr"><li>16.1 turn 与 step：一次心跳，两种粒度</li><li>16.2 主循环走查：ReAct 循环——想一步、动一手、看结果（认领 · 装配 · 请求 · 工具 · 收尾）</li><li>16.3 工具执行管线：一次调用的九道关</li><li>16.4 取消与错误恢复：心脏的自救</li></ul>
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s16-1">16.1 想一步、动一手、看结果：核心循环的骨架</a></li>
+    <li><a href="#s16-2">16.2 一次 step 的五阶段：从输入到去留</a></li>
+    <li><a href="#s16-3">16.3 工具执行管线：一次调用的九道关</a></li>
+    <li><a href="#s16-4">16.4 取消与错误恢复：心脏的自救</a></li>
+    <li><a href="#s16-5">16.5 dsh 的特别设计：循环之外的匠心</a></li>
+  </ul>
+</div>
 
-<div class="callout warn stub-note"><div class="c-title"><span class="ic">✦</span>本章正文待撰写</div><p>骨架已就位（第三幕 · 开发项目 · 第 4 站（第 9 章黑匣子里的痕迹，就是这里写下的））。正文（导语、图文详解、一张图、要点回顾、动手做）将在骨架确认后逐章撰写。草案：docs/.drafts/part-2-bodies/11-agent-loop.html。当前页面用于确认章节骨架与导航结构。</p><p>写正文备忘：16.2 以 ReAct 为循环学名锚点——按「想一步 → 动一手 → 看结果」展开，回指第 1 章心智模型公式与第 8 章 8.2 读→写→验实例，附论文链接（ReAct: Synergizing Reasoning and Acting in Language Models，Yao et al. 2022）。</p></div>
+<h2 id="s16-1">16.1 想一步、动一手、看结果：核心循环的骨架</h2>
+
+<p>核心循环的骨架是：<b>想一步 → 动一手 → 看结果 → 再想下一步</b>。学名是 <b>ReAct</b>（<b>Rea</b>soning 思考 与 <b>Act</b> 行动 交替），出自 2022 年的一篇论文（<a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">ReAct: Synergizing Reasoning and Acting in Language Models，Yao et al. 2022</a>）。第 8 章 8.2 的「模型出主意、工具动手」，就是它在单个任务上的样子；第 1 章心智模型里那个「循环」，就是它。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 640 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="通用ReAct循环">
+  <defs><marker id="m161" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="320" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">你说话 → 回合 turn 开始 → 循环 step → 最终结果</text>
+    <rect x="20" y="140" width="96" height="56" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="68" y="164" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">你</text>
+    <text x="68" y="182" text-anchor="middle" font-size="10.5" fill="#6b7280">输入一句话</text>
+    <line x1="116" y1="168" x2="138" y2="168" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m161)"/>
+    <rect x="140" y="36" width="480" height="248" rx="12" fill="#ffffff" stroke="#0f766e" stroke-dasharray="6 4"/>
+    <text x="380" y="54" text-anchor="middle" font-size="12" fill="#0f766e" font-weight="700">回合 turn：一个 step 接一个 step，直到停</text>
+    <rect x="170" y="72" width="180" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="260" y="95" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">想一步</text>
+    <text x="260" y="112" text-anchor="middle" font-size="9.5" fill="#6b7280">step ① · 求模型</text>
+    <rect x="170" y="144" width="180" height="52" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="260" y="167" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">动一手</text>
+    <text x="260" y="184" text-anchor="middle" font-size="9.5" fill="#6b7280">step ② · 跑工具</text>
+    <rect x="170" y="216" width="180" height="52" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="260" y="239" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">看结果</text>
+    <text x="260" y="256" text-anchor="middle" font-size="9.5" fill="#6b7280">step ③ · 再想</text>
+    <line x1="260" y1="124" x2="260" y2="142" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m161)"/>
+    <line x1="260" y1="196" x2="260" y2="214" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m161)"/>
+    <rect x="400" y="144" width="130" height="52" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="465" y="167" text-anchor="middle" font-size="10.5" fill="#1f2937" font-weight="600">中途产物</text>
+    <text x="465" y="184" text-anchor="middle" font-size="9.5" fill="#6b7280">如代码写入文件</text>
+    <line x1="352" y1="170" x2="398" y2="170" stroke="#9aa3ad" stroke-width="1.4" marker-end="url(#m161)"/>
+    <path d="M352 244 L552 244 L552 98 L352 98" fill="none" stroke="#0f766e" stroke-width="1.6" marker-end="url(#m161)"/>
+    <text x="420" y="238" text-anchor="middle" font-size="10.5" fill="#0f766e" font-weight="600">工具结果喂回「想一步」</text>
+    
+    <path d="M260 268 L260 302 L68 302 L68 198" fill="none" stroke="#0f766e" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m161)"/>
+    <text x="164" y="296" text-anchor="middle" font-size="11" fill="#0f766e" font-weight="600">模型说「不行动了」→ 最终结果给你</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 16-1</b> 你说话触发一个回合，回合里 step 循环（想→动→看），中途产物随时落地，最终结果回到你。</div>
+</div>
+
+<p>在这个循环上，有两个<b>通用概念</b>，不依赖任何具体实现：</p>
+<ul>
+  <li><b>回合（turn）</b>——从你输入一句话，到 Agent 决定停下来。这是一整件事。</li>
+  <li><b>步骤（step）</b>——回合之内的一次「想 + 动 + 看」。一件事往往要好几个 step 才能干完。</li>
+</ul>
+
+<p>一个回合里可以有好几个 step——模型觉得还没干完，就再来一轮。两种粒度各有用途：<b>计费看 step，会话和断点看 turn</b>。</p>
+
+<p>那「什么时候停」？通用答案是：<b>模型这一轮「不行动」了</b>——它不再要求调用任何工具，说明它觉得干完了（或该把控制权还给你），回合就结束。图里那条「最终结果 → 你」的虚线，就是模型说停之后的事。</p>
+
+<h2 id="s16-2">16.2 一次 step 的五阶段：从输入到去留</h2>
+
+<p>把「想一步、动一手、看结果」放慢，一次 step 走五阶段——每个阶段 dsh 都实现了，还给了具体名字（括号里是 dsh 的叫法）：</p>
+<ol>
+  <li><b>拿输入</b>——取本步要处理的那批消息（用户说的、上一轮工具的结果）。<b>一般是队列（先进先出）</b>：对话要保序，先来的先处理；栈（后进先出）会打乱对话顺序。<b>dsh 里的叫法</b>：收件箱（inbox）＋认领（claim）——也是队列，等下个回合的消息从队头取一条，上一轮的工具结果整批取走。</li>
+  <li><b>拼提示</b>——把系统提示、上下文、工具说明拼成发给模型的请求；有些引擎允许这一步被「拦截/注入/拒绝」。<b>dsh 里的叫法</b>：pre-step、system-prompt/assemble。</li>
+  <li><b>问模型</b>——把请求发给模型，拿到它的回复。<b>dsh 里的叫法</b>：agent/request → llm/stream。</li>
+  <li><b>跑工具</b>——模型说要调用工具，就执行（带护栏），把结果拿回来。<b>dsh 里的叫法</b>：tool/call → 工具管线 → tool/result。</li>
+  <li><b>定去留</b>——看模型这轮「还要不要工具」：要 → 带着工具结果回到第 3 步再来一轮；不要 → 回合结束。<b>dsh 里的叫法</b>：turn-stopping 终检 → turn/end。</li>
+</ol>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="主循环五阶段">
+  <defs><marker id="m162" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">一次 step 的五阶段（括号里是 dsh 的名字）</text>
+    <rect x="170" y="36" width="380" height="52" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="360" y="58" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="700">① 拿输入 · dsh: inbox</text>
+    <text x="360" y="76" text-anchor="middle" font-size="10.5" fill="#6b7280">emit 事件：消息进收件箱 → driver 认领</text>
+    <line x1="360" y1="88" x2="360" y2="94" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m162)"/>
+    <rect x="170" y="96" width="380" height="52" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="360" y="118" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">② 拼提示 · dsh: pre-step</text>
+    <text x="360" y="136" text-anchor="middle" font-size="10.5" fill="#6b7280">waterfall：可拒绝 · 可注入 · 可替换消息</text>
+    <line x1="360" y1="148" x2="360" y2="154" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m162)"/>
+    <rect x="170" y="156" width="380" height="52" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="360" y="178" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">③ 问模型 · dsh: agent/request</text>
+    <text x="360" y="196" text-anchor="middle" font-size="10.5" fill="#6b7280">waterfall；每个分片先落 assistant/chunk</text>
+    <line x1="360" y1="208" x2="360" y2="214" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m162)"/>
+    <rect x="170" y="216" width="380" height="52" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="360" y="238" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="700">④ 跑工具 · dsh: tool/call</text>
+    <text x="360" y="256" text-anchor="middle" font-size="10.5" fill="#6b7280">waterfall 三连站（16.3）→ tool/result</text>
+    <line x1="360" y1="268" x2="360" y2="274" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m162)"/>
+    <rect x="170" y="276" width="380" height="52" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="360" y="298" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">⑤ 定去留 · dsh: turn-stopping</text>
+    <text x="360" y="316" text-anchor="middle" font-size="10.5" fill="#6b7280">serial 终检 → turn/end → 状态 idle</text>
+    <path d="M552 302 L620 302 L620 182 L550 182" fill="none" stroke="#0f766e" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#m162)"/>
+    <text x="636" y="182" text-anchor="middle" font-size="11.5" fill="#0f766e" font-weight="600" transform="rotate(-90 636 182)">没干完？回到 ③ 再来一轮</text>
+    <text x="360" y="356" text-anchor="middle" font-size="12" fill="#7b8494">每站都是插件：效应注册、服务取用、事件流动——全程没有一个特权核心</text>
+    <text x="360" y="380" text-anchor="middle" font-size="11.5" fill="#4b5563" font-weight="600">这一搏的完整时序见 agent-lifecycle.zh.md</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 16-2</b> 五阶段是通用引擎骨架，dsh 给每阶段起了名字：认领、装配、请求、工具、收尾。</div>
+</div>
+<p>看清了：<b>「五阶段」是通用设计，dsh 只是证实它</b>——通用概念「想一步 / 动一手 / 看结果」分别落在第 3、4 步和那条回边。</p>
+
+<p>「停还是继续」怎么判定？看三点：</p>
+<ul>
+  <li><b>判据</b>——模型这一轮输出的 <code>assistant/message</code> 里有没有 <code>tool-call</code> 块（driver 的 <code>step()</code> 结尾）：</li>
+</ul>
+<pre><code>// 1. 看模型这轮输出里有没有工具调用
+const toolCalls = message.content.filter(block => block.type === 'tool-call')
+
+// 2. 没有 → 模型觉得干完了，回合结束
+if (toolCalls.length === 0) {
+  return { kind: 'completed' }
+}
+
+// 3. 有 → 执行工具，结果塞回「下一步」输入，进入下一 step
+return concluded ? { kind: 'completed' } : null</code></pre>
+<ul>
+  <li><b>谁拍板</b>——<b>模型只「提案」</b>（输出里带不带 tool-call），<b>driver 代码按确定性规则判定</b>；<code>agent/turn-stopping</code>（serial）在「模型说停 + 收件箱没新输入」时做最后一关复核——插件可以在这里拦下结束或放行（第 12 章「模型只提案、裁决在代码」的又一次落地）。</li>
+  <li><b>安全阀</b>——模型会一直「只要工具」地转下去（复杂任务拆多步），所以循环有兜底：max-tokens 截断、工具超时（16.4）、重复打转提醒，都是防止它无限转的安全阀。</li>
+</ul>
 
 
-  <div class="prevnext">
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 应用线视角</div><p>你不写 driver，但「卡住」时得知道卡在哪：消息发出去没反应 → 卡在①（没被认领）；模型回了但没干活 → 卡在②③（提示没装配对）；工具调用了却没结果 → 卡在④（管线某关拦了）。定位到阶段，再去看对应事件，就是第 9 章日志的用法。</p></div>
+
+<h2 id="s16-3">16.3 工具执行管线：一次调用的九道关</h2>
+
+<p>工具能干活，也能干坏事——所以调用必须有过护栏（权限、沙箱、超时、可拦截）。dsh 把「护栏」做到了极致：一次工具调用要过<b>九道关</b>（第 15 章见过它的三连站 <code>tools/pre-execute</code> / <code>execute</code> / <code>post-execute</code>，这里是完整版，依据 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/tool-execution-pipeline.zh.md" target="_blank" rel="noopener">tool-execution-pipeline.zh.md</a>）：</p>
+<p>九道关按角色分三组（顺序见图 16-3 的蛇形走位）：</p>
+<ul>
+  <li><b>三个 waterfall（可插队、可拦截）</b>——<code>tools/pre-execute</code>（钩子、权限、沙箱）→ <code>tools/execute</code>（超时、重试、指标）→ <code>tools/post-execute</code>（接受、拦截、替换、附加上下文）；</li>
+  <li><b>守卫与询问（可拍板）</b>——<b>单调守卫</b>（只许否决/弃权、保护身份）→ <code>ctx.approval</code>（一次性询问，没回应=否决，第 12 章的主角）→ <b>工具主体</b>（真正干活的代码）→ 文件守卫（fs 写改过 <code>fs/write-intent</code>、<code>fs/edit-intent</code>）；</li>
+  <li><b>收尾三关（不可拦截）</b>——<code>finalizeContent</code>（工具自声明的「仅内容不变式」）→ <code>tools/result</code>（冻结的权威结果，落成 <code>tool/result</code> 日志事件）。</li>
+</ul>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="工具执行管线九道关">
+  <defs><marker id="m163" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">一次工具调用的九道关（蛇形走位）</text>
+    <rect x="16" y="64" width="150" height="52" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="91" y="86" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">pre-execute</text>
+    <text x="91" y="104" text-anchor="middle" font-size="10" fill="#6b7280">瀑布 · 钩子/权限/沙箱</text>
+    <rect x="182" y="64" width="150" height="52" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="257" y="86" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="700">单调守卫</text>
+    <text x="257" y="104" text-anchor="middle" font-size="10" fill="#6b7280">否决/弃权 · 身份保护</text>
+    <rect x="348" y="64" width="150" height="52" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="423" y="86" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="700">一次性询问</text>
+    <text x="423" y="104" text-anchor="middle" font-size="10" fill="#6b7280">ctx.approval · 没回应=否决</text>
+    <rect x="514" y="64" width="150" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="589" y="86" text-anchor="middle" font-size="11.5" fill="#312e81" font-weight="700">execute</text>
+    <text x="589" y="104" text-anchor="middle" font-size="10" fill="#6b7280">瀑布 · 超时/重试/指标</text>
+    <line x1="166" y1="90" x2="180" y2="90" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m163)"/>
+    <line x1="332" y1="90" x2="346" y2="90" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m163)"/>
+    <line x1="498" y1="90" x2="512" y2="90" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m163)"/>
+    <line x1="589" y1="116" x2="589" y2="174" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m163)"/>
+    <rect x="514" y="176" width="150" height="52" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="589" y="198" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="700">工具主体</text>
+    <text x="589" y="216" text-anchor="middle" font-size="10" fill="#6b7280">真正干活的代码</text>
+    <rect x="348" y="176" width="150" height="52" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="423" y="198" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">post-execute</text>
+    <text x="423" y="216" text-anchor="middle" font-size="10" fill="#6b7280">瀑布 · 接受/拦截/替换</text>
+    <rect x="182" y="176" width="150" height="52" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="257" y="198" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="700">finalizeContent</text>
+    <text x="257" y="216" text-anchor="middle" font-size="10" fill="#6b7280">仅内容不变式</text>
+    <rect x="16" y="176" width="150" height="52" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="91" y="198" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="700">tools/result</text>
+    <text x="91" y="216" text-anchor="middle" font-size="10" fill="#6b7280">冻结的权威结果</text>
+    <line x1="512" y1="202" x2="500" y2="202" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m163)"/>
+    <line x1="346" y1="202" x2="334" y2="202" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m163)"/>
+    <line x1="180" y1="202" x2="168" y2="202" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m163)"/>
+    <line x1="91" y1="228" x2="91" y2="250" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m163)"/>
+    <rect x="16" y="252" width="220" height="40" rx="9" fill="#ecfdf8" stroke="#0f766e"/>
+    <text x="126" y="277" text-anchor="middle" font-size="11.5" fill="#0f766e" font-weight="600">落成 tool/result → session/event</text>
+    <text x="560" y="264" font-size="11" fill="#7b8494">守卫与询问是第 12 章的主角</text>
+    <text x="560" y="282" font-size="11" fill="#7b8494">任何一环都能否决或改写</text>
+    <text x="360" y="322" text-anchor="middle" font-size="12" fill="#7b8494">九关全过，一次调用才算数——顺序固定，插件只插队、不插线</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 16-3</b> 工具执行管线九道关：三个 waterfall 加守卫、询问、主体、不变式、落账，一次调用九关全过才算数。</div>
+</div>
+
+<h2 id="s16-4">16.4 取消与错误恢复：心脏的自救</h2>
+
+<p>心脏会漏跳，循环也会。出错的应对是<b>重试、超时、提醒</b>三招。dsh 把这三招做成了三个插件，坏消息全部结构化：</p>
+<ul>
+  <li><b>请求失败</b>——模型调用出错，<code>agent/request-error</code>（waterfall）一响：<code>llm-retry</code> 按策略重试；若是上下文溢出，<code>compaction-basic</code> 先压缩再重开一轮（第 10 章的主角）。</li>
+  <li><b>工具超时</b>——工具声明自己的 <code>timeoutMs</code>，<code>timeout-policy</code> 在 <code>tools/execute</code> 上设一个截止信号；到点就把结果替换成结构化的 <code>TOOL_TIMEOUT</code> 错误。模型看到的是「超时了」三个字，而不是一个卡死的进程。</li>
+  <li><b>重复打转</b>——模型用完全相同的参数连调同一个工具，<code>repeat-tool-reminder</code> 数到 3、5、8 次就逐级注入提醒：「停一下，重读上次结果，换个方案」。它只提醒，不拦路。</li>
+</ul>
+
+<div class="diagram">
+  <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="取消与错误恢复">
+  <defs><marker id="m164" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="320" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">心脏的自救：失败重试、超时报错、重复提醒</text>
+    <text x="20" y="42" font-size="11" fill="#4b5563" font-weight="700">① 请求失败</text>
+    <rect x="20" y="50" width="140" height="44" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="90" y="77" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="600">模型请求失败</text>
+    <rect x="200" y="50" width="190" height="44" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="295" y="77" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="700">agent/request-error</text>
+    <rect x="420" y="38" width="200" height="40" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="520" y="63" text-anchor="middle" font-size="11.5" fill="#312e81" font-weight="600">llm-retry 重试</text>
+    <rect x="420" y="88" width="200" height="40" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="520" y="113" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="600">compaction 压缩</text>
+    <line x1="160" y1="72" x2="198" y2="72" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m164)"/>
+    <line x1="390" y1="64" x2="418" y2="58" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m164)"/>
+    <line x1="390" y1="72" x2="418" y2="106" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m164)"/>
+    <path d="M520 128 L520 146 L110 146 L110 96" fill="none" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m164)"/>
+    <text x="316" y="140" text-anchor="middle" font-size="10.5" fill="#0f766e" font-weight="600">压缩后重开一轮</text>
+    <text x="20" y="176" font-size="11" fill="#4b5563" font-weight="700">② 工具超时</text>
+    <rect x="20" y="184" width="140" height="44" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="90" y="211" text-anchor="middle" font-size="11.5" fill="#1f2937" font-weight="600">工具执行超时</text>
+    <rect x="200" y="184" width="200" height="44" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="300" y="211" text-anchor="middle" font-size="11.5" fill="#78350f" font-weight="700">TOOL_TIMEOUT 结构化结果</text>
+    <rect x="430" y="184" width="190" height="44" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="525" y="211" text-anchor="middle" font-size="11.5" fill="#134e4a" font-weight="600">模型看到错误，循环不炸</text>
+    <line x1="160" y1="206" x2="198" y2="206" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m164)"/>
+    <line x1="400" y1="206" x2="428" y2="206" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m164)"/>
+    <text x="320" y="260" text-anchor="middle" font-size="12" fill="#7b8494">③ 重复打转：同一调用连续 3 / 5 / 8 次 → 逐级提醒（只提醒，不拦路）</text>
+    <text x="320" y="274" text-anchor="middle" font-size="11" fill="#4b5563" font-weight="600">调试的细节，第 22 章《调试与可观测》再放大</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 16-4</b> 心脏的自救：失败重试、超时报错、重复提醒——坏消息全部结构化，循环继续跳。</div>
+</div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>坏消息也要结构化。</b>失败、超时、打转都是「正常输入」，循环从不假装没看见——它把坏消息变成一条消息，再交给模型决定下一步。</p></div>
+
+<h2 id="s16-5">16.5 dsh 的特别设计：循环之外的匠心</h2>
+
+<p>通用核心讲完了，dsh 在循环本身之外，还有两处值得单独说一说的设计——它们不是「必须」，而是「锦上添花」：</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="dsh特别设计">
+  <defs><marker id="m165" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">dsh 的两处特别设计</text>
+    <rect x="20" y="44" width="330" height="150" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="185" y="70" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="700">① 循环本身全是插件</text>
+    <text x="185" y="94" text-anchor="middle" font-size="10.5" fill="#4b5563">五阶段、每道关、终检</text>
+    <text x="185" y="112" text-anchor="middle" font-size="10.5" fill="#4b5563">全是 waterfall/serial/emit 接缝</text>
+    <text x="185" y="136" text-anchor="middle" font-size="10.5" fill="#6b7280">想加审批？监听 pre-execute</text>
+    <text x="185" y="154" text-anchor="middle" font-size="10.5" fill="#6b7280">想改提示？监听 pre-step</text>
+    <text x="185" y="178" text-anchor="middle" font-size="11" fill="#0f766e" font-weight="600">不写死任何一步——一切皆插件</text>
+    <rect x="370" y="44" width="330" height="150" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="535" y="70" text-anchor="middle" font-size="13" fill="#78350f" font-weight="700">② 每一步都可回放</text>
+    <text x="535" y="94" text-anchor="middle" font-size="10.5" fill="#4b5563">模型分片先落日志（assistant/chunk）</text>
+    <text x="535" y="112" text-anchor="middle" font-size="10.5" fill="#4b5563">收件箱待办也持久化（inbox/spliced）</text>
+    <text x="535" y="136" text-anchor="middle" font-size="10.5" fill="#6b7280">进程重启 → 从日志重放，不丢活</text>
+    <text x="535" y="154" text-anchor="middle" font-size="10.5" fill="#6b7280">复盘 → 每一分片都在执行日志里</text>
+    <text x="535" y="178" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">循环是「可重放的」，不只是「会跑的」</text>
+    <text x="360" y="232" text-anchor="middle" font-size="11.5" fill="#7b8494">换来的是「随便在哪插入逻辑」和「出事了能回看」</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 16-5</b> dsh 的两处特别设计：循环本身全是插件接缝、每一步都可回放。</div>
+</div>
+
+<p><b>① 循环本身全是插件。</b>通用 Agent 的循环常常是写死的一段代码；dsh 把五阶段、工具的每一道关、甚至「要不要停」的终检，全做成了 waterfall / serial / emit 接缝（第 15 章的机制）。于是「在任何位置插入逻辑」不只是口号——想给工具加审批，监听 <code>tools/pre-execute</code>；想改模型看到的提示，监听 <code>agent/pre-step</code>；想在回合结束时拦一下，监听 <code>agent/turn-stopping</code>。这是第 13 章「一切皆插件」在循环这个最核心的地方做到了极致。</p>
+
+<p><b>② 每一步都可回放。</b>很多 Agent 循环只是「跑一遍」，跑完就没了；dsh 让循环<b>可重放</b>——模型吐的每个分片先落执行日志（<code>assistant/chunk</code>），收件箱的待办也持久化（<code>agent/inbox/spliced</code>）。带来的两个好处：进程重启能从日志重放、不丢活；复盘时每一分片都在第 9 章的执行日志里，看得见 Agent 每一步是怎么想的。循环不只是「会跑的」，还是「能回看的」。</p>
+
+<h2>一张图总结</h2>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="心脏搏动全景">
+  <defs><marker id="m166" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">本章全景：心脏的搏动</text>
+    <rect x="60" y="90" width="220" height="110" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="170" y="120" text-anchor="middle" font-size="13.5" fill="#312e81" font-weight="700">舒张 · 装配与请求</text>
+    <text x="170" y="144" text-anchor="middle" font-size="10.5" fill="#4b5563">认领输入 · 装配提示</text>
+    <text x="170" y="162" text-anchor="middle" font-size="10.5" fill="#4b5563">请求模型 · 分片落日志</text>
+    <rect x="440" y="90" width="220" height="110" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="550" y="120" text-anchor="middle" font-size="13.5" fill="#78350f" font-weight="700">收缩 · 执行与写回</text>
+    <text x="550" y="144" text-anchor="middle" font-size="10.5" fill="#4b5563">工具管线九道关</text>
+    <text x="550" y="162" text-anchor="middle" font-size="10.5" fill="#4b5563">结果写回日志</text>
+    <line x1="282" y1="130" x2="438" y2="130" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m166)"/>
+    <line x1="438" y1="165" x2="282" y2="165" stroke="#9aa3ad" stroke-width="1.8" marker-end="url(#m166)"/>
+    <text x="360" y="120" text-anchor="middle" font-size="11" fill="#0f766e" font-weight="700">泵给模型</text>
+    <text x="360" y="185" text-anchor="middle" font-size="11" fill="#0f766e" font-weight="700">泵回日志</text>
+    <rect x="230" y="232" width="260" height="44" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="360" y="259" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="700">turn / step：一整天 / 一次搏动</text>
+    <text x="360" y="292" text-anchor="middle" font-size="12" fill="#7b8494">一条主线：一收一缩，转起来；坏消息结构化，循环不炸。</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 16-6</b> 心脏搏动：舒张泵上下文给模型，收缩把结果泵回日志——循环即心跳。</div>
+</div>
+
+<h2>要点回顾</h2>
+
+<ul>
+  <li><b>两种粒度</b>：turn 是完整回合（你说话到它停），step 是一次搏动（进消息到出结果）。</li>
+  <li><b>学名 ReAct</b>：想一步 → 动一手 → 看结果——核心循环的骨架；五阶段是通用引擎骨架，dsh 用 driver 实现了它。</li>
+  <li><b>主循环五阶段</b>：认领 → 装配 → 请求 → 工具 → 收尾；每站都是插件 + 事件，回边是心跳。</li>
+  <li><b>工具管线九道关</b>：三个 waterfall 加守卫、询问、主体、不变式、落账——任何一环都能否决或改写。</li>
+  <li><b>自救三层</b>：失败重试/压缩、超时报结构化错误、重复打转逐级提醒；坏消息也要结构化。</li>
+</ul>
+
+<h2>动手做</h2>
+
+<div class="card">
+<ol>
+  <li>开一次 dsh 会话，让 Agent 做一个小任务（比如改一个文件名）。任务结束后，凭记忆画出这次任务的五阶段，再对照 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/agent-lifecycle.zh.md" target="_blank" rel="noopener">agent-lifecycle.zh.md</a> 的时序图核对。</li>
+  <li>回忆这次任务里的一次工具调用，说出它过了九道关里的哪几关（至少说出 pre-execute、execute、post-execute、tool/result 四关）。</li>
+  <li>设想给「超时」加一条自定义策略：它该监听哪个事件？用哪种模式？为什么？（提示：拦截用 waterfall，参考 16.4 的 timeout-policy。）</li>
+</ol>
+</div>
+
+<p>心脏每跳一下，都留一道痕迹——<code>assistant/chunk</code>、<code>tool/call</code>、<code>tool/result</code>，一条条追加进执行日志（第 9 章）。痕迹攒起来，就是 Agent 看得见的过去。心脏的搏动看完了，下一章换个视角：<b>换一个器官</b>——看看 dsh 里哪些部件能整个换掉，接缝在哪。</p>
+
+        <div class="prevnext">
     <a href="./15-event-driven.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 15 章 让零件通风报信</div></a>
     <a class="next" href="./17-capability-seams.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 17 章 换一个器官</div></a>
   </div>
 <footer class="footer">
-  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
-  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness 与 Codex</span>
+  <span><a href="../index.html">目录</a></span>
 </footer>
 </div>
 </main>

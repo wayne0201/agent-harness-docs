@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>目录 · 深入浅出 AI Agent</title>
+<title>深入浅出 AI Agent</title>
 <link rel="stylesheet" href="./assets/style.css">
 <script src="./assets/book.js" defer></script>
 </head>
@@ -11,7 +11,7 @@
 <header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="./index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
-    <span class="crumb">目录</span>
+    <span class="crumb">全书概览</span>
     <span class="spacer"></span>
     <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
   </div>
@@ -21,8 +21,6 @@
 <nav class="sidenav">
 <div class="side-group">
 <a class="active" href="index.html">全书概览</a>
-<a href="preface.html">前言</a>
-<a href="outline.html">大纲</a>
 </div>
 <details class="side-part" open>
 <summary>第一篇 · 哲学篇</summary>
@@ -83,263 +81,93 @@
 <div class="hero">
   <span class="eyebrow"><span class="dot"></span>AI Agent Engineer · 全链路工程师</span>
   <h1>深入浅出 AI Agent</h1>
-  <p class="subtitle">以 DeepSeek Harness 为例，沿「哲学 → 科学 → 艺术」三篇，先学会用好 Agent，再造出 Agent</p>
+  <p class="subtitle">以 DeepSeek Harness 与 Codex 为双标本，沿「哲学 → 科学 → 艺术」三篇，先学会用好 Agent，再造出 Agent</p>
   <div class="tags">
-    <span class="tag hl">哲学 → 科学 → 艺术</span>
-    <span class="tag">一切皆插件</span>
-    <span class="tag">事件驱动</span>
-    <span class="tag">能力接缝</span>
+    <span class="tag hl">通用哲学是主干</span>
+    <span class="tag">dsh · codex 双标本</span>
+    <span class="tag">哲学 → 科学 → 艺术</span>
+    <span class="tag">应用线 × 创造线</span>
     <span class="tag">从需求到反馈的闭环</span>
   </div>
 </div>
 
-<p class="lead">这不是一本「介绍某个框架 API」的手册，而是一本教你<b>像 Agent 工程师一样思考与做事</b>的书。我们解剖一个真实、自洽的开源 Agent 框架——DeepSeek Harness，沿着「哲学 → 科学 → 艺术」的路径，从「为什么」走到「怎么做」，再走到「怎么做好」。</p>
+<p class="lead">这是一个软件正在学会<b>行动</b>的时代。大语言模型不再只是生成文字，它们开始调用工具、读写文件、执行命令、委派子任务、反思并修正自己。我们把这种「能感知、能决策、能行动、有记忆」的软件实体，称为 <b>Agent（智能体）</b>。</p>
+
+<h2>这本书想做什么</h2>
+<p>市面上的 Agent 教程大多教你「怎么调某个 API」或「怎么用某个框架」。这本书想做一件更根本的事：<b>帮你建立 Agent 工程的心智模型</b>——不仅能看懂一个框架，更能判断一个设计为什么好，进而自己做出好的 Agent。</p>
+<p>为此，我们选了<b>两个真实、自洽的开源 Agent</b>——DeepSeek Harness 与 Codex——作为贯穿全书的<b>双标本</b>，并沿着一条朴素的发展规律来组织全书：</p>
 
 <div class="diagram">
-<svg viewBox="0 0 780 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="哲学到科学到艺术与双线">
-  <defs>
-    <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 Z" fill="#9aa3ad"/></marker>
-  </defs>
-  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
-    <rect x="10" y="36" width="228" height="158" rx="14" fill="#eef2ff" stroke="#c7d2fe"/>
-    <rect x="276" y="36" width="228" height="158" rx="14" fill="#ecfdf8" stroke="#99f6e4"/>
-    <rect x="542" y="36" width="228" height="158" rx="14" fill="#fffbeb" stroke="#fde68a"/>
-    <text x="124" y="28" text-anchor="middle" font-size="15" fill="#4338ca" font-weight="700">① 哲学</text>
-    <text x="390" y="28" text-anchor="middle" font-size="15" fill="#0f766e" font-weight="700">② 科学</text>
-    <text x="656" y="28" text-anchor="middle" font-size="15" fill="#b45309" font-weight="700">③ 艺术</text>
-    <text x="124" y="60" text-anchor="middle" font-size="19" fill="#312e81" font-weight="700">先问为什么</text>
-    <text x="390" y="60" text-anchor="middle" font-size="19" fill="#134e4a" font-weight="700">建立机制</text>
-    <text x="656" y="60" text-anchor="middle" font-size="19" fill="#78350f" font-weight="700">长出品</text>
-    <text x="124" y="80" text-anchor="middle" font-size="12.5" fill="#6b7280">世界观 · 第一性原理</text>
-    <text x="390" y="80" text-anchor="middle" font-size="12.5" fill="#6b7280">架构 · 模式 · 可验证</text>
-    <text x="656" y="80" text-anchor="middle" font-size="12.5" fill="#6b7280">品味 · 判断 · 闭环</text>
-    <text x="124" y="104" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="600">应用线 · 3、4</text>
-    <text x="390" y="104" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="600">应用线 · 7、8、9、10、11、12</text>
-    <text x="656" y="104" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="600">应用线 · 19</text>
-    <text x="124" y="122" text-anchor="middle" font-size="12.5" fill="#4338ca" font-weight="600">创造线 · 5</text>
-    <text x="390" y="122" text-anchor="middle" font-size="12.5" fill="#4338ca" font-weight="600">创造线 · 13–18</text>
-    <text x="656" y="122" text-anchor="middle" font-size="12.5" fill="#4338ca" font-weight="600">创造线 · 20–23</text>
-    <text x="124" y="140" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="600">结合 · 6</text>
-    <text x="656" y="140" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="600">结合 · 24、25</text>
-    <rect x="52" y="154" width="144" height="24" rx="12" fill="#ffffff" stroke="#c7d2fe"/>
-    <rect x="318" y="154" width="144" height="24" rx="12" fill="#ffffff" stroke="#99f6e4"/>
-    <rect x="584" y="154" width="144" height="24" rx="12" fill="#ffffff" stroke="#fde68a"/>
-    <text x="124" y="170" text-anchor="middle" font-size="11.5" fill="#4338ca" font-weight="600">第一篇 · 哲学篇</text>
-    <text x="390" y="170" text-anchor="middle" font-size="11.5" fill="#0f766e" font-weight="600">第二篇 · 科学篇</text>
-    <text x="656" y="170" text-anchor="middle" font-size="11.5" fill="#b45309" font-weight="600">第三篇 · 艺术篇</text>
-    <line x1="238" y1="112" x2="268" y2="112" stroke="#9aa3ad" stroke-width="2" marker-end="url(#arr)"/>
-    <line x1="504" y1="112" x2="534" y2="112" stroke="#9aa3ad" stroke-width="2" marker-end="url(#arr)"/>
-    <text x="390" y="228" text-anchor="middle" font-size="12" fill="#7b8494">第 1、2 章是两条线的共用地基 · 第 6 章与第 24、25 章把两条线拧成一条链</text>
-  </g>
-</svg>
-  <div class="figcaption"><b>图 0-1</b> 全书主线：哲学 → 科学 → 艺术三篇，应用线与创造线并排穿行；第 1、2 章是共用地基，第 6 章与第 24、25 章把两条线拧成一条链。</div>
+  <img src="assets/fig-preface-1.svg" alt="哲学到科学到艺术">
+  <div class="figcaption"><b>图 0-1</b> 事物的发展方向：哲学 → 科学 → 艺术。学习 Agent 亦然。</div>
 </div>
 
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>三个词，记住这本书</div><p><b>哲学</b>回答「是什么、为什么」，<b>科学</b>回答「怎么运转」，<b>艺术</b>回答「怎么做好」。三篇环环相扣：没有哲学，机制是盲目的；没有科学，品味是空谈；没有艺术，工程没有灵魂。</p></div>
 
-<div class="toc-part part-1">
-  <div class="toc-part-head">
-    <span class="part-badge">第一篇</span>
-    <span class="toc-part-title">第一篇 · 哲学篇</span>
-    <span class="toc-part-theme">认识与观念 · 先问为什么</span>
-  </div>
-  <p class="part-intro">六章沿两条线铺开：第 1、2 章是共用地基（认识 Agent、看懂范式转移）；第 3、4 章走应用线，先学用好；第 5 章走创造线，再学造好；第 6 章把两条线拧成一条链。</p>
+<h2>主干与枝干：这本书的骨架</h2>
+<p>贯穿全书的，是一条<b>主干</b>——<b>Agent 的通用哲学</b>：心智模型、上下文纪律、行动边界、可组合性、记忆分层、人机分工、可观测、评估、自举。这些规律不依附于任何具体框架，是<b>所有 Agent 都逃不掉的规律</b>。</p>
+<p>在这条主干上，长出了<b>两根枝干</b>——两个真实标本的设计哲学，是同一规律在不同取舍下的<b>两种思考方向</b>：</p>
+
+<div class="diagram">
+  <img src="assets/fig-preface-4.svg" alt="主干与枝干">
+  <div class="figcaption"><b>图 0-2</b> 通用哲学是主干，dsh 与 codex 是枝干——删掉枝干，主干仍然成立；没有主干，枝干无处可依。</div>
 </div>
 
-  <a class="toc-chap part-1" href="part-1/01-what-is-agent.html">
-    <span class="no">第 1 章</span>
-    <span class="t">什么是 Agent</span>
-    <span class="d">模型 + 记忆 + 工具 + 循环</span>
-  </a>
-  <a class="toc-chap part-1" href="part-1/02-language-interface.html">
-    <span class="no">第 2 章</span>
-    <span class="t">语言成为新接口</span>
-    <span class="d">从机器码到自然语言：一场范式转移</span>
-  </a>
-  <a class="toc-chap part-1" href="part-1/03-harness-philosophy.html">
-    <span class="no">第 3 章</span>
-    <span class="t">与 Agent 共事的哲学</span>
-    <span class="d">上下文喂饱 · 管住边界 · 放手发挥</span>
-  </a>
-  <a class="toc-chap part-1" href="part-1/04-ai-friendly-project.html">
-    <span class="no">第 4 章</span>
-    <span class="t">让项目活起来</span>
-    <span class="d">会说话 · 有记性 · 会成长</span>
-  </a>
-  <a class="toc-chap part-1" href="part-1/05-why-plugin.html">
-    <span class="no">第 5 章</span>
-    <span class="t">把系统拆成积木</span>
-    <span class="d">组合优于构建</span>
-  </a>
-  <a class="toc-chap part-1" href="part-1/06-full-chain-engineer.html">
-    <span class="no">第 6 章</span>
-    <span class="t">全链路工程师</span>
-    <span class="d">发现 → 梳理 → 落地 → 反馈</span>
-  </a>
+<ul>
+  <li><b>DeepSeek Harness（dsh）</b>——把「可组合」推向极致：<b>一切皆插件</b>、无特权核心、事件驱动、能力接缝。它是最纯粹的架构科学标本。</li>
+  <li><b>Codex（codex）</b>——把「严谨」推向极致：生产级工程化，模块化单体 + 插件系统 + 沙箱 + 服务端。它是最务实的工程标本。</li>
+</ul>
 
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>一根主干，两根枝干</div><p>读这本书时记住这个比喻：<b>通用规律是主干（必须掌握），两个标本是枝干（用来对照）</b>。什么时候用哪个标本？看哪个能把这条规律讲得更清楚——dsh 擅长的以 dsh 为主，codex 擅长的以 codex 为主；规律不成立的地方，就不硬上双标本。</p></div>
 
-<div class="toc-part part-2">
-  <div class="toc-part-head">
-    <span class="part-badge">第二篇</span>
-    <span class="toc-part-title">第二篇 · 科学篇</span>
-    <span class="toc-part-theme">机制与用法 · 把观念变成可验证</span>
-  </div>
-  <p class="part-intro">新人入职三幕：认识项目（第 7 章）→ 使用项目（第 8–12 章：代码生成 · 黑匣子 · 记忆 · 技能 · 信任）→ 开发项目（第 13–18 章：架构 · 插件 · 事件 · 循环 · 接缝 · 多智能体）。记忆线贯穿：提供 → 记录 → 消费 → 写回。</p>
+<h2>两条线：应用线与创造线</h2>
+<p>在这条主线上，还并排织着<b>两条线</b>：一条<b>应用线</b>——先学会把 Agent 用好（好的厨子首先是老吃家）；一条<b>创造线</b>——再学会把 Agent 造出来。两条线有边界、不设墙，<b>在用中做，在做中用</b>：第 1、2 章是共用地基，第 3、4 章讲使用，第 5 章讲构建，第 6 章把两条线拧成一条链，此后三篇一路并排到终章。</p>
+
+<h2>一个新身份：全链路工程师</h2>
+<p>AI 时代正在消融旧的角色边界。产品经理、前端、测试、运维……这些曾经的分工，正在被一个更完整的角色覆盖：<b>一个人，从发现需求到梳理需求，到落地实现，再到收集反馈、持续迭代，独立完成整个闭环</b>。</p>
+
+<div class="diagram">
+  <img src="assets/fig-preface-2.svg" alt="全链路工程师闭环">
+  <div class="figcaption"><b>图 0-3</b> 全链路工程师的闭环：发现 → 梳理 → 落地 → 反馈，周而复始。</div>
 </div>
 
-    <a class="toc-chap part-2" href="part-2/07-newbie-tour.html">
-    <span class="no">第 7 章</span>
-    <span class="t">新人报到：先读懂这个项目</span>
-    <span class="d">认识项目：三层记忆与成长</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/08-code-with-agent.html">
-    <span class="no">第 8 章</span>
-    <span class="t">让 Agent 写得出代码</span>
-    <span class="d">使用：交接 · 干活 · 写回</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/09-session-log.html">
-    <span class="no">第 9 章</span>
-    <span class="t">Agent 的执行日志</span>
-    <span class="d">使用：会话日志复盘</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/10-context-memory.html">
-    <span class="no">第 10 章</span>
-    <span class="t">记忆是这样被读取的</span>
-    <span class="d">使用：上下文与压缩</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/11-skills.html">
-    <span class="no">第 11 章</span>
-    <span class="t">技能是这样被使用的</span>
-    <span class="d">使用：技能库</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/12-trust-review.html">
-    <span class="no">第 12 章</span>
-    <span class="t">信任的分级与把关</span>
-    <span class="d">使用：信任与审查</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/13-anatomy.html">
-    <span class="no">第 13 章</span>
-    <span class="t">Agent 是怎么拼起来的</span>
-    <span class="d">开发：架构全景</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/14-plugin-context.html">
-    <span class="no">第 14 章</span>
-    <span class="t">把功能插上插头</span>
-    <span class="d">开发：插件与上下文</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/15-event-driven.html">
-    <span class="no">第 15 章</span>
-    <span class="t">让零件通风报信</span>
-    <span class="d">开发：事件驱动</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/16-agent-loop.html">
-    <span class="no">第 16 章</span>
-    <span class="t">看心脏怎么跳</span>
-    <span class="d">开发：循环与管线</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/17-capability-seams.html">
-    <span class="no">第 19 章</span>
-    <span class="t">换一个器官</span>
-    <span class="d">开发：能力接缝</span>
-  </a>
-  <a class="toc-chap part-2" href="part-2/18-multi-agent.html">
-    <span class="no">第 20 章</span>
-    <span class="t">一个人变一支队伍</span>
-    <span class="d">开发：多智能体</span>
-  </a>
+<p>这就是这本书的终点：不是把你变成「会调框架的人」，而是把你变成<b>能闭环的人</b>。</p>
 
-
-<div class="toc-part part-3">
-  <div class="toc-part-head">
-    <span class="part-badge">第三篇</span>
-    <span class="toc-part-title">第三篇 · 艺术篇</span>
-    <span class="toc-part-theme">火候与境界 · 把机制变成作品</span>
-  </div>
-  <p class="part-intro">从第 19 章的「老吃家」开场（应用线收束），到第 20–23 章打磨创造线的手艺，最后第 24、25 章把两条线收束为闭环与品味。</p>
+<div class="diagram">
+  <img src="assets/fig-preface-3.svg" alt="Agent 心智模型">
+  <div class="figcaption"><b>图 0-4</b> 贯穿全书的 Agent 心智模型：模型（思考）+ 记忆（上下文）+ 工具（行动），由循环（Loop）驱动。</div>
 </div>
 
-  <a class="toc-chap part-3" href="part-3/19-gourmet.html">
-    <span class="no">第 19 章</span>
-    <span class="t">老吃家的段位</span>
-    <span class="d">吃到最后，就成了厨子</span>
-  </a>
-  <a class="toc-chap part-3" href="part-3/20-designing-tools.html">
-    <span class="no">第 20 章</span>
-    <span class="t">设计一个好工具</span>
-    <span class="d">给模型一双好「手」</span>
-  </a>
-  <a class="toc-chap part-3" href="part-3/21-prompts.html">
-    <span class="no">第 21 章</span>
-    <span class="t">Prompt 与系统提示</span>
-    <span class="d">给模型一颗好「心」</span>
-  </a>
-  <a class="toc-chap part-3" href="part-3/22-debugging.html">
-    <span class="no">第 22 章</span>
-    <span class="t">调试与可观测</span>
-    <span class="d">看见看不见的</span>
-  </a>
-  <a class="toc-chap part-3" href="part-3/23-evaluation.html">
-    <span class="no">第 23 章</span>
-    <span class="t">评估与质量</span>
-    <span class="d">证明「它变好了」</span>
-  </a>
-  <a class="toc-chap part-3" href="part-3/24-full-chain-practice.html">
-    <span class="no">第 24 章</span>
-    <span class="t">全链路闭环实战</span>
-    <span class="d">一个人跑通全过程</span>
-  </a>
-  <a class="toc-chap part-3" href="part-3/25-taste-and-growth.html">
-    <span class="no">第 25 章</span>
-    <span class="t">品味与成长</span>
-    <span class="d">从会用到有品味</span>
-  </a>
-
-<div class="toc-part ">
-  <div class="toc-part-head">
-    <span class="part-badge">附录</span>
-    <span class="toc-part-title">附录 · 工具与参考</span>
-    <span class="toc-part-theme">查得着 · 用得上</span>
-  </div>
-  <p class="part-intro">术语、快速上手、扩展资源与全书图表索引。</p>
-</div>
-
-  <a class="toc-chap " href="appendix/a-glossary.html">
-    <span class="no">第 A 章</span>
-    <span class="t">术语表</span>
-    <span class="d">统一定义与索引</span>
-  </a>
-  <a class="toc-chap " href="appendix/b-quickstart.html">
-    <span class="no">第 B 章</span>
-    <span class="t">快速上手</span>
-    <span class="d">10 分钟运行第一个 Agent</span>
-  </a>
-  <a class="toc-chap " href="appendix/c-resources.html">
-    <span class="no">第 C 章</span>
-    <span class="t">扩展阅读与资源</span>
-    <span class="d">论文 · 源码 · 社区</span>
-  </a>
-  <a class="toc-chap " href="appendix/d-diagrams.html">
-    <span class="no">第 D 章</span>
-    <span class="t">图表索引</span>
-    <span class="d">全书图表清单</span>
-  </a>
-
-<h2>三种读法</h2>
+<h2>怎么读这本书</h2>
 <div class="ways">
-  <div class="way"><div class="w-no">01</div><div class="w-title">系统通读</div><p>从第一篇到第三篇，按顺序建立完整的认知体系，适合想成为全链路工程师的你。</p></div>
-  <div class="way"><div class="w-no">02</div><div class="w-title">边读边做</div><p>每章末尾都有「动手做」。跟着第 8–12 章上手使用，跟着第 13–18 章拆源码，跟着第 19–25 章做项目。</p></div>
-  <div class="way"><div class="w-no">03</div><div class="w-title">按需查阅</div><p>第 17 章查「接缝」，第 22 章查「调试」，附录查术语。把本书当作工作台。</p></div>
+  <div class="way"><div class="w-no">01</div><div class="w-title">系统通读</div><p>顺着三篇走一遍，建立完整体系。适合把它当作一门课来学。</p></div>
+  <div class="way"><div class="w-no">02</div><div class="w-title">边读边做</div><p>每章末尾都有「动手做」。理论落地，才是真的学会。</p></div>
+  <div class="way"><div class="w-no">03</div><div class="w-title">按需查阅</div><p>把它当作案头工作台，遇到问题回来翻对应章节与附录。</p></div>
 </div>
+<p>每章的结构保持一致，降低你的阅读成本：</p>
+<ul>
+  <li><b>导语</b>——本章要解决什么问题，一句话说清。</li>
+  <li><b>正文</b>——用图、表、代码、类比，把概念讲透。</li>
+  <li><b>一张图</b>——把本章内容收拢成一张可回看的结构图。</li>
+  <li><b>要点回顾</b>——三到五条，方便复盘。</li>
+  <li><b>动手做</b>——一个小练习，把知识变成肌肉记忆。</li>
+</ul>
 
-<div class="callout note"><div class="c-title"><span class="ic">▶</span>从哪儿开始</div><p>第一次读，建议先花 3 分钟读<a href="preface.html">前言</a>，再进入<a href="part-1/index.html">哲学篇</a>；着急动手的，可以直接跳<a href="part-2/07-newbie-tour.html">第 7 章</a>或<a href="appendix/b-quickstart.html">附录 B</a>。</p></div>
+<h2>关于本书的编写</h2>
+<p>这本书的写作方式，本身就是它所主张工作方式的一次演示：<b>由人定方向、提要求、做判断，由 AI Agent 协作产出，再逐步迭代打磨</b>。你现在读到的全书概览，就是第一轮骨架——欢迎你随时调整，我们再一步步把每一章「填肉」。</p>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>从哪儿开始</div><p>第一次读，建议先进入<a href="part-1/index.html">哲学篇</a>；着急动手的，可以直接跳<a href="part-2/07-newbie-tour.html">第 7 章</a>或<a href="appendix/b-quickstart.html">附录 B</a>。全书的完整章目在左侧目录里。</p></div>
+
+<p style="margin-top:28px">那么，让我们从第一篇——<b>哲学篇</b>开始。</p>
 
 
           <div class="prevnext">
     <div class="spacer-box"></div>
-    <a class="next" href="./preface.html"><div class="pn-label">下一页 →</div><div class="pn-title">前言</div></a>
+    <a class="next" href="./part-1/index.html"><div class="pn-label">下一页 →</div><div class="pn-title">第一篇 · 哲学篇</div></a>
   </div>
 <footer class="footer">
-  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
-  <span><a href="./index.html">目录</a> · <a href="./preface.html">前言</a> · <a href="./outline.html">大纲</a></span>
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness 与 Codex</span>
+  <span><a href="./index.html">目录</a></span>
 </footer>
 </div>
 </main>

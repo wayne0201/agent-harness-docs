@@ -8,21 +8,16 @@
 <script src="../assets/book.js" defer></script>
 </head>
 <body class="part-2">
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
-    <span class="crumb">科学篇 / 第 14 章</span>
-    <span class="spacer"></span>
-    <button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
-  </div>
-</header>
+<header class="topbar"><div class="topbar-inner">
+<a class="brand" href="../index.html">深入浅出 AI Agent<span class="slash"> / </span></a>
+<span class="crumb">科学篇 / 第 14 章</span>
+<span class="spacer"></span>
+<button class="menu-btn" id="menuBtn" aria-label="打开目录" title="目录">☰</button>
+</div></header>
 <main class="layout">
-<aside class="sidebar" id="sidebar">
-<nav class="sidenav">
+<aside class="sidebar" id="sidebar"><nav class="sidenav">
 <div class="side-group">
 <a href="../index.html">全书概览</a>
-<a href="../preface.html">前言</a>
-<a href="../outline.html">大纲</a>
 </div>
 <details class="side-part" open>
 <summary>第一篇 · 哲学篇</summary>
@@ -76,8 +71,7 @@
 <li><a href="../appendix/d-diagrams.html">附录 D 图表索引</a></li>
 </ul>
 </details>
-</nav>
-</aside>
+</nav></aside>
 <div class="container">
 
 <div class="hero part-2">
@@ -87,23 +81,359 @@
   <p class="subtitle">学会 Cordis 的插件与上下文，写出第一个插件</p>
 </div>
 
-<div class="callout idea"><div class="c-title"><span class="ic">◆</span>核心问题</div><p>「一切皆插件」如何在代码层面落地？</p></div>
+<p class="lead">第 13 章结尾说：下一章 zoom in 到细胞——把「五个关键词」变成代码。这一章就兑现它。先写一个十行的插件，再认识 Cordis 的五个关键词，最后搞懂两件最让人挠头的事：<b>谁先谁后</b>（顺序与依赖）与<b>拔掉插头</b>（可逆效应）。全章一个比喻：<b>插座与电器</b>——上下文是配电箱，插件是电器，依赖是「用电要求」，效应是「拔掉插头，线收干净」。第 11 章抛过的悬念（技能系统在体内是怎么实现的）——本章用三个关键词当作活体标本剖给你看。</p>
+
+<div class="callout idea"><div class="c-title"><span class="ic">◆</span>本章核心问题</div><p>「一切皆插件」如何在代码层面落地？</p></div>
 
 <div class="callout note"><div class="c-title"><span class="ic">▶</span>你将获得</div><p>看懂并动手写一个 dsh 插件的能力。</p></div>
 
-<h2>本章结构</h2>
-<ul class="section-list" style="grid-template-columns:1fr"><li>14.1 第一个插件：十行代码的 hello</li><li>14.2 五个关键词：Cordis 的全家福</li><li>14.3 顺序与依赖：谁先谁后，谁说了算</li><li>14.4 可逆效应与类型安全：拔插头与说明书</li></ul>
+<div class="card">
+  <div class="sections"><b>本章导览</b></div>
+  <ul class="section-list">
+    <li><a href="#s14-1">14.1 第一个插件：十行代码的 hello</a></li>
+    <li><a href="#s14-2">14.2 五个关键词：Cordis 的全家福</a></li>
+    <li><a href="#s14-3">14.3 顺序与依赖：谁先谁后，谁说了算</a></li>
+    <li><a href="#s14-4">14.4 可逆效应与类型安全：拔插头与说明书</a></li>
+  </ul>
+</div>
 
-<div class="callout warn stub-note"><div class="c-title"><span class="ic">✦</span>本章正文待撰写</div><p>骨架已就位（第三幕 · 开发项目 · 第 2 站）。正文（导语、图文详解、一张图、要点回顾、动手做）将在骨架确认后逐章撰写。草案：docs/.drafts/part-2-bodies/09-plugin-context.html。当前页面用于确认章节骨架与导航结构。</p><p>写正文备忘：承接第 11 章的悬念——技能系统的体内实现（skill 能力家族：ctx.skills 提供方注册表 · skill-filesystem 本地发现 · tool-skill 发布目录与 skill 工具 loader）作为「注册即效应」的实例走一遍。</p></div>
+<h2 id="s14-1">14.1 第一个插件：十行代码的 hello</h2>
 
+<p>第 5 章问过三个哲学问题——怎么拼、先拼谁、谁说了算。答案落在代码上，就是下面这十行（取自 dsh 的 Cordis 教程，原文见 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-tutorial/01-first-plugin.zh.md" target="_blank" rel="noopener">deepseek-harness/docs/cordis-tutorial/01-first-plugin.zh.md</a>）：</p>
 
-  <div class="prevnext">
+<pre><code>import type { Context } from '@deepseek-ai/cordis'
+
+export const name = 'hello'
+
+export function apply(ctx: Context) {
+  console.log('hello from my first plugin')
+}</code></pre>
+
+<p>逐行看，只有三个要点：</p>
+<ul>
+  <li><code>apply(ctx)</code> 是插件的<b>唯一入口</b>——框架加载你时，只调这一个函数；</li>
+  <li><code>ctx</code> 是<b>上下文</b>——就是你插上插头的那个配电箱，之后你所有的「贡献」都登记在它上面；</li>
+  <li><code>name</code> 只是诊断标识，可写可不写。</li>
+</ul>
+
+<p>配套还有一份清单 <code>cordis.yml</code>：</p>
+<pre><code>- name: './hello.ts'</code></pre>
+
+<p>清单写「要挂哪些插件」，插件写「自己贡献什么」。启动器读清单、把每个插件挂到根 Context 上，挂到 hello 时调用你的 <code>apply(ctx)</code>——屏幕打出 hello from my first plugin。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="最小插件三动作">
+  <defs><marker id="m141" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="320" y="24" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">最小插件：一份清单、一个入口、一行输出</text>
+    <rect x="20" y="64" width="130" height="52" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="85" y="86" text-anchor="middle" font-size="12.5" fill="#1f2937" font-weight="600">cordis.yml</text>
+    <text x="85" y="103" text-anchor="middle" font-size="10.5" fill="#6b7280">清单：挂哪些插件</text>
+    <rect x="180" y="64" width="130" height="52" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="245" y="86" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">Loader 挂载</text>
+    <text x="245" y="103" text-anchor="middle" font-size="10.5" fill="#6b7280">读清单 · 并发挂载</text>
+    <rect x="340" y="64" width="130" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="405" y="86" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="600">apply(ctx)</text>
+    <text x="405" y="103" text-anchor="middle" font-size="10.5" fill="#6b7280">插件的唯一入口</text>
+    <rect x="500" y="64" width="120" height="52" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="560" y="86" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="600">输出 hello</text>
+    <text x="560" y="103" text-anchor="middle" font-size="10.5" fill="#6b7280">屏幕打出一行</text>
+    <line x1="150" y1="90" x2="178" y2="90" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m141)"/>
+    <line x1="310" y1="90" x2="338" y2="90" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m141)"/>
+    <line x1="470" y1="90" x2="498" y2="90" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m141)"/>
+    <text x="320" y="178" text-anchor="middle" font-size="12" fill="#7b8494">没有框架启动代码：插件只描述自己的贡献，清单负责组合</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 14-1</b> 最小插件的三动作：清单点名、Loader 并发挂载、apply(ctx) 通电——框架不「拉」任何东西。</div>
+</div>
+
+<p>注意最后一格：<b>全程没有框架启动代码</b>。插件不「拉起」任何东西，只描述自己的贡献；谁组合、谁启动，由清单说了算。dsh 自己的 <code>packages/bundle/base</code> 就是一份更长的插件清单（第 13 章的依赖主干就长在这份清单里），配置覆盖它——这正是第 5 章「谁说了算」在代码里的样子。</p>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 应用线视角</div><p>就算你一辈子不写插件，这份清单也天天见：在 dsh 里选模型、开关能力、改配置，本质都是在改这份插件组合。改完不生效时，第一件事就是查你的改动「挂上了没有」——多半停在 PENDING（14.3 会讲）。</p></div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>插件有三种形态</div><p>函数（刚写的这种）、带 <code>apply</code> 方法的对象、以及 <code>Service</code> 子类。在需要对外提供服务之前，函数形态就够用——14.3 你会看到类形态何时上场。</p></div>
+
+<h2 id="s14-2">14.2 五个关键词：Cordis 的全家福</h2>
+
+<p>十行代码背后，是 Cordis 的全部思想。dsh 的官方入门文档把它浓缩成<b>五个关键词</b>——第 13 章 13.2 里「Context 三样东西」（服务、事件、效应）的完整版：</p>
+
+<ol>
+  <li><b>插件（Plugin）</b>——实现服务的对象：可以是一个带 <code>apply(ctx)</code> 的函数，也可以是一个类。在 dsh 里，连 Agent 循环本身都是一个插件。</li>
+  <li><b>上下文（Context）</b>——服务的仓库：每个服务挂在一个稳定的 <code>ctx.xxx</code> 键上（<code>ctx.llm</code>、<code>ctx.tools</code>、<code>ctx.sessions</code>），插件按「键」找服务，而不是 import 某个具体实现。</li>
+  <li><b>依赖注入（inject）</b>——插件声明自己需要哪些服务；框架保证「所需服务就绪后才挂载它」。加载顺序由依赖关系自然表达，不需要手工排启动顺序。</li>
+  <li><b>类型化事件（Typed Events）</b>——插件之间靠事件通信，五种派发模式各司其职：<code>emit</code>（广播观察）、<code>parallel</code>（并发执行）、<code>serial</code>（串行执行）、<code>bail</code>（serial 的同步版）、<code>waterfall</code>（接力包装）。</li>
+  <li><b>可逆效应（Effects）</b>——一切注册（提示分区、工具 schema、适配器、监听器）都通过 <code>ctx.effect()</code> / <code>ctx.on()</code> 进行；卸载或热重载时，效应按预期有序收回。</li>
+</ol>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五个关键词全家福">
+  <defs><marker id="m142" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">五个关键词：一台戏，围着配电箱转</text>
+    <rect x="20" y="34" width="200" height="64" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="120" y="58" text-anchor="middle" font-size="13" fill="#312e81" font-weight="700">插件 Plugin</text>
+    <text x="120" y="76" text-anchor="middle" font-size="10.5" fill="#4b5563">实现服务的对象</text>
+    <text x="120" y="90" text-anchor="middle" font-size="10.5" fill="#4b5563">apply(ctx) 是唯一入口</text>
+    <rect x="500" y="34" width="200" height="64" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="600" y="58" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="700">服务 Service</text>
+    <text x="600" y="76" text-anchor="middle" font-size="10.5" fill="#4b5563">ctx.llm · ctx.tools</text>
+    <text x="600" y="90" text-anchor="middle" font-size="10.5" fill="#4b5563">按键找服务</text>
+    <rect x="210" y="130" width="300" height="76" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="360" y="156" text-anchor="middle" font-size="14.5" fill="#1f2937" font-weight="700">上下文 Context —— 服务的仓库</text>
+    <text x="360" y="176" text-anchor="middle" font-size="11" fill="#6b7280">每个服务挂在一个稳定的 ctx.xxx 键上</text>
+    <text x="360" y="192" text-anchor="middle" font-size="11" fill="#6b7280">按「键」取服务，而不是 import 实现</text>
+    <rect x="20" y="236" width="200" height="64" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="120" y="260" text-anchor="middle" font-size="13" fill="#78350f" font-weight="700">依赖注入 inject</text>
+    <text x="120" y="278" text-anchor="middle" font-size="10.5" fill="#4b5563">声明「我需要谁」</text>
+    <text x="120" y="292" text-anchor="middle" font-size="10.5" fill="#4b5563">就绪之前保持 PENDING</text>
+    <rect x="260" y="236" width="200" height="64" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="360" y="260" text-anchor="middle" font-size="13" fill="#134e4a" font-weight="700">可逆效应 Effects</text>
+    <text x="360" y="278" text-anchor="middle" font-size="10.5" fill="#4b5563">一切注册可撤销</text>
+    <text x="360" y="292" text-anchor="middle" font-size="10.5" fill="#4b5563">卸载时逆序收回</text>
+    <rect x="500" y="236" width="200" height="64" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="600" y="260" text-anchor="middle" font-size="13" fill="#78350f" font-weight="700">类型化事件 Events</text>
+    <text x="600" y="278" text-anchor="middle" font-size="10.5" fill="#4b5563">emit · parallel · serial</text>
+    <text x="600" y="292" text-anchor="middle" font-size="10.5" fill="#4b5563">bail · waterfall</text>
+    <line x1="120" y1="100" x2="240" y2="150" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m142)"/>
+    <line x1="600" y1="100" x2="480" y2="150" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m142)"/>
+    <line x1="150" y1="234" x2="260" y2="180" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m142)"/>
+    <line x1="470" y1="180" x2="500" y2="234" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m142)"/>
+    <line x1="360" y1="234" x2="360" y2="208" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m142)"/>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 14-2</b> 五个关键词围着配电箱：插件提供服务、依赖决定顺序、事件负责通信、效应保证可逆。</div>
+</div>
+
+<table>
+  <tr><th>关键词</th><th>它是什么</th><th>生活说法</th><th>一句记忆</th></tr>
+  <tr><td><b>插件</b></td><td>实现服务的对象</td><td>电器</td><td>一切功能都是它</td></tr>
+  <tr><td><b>上下文</b></td><td>服务的仓库</td><td>配电箱</td><td>按键取服务，不 import 实现</td></tr>
+  <tr><td><b>inject</b></td><td>依赖声明</td><td>电器的用电要求</td><td>所需服务就绪，它才通电</td></tr>
+  <tr><td><b>事件</b></td><td>类型化通信</td><td>广播线路</td><td>五种播报方式（第 15 章）</td></tr>
+  <tr><td><b>效应</b></td><td>可逆的注册</td><td>保险丝 + 插头</td><td>拔插头，线收干净</td></tr>
+</table>
+
+<p>五个关键词里，事件的五种派发模式本章只点到名字——第 15 章《让零件通风报信》会逐一带你试播。依赖与效应，则是本章后两节的主角。</p>
+
+<h3>走一遍活体标本：技能系统的体内实现</h3>
+<p>第 11 章结尾留了个悬念：技能在体内是怎么实现的？答案是三个插件，把五个关键词挨个用了一遍。你已经在第 11 章用过它们（拆锦囊、看目录），现在从「创造」这一侧看同一套东西：</p>
+<table>
+  <tr><th>插件</th><th>inject 谁</th><th>干什么</th><th>用到的关键词</th></tr>
+  <tr><td><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/skill/README.zh.md" target="_blank" rel="noopener">dsh-skill</a></td><td>—</td><td>提供 <code>ctx.skills</code> 注册表：不知道技能从哪来，只等提供方来 <code>registerProvider</code></td><td>服务 + 上下文</td></tr>
+  <tr><td><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/skill-filesystem/README.zh.md" target="_blank" rel="noopener">dsh-skill-filesystem</a></td><td><code>skills</code></td><td>扫描 <code>.agents/skills</code> 解析 SKILL.md，把每个锦囊注册成提供方</td><td>插件 + inject</td></tr>
+  <tr><td><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/tool-skill/README.zh.md" target="_blank" rel="noopener">dsh-tool-skill</a></td><td><code>agents · tools · skills</code></td><td>发布第 11 章那个 <code>skill</code> 工具：渲染目录、按名加载 SKILL.md 原文</td><td>插件 + 服务 + 效应</td></tr>
+</table>
+<p>三条线合起来就是你在第 11 章看到的全部：<b>注册表（服务）等提供方来注册，文件系统插件（inject 声明它要注册表）去发现并注册，工具插件（又要注册表、又要工具表）把目录和正文端上桌</b>。它们没有一个在「启动时一次性搭好」，全靠 inject 声明 + 注册效应——这就是「注册即效应」在 dsh 里的真实样子。</p>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 应用线视角</div><p>第 11 章你只关心「拆开能用」；现在你看到它底下是三块插件拼的。下次技能「不出现」，你知道去哪查：注册表有没有提供方（dsh-skill）→ 文件系统有没有扫到（dsh-skill-filesystem）→ 目录有没有上桌（dsh-tool-skill）。</p></div>
+
+<h3>科普小站：插件化思想的简史</h3>
+<p>「把小工具组合成大系统」是条老路：Unix 管道让一个程序的输出成为另一个程序的输入；微内核把操作系统的大部分功能挪出内核、做成可装卸的模块；再到前端生态里处处可见的 plugin 体系。Cordis 做的，是把「一切皆插件」从一种风格变成一个<b>运行时内核</b>——插件不仅可装卸，而且装卸是可逆的、顺序是由依赖算出来的。第 5 章的「时空可组合性」，就是这套内核的哲学表达。</p>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>延伸阅读</div><p>Cordis 设计论文 <a href="https://github.com/cordiverse/paper" target="_blank" rel="noopener">github.com/cordiverse/paper</a>；源码 <a href="https://github.com/cordiverse/cordis" target="_blank" rel="noopener">github.com/cordiverse/cordis</a>；dsh 入门文档 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-primer.zh.md" target="_blank" rel="noopener">deepseek-harness/docs/cordis-primer.zh.md</a>；还有手把手的四篇教程 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-tutorial/01-first-plugin.zh.md" target="_blank" rel="noopener">01 第一个插件</a>、<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-tutorial/02-lifecycle-and-effects.zh.md" target="_blank" rel="noopener">02 生命周期与效应</a>、<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-tutorial/03-services.zh.md" target="_blank" rel="noopener">03 服务</a>、<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-tutorial/04-events.zh.md" target="_blank" rel="noopener">04 事件</a>。</p></div>
+
+<h2 id="s14-3">14.3 顺序与依赖：谁先谁后，谁说了算</h2>
+
+<p>第 13 章在依赖主干里看到一句话：<b>「行序不承载加载语义，激活由服务可用性驱动」</b>。这一节把这句话拆开——为什么不用手工排顺序？Cordis 用两条铁律回答：</p>
+
+<ul>
+  <li><b>铁律一：注册顺序 = 默认顺序</b>。没有依赖声明的插件，按注册顺序依次运行。</li>
+  <li><b>铁律二：有依赖声明，就按依赖来</b>。插件声明 <code>inject: ['llm', 'tools']</code> 之后，框架保证这两样就绪之前它绝不运行——与它注册得早还是晚无关。</li>
+</ul>
+
+<p>背后是一个状态机，每个插件实例（fiber）在其中流转：</p>
+
+<pre><code>PENDING → LOADING → ACTIVE → UNLOADING → DISPOSED
+                 ↘ FAILED</code></pre>
+
+<p><b>PENDING</b>：依赖没齐，先等着——「为什么我的插件没输出」，最常见的答案就是它。<b>LOADING / ACTIVE</b>：apply 正在跑 / 已就绪。<b>FAILED</b>：apply 或配置校验抛异常。<b>UNLOADING / DISPOSED</b>：正在拆除 / 拆完。</p>
+
+<p>用教程里的例子看一遍。greeter 插件提供一个问候服务，consumer 插件声明 <code>inject: ['greeter']</code> 再消费它：</p>
+
+<pre><code>export class GreeterService extends Service {
+  constructor(ctx: Context) { super(ctx, 'greeter') }
+  greet(who: string) { return 'Hello, ' + who + '!' }
+}
+
+export const name = 'consumer'
+export const inject = ['greeter']
+export function apply(ctx: Context) { console.log(ctx.greeter.greet('world')) }</code></pre>
+
+<p>把清单里两行的顺序对调，输出不变；把 greeter 那一行删掉，consumer 就静静停在 PENDING——不崩溃，也不半吊子运行。<b>谁先谁后，不是排出来的，是依赖声明让框架算出来的。</b></p>
+
+<div class="callout dual"><div class="c-title"><span class="ic">⇄</span>双线提示 · 应用线视角</div><p>「我的插件没反应」是 dsh 用户最常见的问题之一，答案多半是 PENDING：它依赖的服务还没就绪。机制是创造线的，诊断它的能力属于每一位使用者——第 13 章那张依赖主干表，就是你排查时的地图。</p></div>
+
+<p>更妙的是，这份依赖是<b>持续跟踪</b>的，而不是启动时检查一次就完事：</p>
+<ol>
+  <li>提供者 A 挂载，交出 <code>ctx.llm</code> → 所有 <code>inject: ['llm']</code> 的插件被唤醒，自动激活。</li>
+  <li>A 被卸载（它的效应全部收回）→ 依赖者们<b>自动卸载</b>——disposer 按注册的<b>逆序</b>执行，像叠盘子：后装的先拆，先装的后拆。</li>
+  <li>换上新版本 A′ → 依赖者们<b>自动重载</b>，重新拿到新实现。</li>
+</ol>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="插件顺序与依赖">
+  <defs><marker id="m143" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="24" text-anchor="middle" font-size="12.5" fill="#4b5563" font-weight="700">注册顺序决定默认先后；依赖声明决定激活时机</text>
+    <text x="20" y="66" font-size="11.5" fill="#0f766e" font-weight="700">提供者 A</text>
+    <text x="20" y="82" font-size="10.5" fill="#6b7280">提供 ctx.llm</text>
+    <text x="20" y="172" font-size="11.5" fill="#4338ca" font-weight="700">依赖者 B</text>
+    <text x="20" y="188" font-size="10.5" fill="#6b7280">inject: ['llm']</text>
+    <rect x="110" y="44" width="130" height="44" rx="9" fill="#ecfdf8" stroke="#5eead4"/><text x="175" y="71" text-anchor="middle" font-size="12" fill="#134e4a" font-weight="600">① 注册 A</text>
+    <rect x="258" y="44" width="130" height="44" rx="9" fill="#ecfdf8" stroke="#5eead4"/><text x="323" y="71" text-anchor="middle" font-size="12" fill="#134e4a" font-weight="600">② 提供 ctx.llm</text>
+    <rect x="406" y="44" width="130" height="44" rx="9" fill="#f6f4ee" stroke="#d6d0c4"/><text x="471" y="71" text-anchor="middle" font-size="12" fill="#4b5563" font-weight="600">③ 被卸载</text>
+    <rect x="554" y="44" width="130" height="44" rx="9" fill="#ecfdf8" stroke="#5eead4"/><text x="619" y="71" text-anchor="middle" font-size="12" fill="#134e4a" font-weight="600">④ A′ 重注册</text>
+    <rect x="110" y="150" width="130" height="44" rx="9" fill="#eef2ff" stroke="#c7d2fe"/><text x="175" y="177" text-anchor="middle" font-size="12" fill="#312e81" font-weight="600">① 注册 B · 等待</text>
+    <rect x="258" y="150" width="130" height="44" rx="9" fill="#fffbeb" stroke="#fde68a"/><text x="323" y="177" text-anchor="middle" font-size="12" fill="#78350f" font-weight="600">② 激活 · 消费</text>
+    <rect x="406" y="150" width="130" height="44" rx="9" fill="#eef2ff" stroke="#c7d2fe"/><text x="471" y="177" text-anchor="middle" font-size="12" fill="#312e81" font-weight="600">③ 自动卸载</text>
+    <rect x="554" y="150" width="130" height="44" rx="9" fill="#eef2ff" stroke="#c7d2fe"/><text x="619" y="177" text-anchor="middle" font-size="12" fill="#312e81" font-weight="600">④ 自动重载</text>
+    <line x1="323" y1="90" x2="323" y2="146" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m143)"/>
+    <line x1="471" y1="90" x2="471" y2="146" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m143)"/>
+    <line x1="619" y1="90" x2="619" y2="146" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m143)"/>
+    <text x="360" y="222" text-anchor="middle" font-size="12" fill="#7b8494">顺序是声明出来的，不是排出来的——依赖变化时，依赖者自动卸载、自动重载</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 14-3</b> 提供者与依赖者的生命周期联动：A 的挂载与卸载，自动驱动 B 的激活与重载。</div>
+</div>
+
+<div class="callout note"><div class="c-title"><span class="ic">▶</span>一句话记住</div><p><b>「先注册谁」不重要，「谁依赖谁」才重要</b>——顺序是声明出来的，不是排出来的。这也是 dsh 能「一次替换，全产品改变」的地基（第 17 章会站在这个地基上看接缝）。</p></div>
+
+<h2 id="s14-4">14.4 可逆效应与类型安全：拔插头与说明书</h2>
+
+<p>插件装上后还可能被卸载：改配置、热重载、依赖消失，都会触发拆除。所以 Cordis 要求：<b>一切注册都必须可逆</b>。</p>
+
+<p>凡是 Cordis 认识的注册——<code>ctx.on()</code> 监听事件、<code>ctx.plugin()</code> 挂子插件、服务注册——本身就已经是效应，卸载时自动撤销，你不用管。只有 Cordis 不认识的资源（定时器、网络连接、文件 watcher），才需要亲手包一层：</p>
+
+<pre><code>export function apply(ctx: Context) {
+  ctx.effect(() => {
+    const timer = setInterval(() => console.log('tick'), 200)
+    return () => { clearInterval(timer); console.log('cleaned up') }
+  })
+}</code></pre>
+
+<p><code>ctx.effect()</code> 里跑的是「装」的逻辑，return 的那个函数是「拆」的逻辑（叫 <b>disposer</b>）。拆的时候按注册的<b>逆序</b>执行——后装的先拆，先装的后拆，就像收盘子从上往下拿。</p>
+
+<div class="diagram">
+  <svg viewBox="0 0 640 216" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="注册与卸载的逆序">
+  <defs><marker id="m144" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="320" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">注册与卸载：正序装上，逆序拆下</text>
+    <text x="20" y="48" font-size="11" fill="#0f766e" font-weight="700">注册（正序）</text>
+    <rect x="20" y="58" width="180" height="48" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="110" y="78" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">① 定时器</text>
+    <text x="110" y="95" text-anchor="middle" font-size="10.5" fill="#6b7280">先装 · 垫底</text>
+    <rect x="230" y="58" width="180" height="48" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="320" y="78" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">② 事件监听</text>
+    <text x="320" y="95" text-anchor="middle" font-size="10.5" fill="#6b7280">第二层</text>
+    <rect x="440" y="58" width="180" height="48" rx="9" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="530" y="78" text-anchor="middle" font-size="12.5" fill="#134e4a" font-weight="600">③ 服务注册</text>
+    <text x="530" y="95" text-anchor="middle" font-size="10.5" fill="#6b7280">后装 · 最上面</text>
+    <line x1="202" y1="82" x2="228" y2="82" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m144)"/>
+    <line x1="412" y1="82" x2="438" y2="82" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m144)"/>
+    <text x="20" y="146" font-size="11" fill="#b45309" font-weight="700">卸载（逆序）</text>
+    <rect x="20" y="156" width="180" height="48" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="110" y="176" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="600">③ 服务注册</text>
+    <text x="110" y="193" text-anchor="middle" font-size="10.5" fill="#6b7280">先拆 · 从上往下拿</text>
+    <rect x="230" y="156" width="180" height="48" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="320" y="176" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="600">② 事件监听</text>
+    <text x="320" y="193" text-anchor="middle" font-size="10.5" fill="#6b7280">第二层拆</text>
+    <rect x="440" y="156" width="180" height="48" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="530" y="176" text-anchor="middle" font-size="12.5" fill="#78350f" font-weight="600">① 定时器</text>
+    <text x="530" y="193" text-anchor="middle" font-size="10.5" fill="#6b7280">最后拆 · 垫底的</text>
+    <line x1="228" y1="180" x2="202" y2="180" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m144)"/>
+    <line x1="438" y1="180" x2="412" y2="180" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m144)"/>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 14-4</b> 叠盘子：注册正序 ①②③，卸载逆序 ③②①——后装的先拆，垫底的最后拆。</div>
+</div>
+
+<p>最后是<b>类型安全</b>。运行时，greeter 用 <code>super(ctx, 'greeter')</code> 把服务挂到键上；编译时，还有一行不起眼的声明合并，让 <code>ctx.greeter</code> 到处都有类型提示：</p>
+
+<pre><code>declare module '@deepseek-ai/cordis' {
+  interface Context { greeter: GreeterService }
+}</code></pre>
+
+<p>这行不生成任何代码；没有它服务照样能跑，但消费方会失去编译期检查。<b>配电箱每个插孔的规格都写在说明书上</b>——服务键是运行时的事实，声明合并是编译时的说明书，两边对得上，才敢放心插拔。这也正是第 13 章那句「替换只看接口」的机制基础：接口（键 + 类型声明）就是说明书。</p>
+
+<p>展开一层，回答一个常见疑问：<b>A 插件依赖了 B 插件，它从类型上是怎么知道 B 有什么方法的？</b>不是 A 去 import B 的实现——而是两段各管一段：</p>
+<ul>
+  <li><b><code>inject</code> 管运行时</b>——A 声明 <code>inject: ['b']</code>，框架保证 B 的服务在 A 激活前已就绪（14.3 的状态机），这只是「运行时存在」的保证，不含任何类型信息；</li>
+  <li><b>声明合并管编译时</b>——B 用 <code>declare module '@deepseek-ai/cordis'</code> 把自己的服务类型塞进全局 <code>Context</code> 接口，A 里写 <code>ctx.b.someMethod()</code> 就有自动补全和类型检查，全程不用 import B 的实现类。</li>
+</ul>
+<p>真实案例：dsh 的模型服务 <code>ctx.llm</code> 就是这么声明的——<a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/llm/llm/src/index.ts" target="_blank" rel="noopener">packages/llm/llm/src/index.ts</a> 里一行 <code>interface Context { llm: LlmRuntime }</code>，消费方声明 <code>inject: ['llm']</code> 后直接调 <code>ctx.llm</code>，背后挂哪个适配器它一概不知（第 13 章「替换只看接口」的活例）。想看最小完整版，教程 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-tutorial/03-services.zh.md" target="_blank" rel="noopener">03-services.zh.md</a> 里 greeter 与 consumer 的完整代码就在那。</p>
+
+<p>回头再看 14.2 的技能家族，三块插件各自声明 <code>inject</code>、各自用 <code>ctx.effect</code> 注册——把「注册即效应」走了一遍。到这里，你会看插件、会判断依赖、会收拾效应，已经具备了动手写自己插件的基础——第 20 章《设计一个好工具》再教你把它设计得让模型好用。</p>
+
+<h2>一张图总结</h2>
+
+<div class="diagram">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="插座与电器全景">
+  <defs><marker id="m145" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 Z" fill="#9aa3ad"/></marker></defs>
+  <g font-family='-apple-system,"PingFang SC","Microsoft YaHei",sans-serif'>
+    <text x="360" y="20" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="700">本章全景：插座与电器</text>
+    <rect x="20" y="40" width="220" height="168" rx="10" fill="#ecfdf8" stroke="#5eead4"/>
+    <text x="130" y="66" text-anchor="middle" font-size="14" fill="#134e4a" font-weight="700">配电箱 Context</text>
+    <text x="130" y="92" text-anchor="middle" font-size="11" fill="#4b5563">服务 = 电（ctx.xxx 键）</text>
+    <text x="130" y="112" text-anchor="middle" font-size="11" fill="#4b5563">事件 = 广播线路</text>
+    <text x="130" y="132" text-anchor="middle" font-size="11" fill="#4b5563">效应 = 保险丝</text>
+    <text x="130" y="158" text-anchor="middle" font-size="11" fill="#6b7280">谁供电，谁决定先后</text>
+    <text x="130" y="180" text-anchor="middle" font-size="11" fill="#6b7280">拔掉电源，全部收回</text>
+    <rect x="275" y="40" width="170" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="360" y="62" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">① 写插件</text>
+    <text x="360" y="80" text-anchor="middle" font-size="10.5" fill="#6b7280">apply(ctx) + inject 声明</text>
+    <rect x="275" y="108" width="170" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="360" y="130" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">② 通电</text>
+    <text x="360" y="148" text-anchor="middle" font-size="10.5" fill="#6b7280">依赖就绪 → ACTIVE</text>
+    <rect x="275" y="176" width="170" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="360" y="198" text-anchor="middle" font-size="12.5" fill="#312e81" font-weight="700">③ 拔插头</text>
+    <text x="360" y="216" text-anchor="middle" font-size="10.5" fill="#6b7280">效应逆序收回</text>
+    <line x1="360" y1="92" x2="360" y2="106" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m145)"/>
+    <line x1="360" y1="160" x2="360" y2="174" stroke="#9aa3ad" stroke-width="1.6" marker-end="url(#m145)"/>
+    <rect x="480" y="40" width="220" height="188" rx="10" fill="#f6f4ee" stroke="#d6d0c4"/>
+    <text x="590" y="66" text-anchor="middle" font-size="14" fill="#1f2937" font-weight="700">电器 = 插件</text>
+    <text x="590" y="92" text-anchor="middle" font-size="11" fill="#4b5563">提供服务（供别的电器用电）</text>
+    <text x="590" y="112" text-anchor="middle" font-size="11" fill="#4b5563">监听事件（听广播）</text>
+    <text x="590" y="132" text-anchor="middle" font-size="11" fill="#4b5563">注册效应（保险丝）</text>
+    <text x="590" y="158" text-anchor="middle" font-size="11" fill="#6b7280">inject = 用电要求</text>
+    <text x="590" y="180" text-anchor="middle" font-size="11" fill="#6b7280">卸载 = 自动断电</text>
+    <line x1="448" y1="66" x2="478" y2="66" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m145)"/>
+    <line x1="448" y1="134" x2="478" y2="134" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m145)"/>
+    <line x1="448" y1="202" x2="478" y2="202" stroke="#9aa3ad" stroke-width="1.5" marker-end="url(#m145)"/>
+    <text x="360" y="286" text-anchor="middle" font-size="12" fill="#7b8494">一条主线：电器插上插座才通电；拔掉插头，线收干净。</text>
+  </g>
+  </svg>
+  <div class="figcaption"><b>图 14-5</b> 插座与电器：写插件、通电、拔插头——五个关键词各就各位。</div>
+</div>
+
+<h2>要点回顾</h2>
+
+<ul>
+  <li><b>插件只有一个入口</b>：<code>apply(ctx)</code>，一切贡献都登记到上下文上。</li>
+  <li><b>上下文是服务的仓库</b>：每个服务一个稳定键（<code>ctx.llm</code>、<code>ctx.tools</code>…），按键取服务，不 import 实现。</li>
+  <li><b>顺序是算出来的</b>：注册顺序是默认，依赖声明是覆盖；依赖持续跟踪，提供者换人，依赖者自动卸载重载——第 13 章那句「行序不承载加载语义」就是它。</li>
+  <li><b>一切注册可逆</b>：效应卸载时逆序收回，后装的先拆；技能系统就是「注册即效应」的活体标本。</li>
+  <li><b>声明合并给类型</b>：运行时挂键 + 编译时声明，插孔规格有据可查——接口（键 + 类型）就是说明书。</li>
+</ul>
+
+<h2>动手做</h2>
+
+<div class="card">
+<ol>
+  <li>打开 <a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/cordis-tutorial/01-first-plugin.zh.md" target="_blank" rel="noopener">01-first-plugin.zh.md</a>，跟着写一遍 hello 插件；没环境也没关系，在纸上写出 <code>apply(ctx)</code> 里你要做的那一件事。</li>
+  <li>在 <code>deepseek-harness/packages</code> 下任选一个插件，找它的三个痕迹：<code>inject</code> 了谁、提供了什么服务、注册了哪些效应（对照 14.2 技能家族那张表来找）。</li>
+  <li>设想你要写的一个插件，回答三问：它提供什么服务？它依赖谁？卸载时它要收走什么？</li>
+</ol>
+</div>
+
+<p>插件都挂上了、顺序也理顺了，可插件之间怎么说话？广播、传阅、还是排队？——下一章《让零件通风报信》，我们把配电箱里的广播线路接上电。</p>
+
+        <div class="prevnext">
     <a href="./13-anatomy.html"><div class="pn-label">← 上一页</div><div class="pn-title">第 13 章 Agent 是怎么拼起来的</div></a>
     <a class="next" href="./15-event-driven.html"><div class="pn-label">下一页 →</div><div class="pn-title">第 15 章 让零件通风报信</div></a>
   </div>
 <footer class="footer">
-  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness</span>
-  <span><a href="../index.html">目录</a> · <a href="../preface.html">前言</a> · <a href="../outline.html">大纲</a></span>
+  <span>《深入浅出 AI Agent》 · 基于 DeepSeek Harness 与 Codex</span>
+  <span><a href="../index.html">目录</a></span>
 </footer>
 </div>
 </main>
